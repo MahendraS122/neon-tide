@@ -1,8 +1,7 @@
-// Every texture in the game is painted here, on a 2D canvas, at load time: facades with lit
-// windows, glass towers, the city's roads and sand in one image, park grass, neon signs and the
-// number plates. Textures are cached by key, so a hundred buildings of one style share one image.
+// Canvas-painted surfaces, cached so buildings and vehicles can share textures.
 import * as THREE from 'three';
 import { PALETTE } from '../config.js';
+import { createRandom } from '../random.js';
 const cache = new Map();
 function canvas(width, height) {
   const element = document.createElement('canvas');
@@ -40,15 +39,7 @@ function grain(ctx, width, height, amount = 0.06) {
   }
   ctx.putImageData(image, 0, 0);
 }
-function mulberry(seed) {
-  let a = seed | 0;
-  return function random() {
-    a =(a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^(a >>> 15), 1 | a);
-    t =(t + Math.imul(t ^(t >>> 7), 61 | t)) ^ t;
-    return((t ^(t >>> 14)) >>> 0) / 4294967296;
-  };
-}
+
 /* ------------------------------------------------------------------ facades */
 /**
 * A pastel art-deco or apartment facade: horizontal bands per floor, punched windows with a little
@@ -59,7 +50,7 @@ export function facadeTexture(style, tint, seed = 1) { return cached(`facade:${s
   const width = 256;
   const height = 256;
   const { element, ctx } = canvas(width, height);
-  const rand = mulberry(seed);
+  const rand = createRandom(seed);
   ctx.fillStyle = tint;
   ctx.fillRect(0, 0, width, height);
   // Vertical wash: walls catch the low sun near the top.
@@ -120,7 +111,7 @@ export function glassTexture(tint, seed = 1) { return cached(`glass:${tint}:${se
   const width = 256;
   const height = 512;
   const { element, ctx } = canvas(width, height);
-  const rand = mulberry(seed);
+  const rand = createRandom(seed);
   const base = ctx.createLinearGradient(0, 0, width * 0.4, height);
   base.addColorStop(0, tint);
   base.addColorStop(0.5, '#7ea6c8');
@@ -163,94 +154,6 @@ export function glassTexture(tint, seed = 1) { return cached(`glass:${tint}:${se
   ctx.fillStyle = sheen;
   ctx.fillRect(0, 0, width, height);
   return finish(element);
-});
-}
-/* ------------------------------------------------------------------ the ground */
-/**
-* The whole city's ground in one image: asphalt everywhere, lane dashes down every street, kerb
-* lines and crosswalks at every junction, the promenade paving and the sand at the western edge.
-* The plane is `size` pixels for `half*2` metres, with texture x running along world x and texture
-* y along world z (the plane is laid flat, so v runs the other way).
-*/
-export function cityGroundTexture(size, half, roads, roadHalf, promenade) { return cached('ground',
-() => {
-  const { element, ctx } = canvas(size, size);
-  const perMetre = size /(half * 2);
-  const toPx =(world) =>(world + half) * perMetre;
-  const m =(metres) => metres * perMetre;
-  ctx.fillStyle = PALETTE.asphalt;
-  ctx.fillRect(0, 0, size, size);
-  grain(ctx, size, size, 0.05);
-  // Tyre-darkened lanes down the middle of each street.
-  ctx.fillStyle = 'rgba(18,18,24,.16)';
-  for (const road of roads) {
-    for (const offset of[- 5.2, 5.2]) {
-      ctx.fillRect(toPx(road + offset) - m(3), 0, m(6), size);
-      ctx.fillRect(0, toPx(road + offset) - m(3), size, m(6));
-    }
-  }
-  for (const road of roads) {
-    // Centre dashes.
-    ctx.fillStyle = PALETTE.lane;
-    for (let t = - half; t < half; t += 9) {
-      ctx.fillRect(toPx(road) - m(0.16), toPx(t), m(0.32), m(4.5));
-      ctx.fillRect(toPx(t), toPx(road) - m(0.16), m(4.5), m(0.32));
-    }
-    // Kerb-edge paint either side of the street.
-    ctx.fillStyle = 'rgba(236,228,210,.6)';
-    for (const side of[- 1, 1]) {
-      ctx.fillRect(toPx(road + side *(roadHalf - 0.7)) - m(0.13), 0, m(0.26), size);
-      ctx.fillRect(0, toPx(road + side *(roadHalf - 0.7)) - m(0.13), size, m(0.26));
-    }
-  }
-  // Crosswalks: bar runs on every approach to a junction.
-  ctx.fillStyle = 'rgba(246,242,228,.75)';
-  for (const rx of roads) {
-    for (const rz of roads) {
-      for (const dir of[- 1, 1]) {
-        for (let b = - roadHalf + 1.3; b < roadHalf - 1; b += 1.9) {
-          ctx.fillRect(toPx(rx + b) - m(0.4), toPx(rz + dir *(roadHalf + 1.4)), m(0.8), m(2.8));
-          ctx.fillRect(toPx(rx + dir *(roadHalf + 1.4)), toPx(rz + b) - m(0.4), m(2.8), m(0.8));
-        }
-      }
-    }
-  }
-  // The promenade: pale paving with transverse seams.
-  const promStart = toPx(promenade.center - promenade.half);
-  const promEnd = toPx(promenade.center + promenade.half);
-  ctx.fillStyle = PALETTE.walk;
-  ctx.fillRect(promStart, 0, promEnd - promStart, size);
-  ctx.strokeStyle = 'rgba(150,138,120,.45)';
-  ctx.lineWidth = Math.max(1, m(0.12));
-  for (let z = - half; z < half; z += 3.2) {
-    ctx.beginPath();
-    ctx.moveTo(promStart, toPx(z));
-    ctx.lineTo(promEnd, toPx(z));
-    ctx.stroke();
-  }
-  // A darker wet band at the promenade's seaward lip.
-  ctx.fillStyle = 'rgba(120,108,92,.4)';
-  ctx.fillRect(promStart - m(1.2), 0, m(1.2), size);
-  // Sand at the far west, darker where it meets the water.
-  const sandStart = toPx(promenade.beachStart);
-  const sand = ctx.createLinearGradient(0, 0, sandStart, 0);
-  sand.addColorStop(0, PALETTE.sandDark);
-  sand.addColorStop(0.22, PALETTE.sand);
-  sand.addColorStop(0.9, PALETTE.sand);
-  sand.addColorStop(1, PALETTE.sandDark);
-  ctx.fillStyle = sand;
-  ctx.fillRect(0, 0, sandStart, size);
-  // Dry-sand ripples.
-  ctx.strokeStyle = 'rgba(190,166,120,.28)';
-  ctx.lineWidth = Math.max(1, m(0.25));
-  for (let z = - half; z < half; z += 2.4) {
-    ctx.beginPath();
-    ctx.moveTo(0, toPx(z));
-    ctx.bezierCurveTo(sandStart * 0.35, toPx(z + 1.4), sandStart * 0.65, toPx(z - 1.4), sandStart,
-    toPx(z));
-    ctx.stroke();
-  }
-  return finish(element, { aniso: 8 });
 });
 }
 /** A plain tiled surface for roofs and pavement: colour, optional seams, a little grain. */
@@ -345,19 +248,4 @@ export function plateTexture(text) { return cached(`plate:${text}`,() => {
   ctx.fillText(text, 64, 38);
   return finish(element);
 });
-}
-/** A radial soft dot, for glows and light pools. */
-export function glowTexture(color = '#fff3d0') { return cached(`glow:${color}`,() => {
-  const size = 128;
-  const { element, ctx } = canvas(size, size);
-  const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-  g.addColorStop(0, color);
-  g.addColorStop(0.35, 'rgba(255,240,200,.5)');
-  g.addColorStop(1, 'rgba(255,220,160,0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, size, size);
-  return finish(element, { aniso: 1 });
-});
-} export function disposeTextures() { for (const texture of cache.values()) texture.dispose?.();
-cache.clear();
 }

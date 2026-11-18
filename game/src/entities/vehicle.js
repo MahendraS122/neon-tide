@@ -2,7 +2,7 @@
 // little understeer at speed) plus its visual group and the wheels that steer and roll. The model
 // is built once per car and reused, so a stolen car that respawns keeps its paint and plate.
 import * as THREE from 'three';
-import { VEHICLE, GROUND } from '../config.js';
+import { VEHICLE } from '../config.js';
 import { buildCarVisual, CAR_SHAPES } from './vehicleModel.js';
 let nextId = 1;
 export function createVehicle({ kind = 'sedan', color = 0xd8d8de, x = 0, z = 0, heading = 0, plate,
@@ -140,6 +140,3 @@ for (const box of world.colliders) {
   car.health = Math.max(0, car.health -(car.upgrades?.armour ? 0.3: 1));
 }
 }
-/** Where a passenger sits in the car's local frame. */
-export const DRIVER_SEAT = new THREE.Vector3(- 0.34, 0.9, - 0.1);
-export { GROUND };

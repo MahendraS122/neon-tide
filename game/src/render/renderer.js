@@ -3,7 +3,6 @@
 import * as THREE from 'three';
 import { CAMERA, SUN } from '../config.js';
 export const TIME_DAY = 'day';
-export const TIME_NIGHT = 'night';
 export function createRenderer(canvas) { const renderer = new THREE.WebGLRenderer({
   canvas, antialias: true, powerPreference: 'high-performance', stencil: false,
   // Keep the colour buffer readable after a frame: a headless capture (and the entry's own

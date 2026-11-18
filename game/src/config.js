@@ -29,8 +29,15 @@ promenadeX: - 318, promenadeHalf: 25,
 beachX: - 368, beachHalf: 52, waterX: - 424, waterWidth: 1500,
 /** The pier, its deck at promenade height, and the Ferris wheel at its end. */
 pierX: - 318, pierLength: 236, pierWidth: 18, pierZ: 58, ferrisWheelX: - 540, ferrisWheelY: 8, };
-/** Surface height by where you are: the pavement is a step up from the asphalt. */
-export const GROUND = { road: 0, walk: CURB_HEIGHT };
+export const DISTRICTS =[{ id: 'shore', name: 'Shoreline', cols:[0], rows:[0, 1, 2], style: 'deco', neon: 2,
+palms: true }, { id: 'ocean', name: 'Ocean Drive', cols:[0], rows:[3, 4, 5], style: 'deco', neon: 3,
+palms: true }, { id: 'neon', name: 'Neon Row', cols:[1], rows:[1, 2, 3], style: 'deco', neon: 4, palms: true },
+{ id: 'downtown', name: 'Solara Heights', cols:[2, 3], rows:[2, 3, 4], style: 'glass', neon: 1 },
+{ id: 'lagoon', name: 'Lagoon Quarter', cols:[1, 2], rows:[0], style: 'apartment', neon: 2, palms: true },
+{ id: 'palms', name: 'Palm Grove', cols:[4, 5], rows:[3, 4, 5], style: 'apartment', neon: 1, palms: true },
+{ id: 'mills', name: 'Sunset Mills', cols:[3, 4], rows:[0, 1], style: 'apartment', neon: 1, palms: true },
+{ id: 'port', name: 'Crane Port', cols:[5], rows:[0, 1, 2], style: 'port', neon: 0 },
+{ id: 'yards', name: 'Container Yards', cols:[5], rows:[3, 4, 5], style: 'port', neon: 0 }];
 /** Golden hour: a low sun out over the water, so shadows rake long across Ocean Drive. */
 export const SUN = {
 /** Degrees above the horizon. */
@@ -62,5 +69,3 @@ walkLine: '#b3a693', sand: '#e8cf9d', sandDark: '#cdae78', grass: '#5b8c46', wat
 '#7fb4ae', '#5d86a8', '#93b5c9', '#6b8fc0'], concrete:['#b9b2a6', '#a8a49b', '#c6bfb2'], neon:['#25e6d0',
 '#ff4d9d', '#ffb03a', '#8f6bff', '#66ff8f', '#ff7a2f'], };
 export const HUD = { startCash: 500 };
-/** Where the save lives between visits (this browser only). */
-export const SAVE_KEY = 'neon-tide.save.v1';

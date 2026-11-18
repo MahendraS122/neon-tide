@@ -1,6 +1,5 @@
 // Full-city atlas paints the real grid, districts, services, story state and road-following GPS.
-import { ROADS, CITY, BLOCK_HALF } from '../config.js';
-import { DISTRICTS } from '../world/cityGen.js';
+import { ROADS, CITY, BLOCK_HALF, DISTRICTS } from '../config.js';
 import { STORY, CHAPTERS } from '../missions/story.js';
 import { drawPortrait } from './portraits.js';
 export const MAP_ICONS =[['safehouse', 'H', '#87e6c1', 'Safehouse'],['garage', 'G', '#f4b36b', 'Garage / respray'],

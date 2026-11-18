@@ -1,10 +1,6 @@
-// Street furniture, built from primitives and shared materials: palms with drooping frond cards,
-// lit street lamps, benches, hydrants, bollards, traffic lights, the pier's planks and railing,
-// the Ferris wheel and the port's cranes and container stacks. Everything is instanced or cloned
-// from one prototype so a whole avenue of palms costs a handful of draw calls.
+// Shared procedural street furniture, pier, Ferris wheel and port cranes.
 import * as THREE from 'three';
-import { PALETTE } from '../config.js';
-import { surfaceTexture, glowTexture } from '../render/textures.js';
+import { surfaceTexture } from '../render/textures.js';
 import { createDice } from '../random.js';
 const up = new THREE.Vector3(0, 1, 0);
 export function createPropsKit() { const trunkMaterial = new THREE.MeshStandardMaterial({ color:
@@ -15,7 +11,6 @@ const frondDark = new THREE.MeshStandardMaterial({ color: 0x2c5c34, roughness: 0
 });
 const poleMaterial = new THREE.MeshStandardMaterial({ color: 0x6f7478, roughness: 0.6, metalness:
 0.4 });
-const lampMaterial = new THREE.MeshBasicMaterial({ color: 0xffe3ad });
 const woodMaterial = new THREE.MeshStandardMaterial({ map: surfaceTexture('#a8814f', 'plank', { seams:
 true }), roughness: 0.88, });
 const concreteMaterial = new THREE.MeshStandardMaterial({ map: surfaceTexture('#b6ae9f', 'concrete',
@@ -176,7 +171,7 @@ function crane(seed) {
 }
 return {
   palm, streetLamp, bench, hydrant, bollard, trafficLight, crane, materials: { trunkMaterial, frondMaterial,
-  poleMaterial, woodMaterial, concreteMaterial, lampMaterial },
+  poleMaterial, woodMaterial, concreteMaterial },
 };
 }
 /**

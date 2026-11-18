@@ -41,18 +41,3 @@ merged.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
 merged.computeBoundingSphere();
 return merged;
 }
-/** Collect the meshes under `root` that use `material`, bake them, and return one merged mesh. */
-export function bakeByMaterial(root, material, { castShadow = true, receiveShadow = true } = { }) {
-  root.updateMatrixWorld(true);
-  const parts =[];
-  root.traverse((child) => {
-    if (child.isMesh && child.material === material) {
-      parts.push({ geometry: child.geometry, matrix: child.matrixWorld.clone() });
-    }
-  });
-  if (parts.length === 0) return null;
-  const mesh = new THREE.Mesh(mergeGeometries(parts), material);
-  mesh.castShadow = castShadow;
-  mesh.receiveShadow = receiveShadow;
-  return mesh;
-}

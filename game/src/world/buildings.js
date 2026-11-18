@@ -1,16 +1,9 @@
-// Buildings, one lot at a time. Each tower is a textured body whose UVs are scaled so windows keep
-// a constant size on any wall, a roof cap with a parapet lip, a lit shopfront band at street level
-// and rooftop clutter. Rather than one mesh per part, geometry is filed into buckets keyed by
-// material and merged once at the end: the whole skyline then costs about a dozen draw calls.
+// Textured towers and neon signs, with geometry merged by material.
 import * as THREE from 'three';
-import { LOT_HALF, PALETTE, CURB_HEIGHT, BLOCK_CENTERS } from '../config.js';
+import { LOT_HALF, PALETTE, CURB_HEIGHT } from '../config.js';
 import { facadeTexture, glassTexture, signTexture, surfaceTexture } from '../render/textures.js';
 import { createDice } from '../random.js';
 import { mergeGeometries } from './mergeGeometry.js';
-/** Shop names the city is signed with; original to Port Solara. */
-export const SHOP_NAMES =['TIDE MART', 'SOLARA LIQUOR', 'PALM DELI', 'CASA VERDE', 'NEON NOODLE',
-'SALT & VINYL', 'PIER 9 PAWN', 'LAGUNA CAFE', 'BRISA BAKERY', 'GOLD COAST TATTOO', 'VELVET ROOM',
-'MARLIN BAIT', 'SUNSPOT LAUNDRY', 'CORAL MOTORS', 'COPPER KETTLE',];
 const NEON_WORDS =['HOTEL', 'MOTEL', 'CLUB', 'ARCADE', 'DINER', 'PAWN', 'SURF', 'BAR', 'TATTOO',
 'GYM', 'VINYL', 'CINEMA', 'LOBSTER', 'RADIO'];
 /** Metres of facade one tile of the texture covers, so windows stay a human size. */
@@ -105,11 +98,10 @@ function addTower(opts, colliders) {
   const bandH = 3.6;
   const band = new THREE.Matrix4().makeTranslation(x, base + bandH / 2, z);
   file(shopMaterial, new THREE.BoxGeometry(w + 0.3, bandH, d + 0.3), band);
-  // Which sides face a street: pick the two nearest lot edges and light those.
   const faces =[{ sx: 0, sz: -(d / 2), rx: 0 }, { sx: 0, sz: d / 2, rx: 0 }, { sx: -(w / 2), sz:
   0, rx: Math.PI / 2 }, { sx: w / 2, sz: 0, rx: Math.PI / 2 },];
   const rand = createDice(variant * 131 + Math.round(x + z));
-  for (const face of faces.slice(0, 4)) {
+  for (const face of faces) {
     if (!rand.chance(0.55)) continue;
     const width = face.rx === 0 ? w * 0.8: d * 0.8;
     const matrix = new THREE.Matrix4().makeTranslation(x + face.sx * 1.02, base + 1.5, z + face.sz * 1.02);

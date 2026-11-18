@@ -1,10 +1,6 @@
-// The city, assembled once at boot from the module's parts. Streets run along ROADS on both axes;
-// the six-by-six blocks between them carry a raised pavement, a ring of street furniture and one
-// to three buildings. West of Ocean Drive are the promenade, the sand and the sea; the pier runs
-// out over the water. Everything the rest of the game asks about the world (surface height, what
-// is solid, which district a point is in) lives here.
+// Assemble the city and expose its collision, district and surface samplers.
 import * as THREE from 'three';
-import { CITY, LOT_HALF, PALETTE, ROADS, ROAD_HALF, CURB_HEIGHT, BLOCK_HALF, BLOCK_CENTERS, PITCH,
+import { CITY, DISTRICTS, LOT_HALF, PALETTE, CURB_HEIGHT, BLOCK_HALF, BLOCK_CENTERS,
 } from '../config.js';
 import { surfaceTexture, grassTexture } from '../render/textures.js';
 import { buildGround } from './ground.js';
@@ -12,25 +8,6 @@ import { createDice } from '../random.js';
 import { createBuildingKit, fillBlock } from './buildings.js';
 import { createPropsKit, buildPier } from './props.js';
 import { mergeGeometries } from './mergeGeometry.js';
-/**
-* Districts by block grid index: column 0 is the beach side, row 0 the south end. Each carries the
-* look of its buildings, how many signs it gets, and the name the HUD shows there.
-*/
-export const DISTRICTS =[{ id: 'shore', name: 'Shoreline', cols:[0], rows:[0, 1, 2], style: 'deco',
-neon: 2, palms: true }, { id: 'ocean', name: 'Ocean Drive', cols:[0], rows:[3, 4, 5], style: 'deco',
-neon: 3, palms: true }, { id: 'neon', name: 'Neon Row', cols:[1], rows:[1, 2, 3], style: 'deco',
-neon: 4, palms: true }, { id: 'downtown', name: 'Solara Heights', cols:[2, 3], rows:[2, 3, 4], style:
-'glass', neon: 1 }, {
-  id: 'lagoon', name: 'Lagoon Quarter', cols:[1, 2], rows:[0], style: 'apartment', neon: 2, palms:
-  true
-}, {
-  id: 'palms', name: 'Palm Grove', cols:[4, 5], rows:[3, 4, 5], style: 'apartment', neon: 1, palms:
-  true
-}, {
-  id: 'mills', name: 'Sunset Mills', cols:[3, 4], rows:[0, 1], style: 'apartment', neon: 1, palms:
-  true
-}, { id: 'port', name: 'Crane Port', cols:[5], rows:[0, 1, 2], style: 'port', neon: 0 }, { id: 'yards',
-name: 'Container Yards', cols:[5], rows:[3, 4, 5], style: 'port', neon: 0 },];
 /** Which district a world position falls in, for the HUD's location line. */
 export function districtAt(x, z) { if (x < CITY.promenadeX + 26) return { id: 'beach', name: x < CITY.beachX ?
 'Solara Beach': 'The Promenade' };
@@ -52,18 +29,6 @@ return { id: 'city', name: 'Port Solara' };
     }
   }
   return best;
-}
-/** Which road centre is nearest a coordinate: -1 outside the grid. */
-export function nearestRoadIndex(value) { let best = - 1;
-let bestDist = ROAD_HALF + 0.5;
-for (let i = 0; i < ROADS.length; i += 1) {
-  const d = Math.abs(value - ROADS[i]);
-  if (d < bestDist) {
-    bestDist = d;
-    best = i;
-  }
-}
-return best;
 }
 /**
 * Build the world. Returns collision boxes, the surface sampler, the pier, the landmark positions

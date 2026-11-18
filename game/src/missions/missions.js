@@ -1,7 +1,6 @@
 // Campaign progression, retries, rewards, start markers and objective presentation.
-import { STORY, CHAPTERS } from './story.js';
 import { createObjectiveMarker, prepareObjective, objectiveComplete } from './objectives.js';
-export function createMissions(game) { const state = { completed:[], active: null, stage: 0, remaining:
+export function createMissions(game, STORY, CHAPTERS) { const state = { completed:[], active: null, stage: 0, remaining:
 null, cooldown: 0 };
 const marker = createObjectiveMarker(game.view.scene);
 let runtime = { };

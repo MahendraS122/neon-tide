@@ -1,8 +1,4 @@
-// Portraits, drawn on a canvas at runtime: a head-and-shoulders bust per character, with the hair,
-// jaw, collar and lighting that make Mara, Tavo, Nina, Garza, Hollis and Dex each recognisable at
-// tiny size. The same palette as their in-world rig (entities/character.js), so a speaker matches
-// the figure standing in the street. Also draws the chapter cards' art-deco linework.
-import { CAST } from '../entities/character.js';
+// Canvas portraits shared by dialogue, title cards and the city atlas.
 /** Character-specific look: hair shape, skin, clothing, and a prop or feature that reads at size. */
 export const PORTRAITS = { mara: {
   skin: '#8c5a3c', hair: '#1a1210', shirt: '#8b2f52', accent: '#ff4d9d', style: 'long', name: 'MARA REYES',
@@ -209,9 +205,7 @@ export function drawPortrait(canvas, key, { size = 78 } = { }) {
   ctx.strokeRect(0.5, 0.5, s - 1, s - 1);
   return look;
 }
-/** A big portrait for the title screen lineup and the character cards. */
-export function drawPortraitLarge(canvas, key, size = 150) { return drawPortrait(canvas, key, { size });
-} function hexAlpha(hex, alpha) {
+function hexAlpha(hex, alpha) {
   const value = hex.replace('#', '');
   const r = Number.parseInt(value.slice(0, 2), 16);
   const g = Number.parseInt(value.slice(2, 4), 16);
@@ -228,4 +222,3 @@ function shade(hex, amount) {
   });
   return `rgb(${shifted[0]},${shifted[1]},${shifted[2]})`;
 }
-export { CAST };

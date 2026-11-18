@@ -1,8 +1,7 @@
 // SPD cruisers and foot officers pursue the player, exchange fire and make arrests.
 import * as THREE from 'three';
-import { createVehicle } from './vehicle.js';
 import { createFigure, poseFigure, CAST } from './character.js';
-export function createPolice(scene, world) { const units =[];
+export function createPolice(scene, world, createVehicle) { const units =[];
 const officers =[];
 let serial = 20;
 let clock = 0;
