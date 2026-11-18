@@ -331,24 +331,26 @@ function addMuzzleFlash(game, x, z) {
 export async function stageShot(name, game) { try {
   if (name === 'map') {
     game.hud.hideLoading();
-    game.missions.restore({ completed: [0, 1, 2, 3] });
+    game.missions.restore({ completed:[0, 1, 2, 3] });
     game.missions.start(4, false);
-    game.playerRig.teleport(-282, -110);
+    game.playerRig.teleport(- 282, - 110);
     game.cash = 12480;
-    game.stats = { respect: 680, carsStolen: 12, tokens: [0, 2, 5, 7, 11], properties: 2 };
+    game.stats = { respect: 680, carsStolen: 12, tokens:[0, 2, 5, 7, 11], properties: 2 };
     game.time = { day: 3, dayName: 'WED', minutes: 1122 };
     game.cityMap.show();
     game.view.draw();
     await wait(150);
     window.__shotReady = true;
-  } else if (name === 'title') {
+  }
+  else if (name === 'title') {
     game.title.show();
     game.title.update(0);
     game.view.draw();
     await wait(180);
     game.view.draw();
     window.__shotReady = true;
-  } else if (name === 'onfoot') await onfootShot(game);
+  }
+  else if (name === 'onfoot') await onfootShot(game);
   else await chaseShot(game);
 }
 catch (error) {

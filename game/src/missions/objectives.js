@@ -38,7 +38,7 @@ if (stage.type === 'escape') game.wanted.crime('carjacking', 1.7);
 const distance = Math.hypot(player.position.x - stage.at[0], player.position.z - stage.at[1]);
 switch (stage.type) {
   case 'steal': return player.inVehicle === runtime.car;
-  case 'drive': return distance < 11 && player.inVehicle === runtime.car;
+  case 'drive': return distance < 11 && Boolean(player.inVehicle) &&(!runtime.car || player.inVehicle === runtime.car);
   case 'drop': return distance < 7;
   case 'reach': return distance < 9;
   case 'combat': return game.gang.members.every(member => member.dead);

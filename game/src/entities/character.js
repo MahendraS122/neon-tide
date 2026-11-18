@@ -137,8 +137,7 @@ hair: HAIR[0] }, mara: { shirt: 0x8b2f52, trousers: 0x25202c, jacket: null, skin
 0x1a1210 }, tavo: { shirt: 0xe6e0d0, trousers: 0x1a1a1f, jacket: 0x3a5f7a, skin: SKIN[1], hair:
 0x0e0c0a }, nina: { shirt: 0x2fd6b6, trousers: 0x1b2430, jacket: null, skin: SKIN[3], hair: 0x6b3a1a },
 garza: { shirt: 0xb2874a, trousers: 0x2a2a2e, jacket: 0x4a3a28, skin: SKIN[1], hair: 0x3a2a1a },
-hollis: {
-  shirt: 0x2a3a5a, trousers: 0x14181f, jacket: null, skin: SKIN[0], hair: 0x5a5a5a, cap: 0x1a2233
-}, cop: {
-  shirt: 0x2a3f6b, trousers: 0x121828, jacket: null, skin: SKIN[1], hair: HAIR[1], cap: 0x16243c
-}, ped: { shirt: 0xd8a030, trousers: 0x323a44, jacket: null, skin: SKIN[2], hair: HAIR[3] }, };
+hollis: { shirt: 0x2a3a5a, trousers: 0x14181f, jacket: null, skin: SKIN[0], hair: 0x5a5a5a, cap:
+0x1a2233 }, cop: { shirt: 0x2a3f6b, trousers: 0x121828, jacket: null, skin: SKIN[1], hair: HAIR[1],
+cap: 0x16243c }, ped: { shirt: 0xd8a030, trousers: 0x323a44, jacket: null, skin: SKIN[2], hair:
+HAIR[3] }, };

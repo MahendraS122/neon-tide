@@ -1,10 +1,9 @@
-export function createWanted() { const state = {
-  level: 0, heat: 0, cooldown: 0, searching: false, lineOfSight: false, flash: 0, units:[]
-};
+// Crime heat, visibility search and cooldown decide when the police give up.
+export function createWanted() { const state = { level: 0, heat: 0, cooldown: 0, searching: false,
+lineOfSight: false, flash: 0, units:[] };
 function crime(type = 'assault', weight = 1) {
-  const values = {
-    assault: 1, vehicleTheft: 1, weapon: 1, hitOfficer: 2, kill: 2, explosion: 3, carjacking: 2
-  };
+  const values = { assault: 1, vehicleTheft: 1, weapon: 1, hitOfficer: 2, kill: 2, explosion: 3,
+  carjacking: 2 };
   state.heat = Math.min(100, state.heat +(values[type] ?? 1) * weight * 14);
   state.level = Math.min(5, Math.max(state.level, Math.ceil(state.heat / 20)));
   state.cooldown = 0;

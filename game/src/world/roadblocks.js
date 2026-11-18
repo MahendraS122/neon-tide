@@ -1,3 +1,4 @@
+// High-wanted-level SPD roadblocks close nearby streets with lit barricades.
 import * as THREE from 'three';
 export function createRoadblocks(scene, world) { const blocks =[];
 let previous = 0;

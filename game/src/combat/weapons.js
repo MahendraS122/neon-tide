@@ -1,3 +1,4 @@
+// Player weapons, ray-hit damage, tracers, reloads and Lavado/police combatants.
 import * as THREE from 'three';
 import { createFigure, poseFigure } from '../entities/character.js';
 const SPECS =[{ name: 'FISTS', mag: Infinity, rate: .45, spread: .35, damage: 12, range: 2.4 },

@@ -105,7 +105,7 @@
   #spd-panel{
   position:absolute;
   left:16px;
-  top:152px;
+  top:174px;
   width:352px;
   padding:8px 11px 9px}
   #spd-panel h3{
@@ -218,6 +218,7 @@
   left:16px;
   bottom:16px;
   display:flex;
+  flex-direction:column;
   align-items:flex-end;
   gap:12px}
   #minimap-frame{
@@ -241,6 +242,24 @@
   font-size:11px;
   color:#cfe0f5;
   text-shadow:0 1px 3px #000}
+  #respect{
+  width:188px;
+  padding:6px 8px;
+  color:#8ce6cf;
+  font-size:9px;
+  letter-spacing:1.5px}
+  #respect b{
+  float:right;
+  color:#ffcf8f}
+  #respect > div{
+  height:4px;
+  background:#285050;
+  margin-top:5px}
+  #respect i{
+  display:block;
+  height:100%;
+  width:0;
+  background:#5de3bb}
   /* Vitals sit above the minimap, where nothing else is drawn. */
   #vitals{
   position:absolute;
@@ -283,6 +302,11 @@
   width:196px;
   padding:8px 11px 9px;
   text-align:right}
+  #nitro-label{
+  color:#82dcca;
+  font-size:8px;
+  letter-spacing:2px;
+  margin:5px 0 -3px}
   #spd-kmh{
   font-family:var(--fixed);
   font-size:33px;
@@ -313,7 +337,36 @@
   bottom:16px;
   width:196px;
   padding:7px 11px 8px;
+  padding-right:39px;
   text-align:right}
+  .radio-eq{
+  position:absolute;
+  right:11px;
+  top:12px;
+  height:18px;
+  display:flex;
+  gap:3px;
+  align-items:end}
+  .radio-eq i{
+  height:13px;
+  width:2px;
+  background:#64e8cf;
+  transform-origin:bottom;
+  animation:radio-level .65s infinite alternate ease-in-out}
+  .radio-eq i:nth-child(2n){
+  animation-delay:-.33s}
+  .radio-eq i:nth-child(3n){
+  animation-delay:-.18s}
+  @keyframes radio-level{
+  from{
+  transform:scaleY(.22)}
+  to{
+  transform:scaleY(1)}
+  }
+  @media (prefers-reduced-motion:reduce){
+  .radio-eq i{
+  animation:none}
+  }
   #radio-station{
   font-size:11px;
   letter-spacing:2.4px;
@@ -444,6 +497,7 @@
       <div id="mp-stages"><i class="on"></i><i></i><i></i><i></i><i></i></div>
       <div id="mp-cash">+$400</div>
     </div>
+    <div id="mp-next"></div>
   </section>
 
   <section id="spd-panel" class="panel hidden">
@@ -470,6 +524,7 @@
       <canvas id="minimap" width="212" height="212"></canvas>
       <div id="map-n">N</div>
     </div>
+    <div id="respect" class="panel"><span>RESPECT</span><b>LVL 01</b><div><i></i></div></div>
   </section>
 
   <section id="vitals">
@@ -481,10 +536,12 @@
   <section id="speedo" class="panel">
     <div id="spd-kmh">0<span> KM/H</span></div>
     <div id="spd-gear">P &middot; NEUTRAL</div>
+    <div id="nitro-label">NITRO</div>
     <div id="nitro-wrap"><i style="width:100%"></i></div>
   </section>
 
   <section id="radio" class="panel">
+    <div class="radio-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     <div id="radio-station">SUNSET FM 98.6</div>
     <div id="radio-song">&ldquo;Chrome Palms&rdquo;</div>
   </section>

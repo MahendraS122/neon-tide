@@ -1,3 +1,4 @@
+// Procedural tapered coachwork meshes give each original car its silhouette.
 import * as THREE from 'three';
 // Bevelled side profiles, extruded across the axle. The actual wheel wells are holes
 // cut out of the lower silhouette, rather than dark boxes pasted onto a slab.

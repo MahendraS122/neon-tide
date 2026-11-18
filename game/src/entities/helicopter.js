@@ -1,3 +1,4 @@
+// A procedural police helicopter circles, spots and lights the wanted player.
 import * as THREE from 'three';
 export function createHelicopter(scene) { const root = new THREE.Group();
 root.name = 'SPD AIR 1';
@@ -5,9 +6,8 @@ const dark = new THREE.MeshStandardMaterial({ color: 0x182532, metalness: .5, ro
 const fuselage = new THREE.Mesh(new THREE.SphereGeometry(1, 14, 10), dark);
 fuselage.scale.set(1.65, .72, .72);
 root.add(fuselage);
-const cockpit = new THREE.Mesh(new THREE.SphereGeometry(.64, 12, 8), new THREE.MeshPhysicalMaterial({
-  color: 0x37c6dd, metalness: .2, roughness: .08, transparent: true, opacity: .72, clearcoat: 1
-}));
+const cockpit = new THREE.Mesh(new THREE.SphereGeometry(.64, 12, 8), new THREE.MeshPhysicalMaterial({ color:
+0x37c6dd, metalness: .2, roughness: .08, transparent: true, opacity: .72, clearcoat: 1 }));
 cockpit.position.z = .58;
 root.add(cockpit);
 const tail = new THREE.Mesh(new THREE.CylinderGeometry(.13, .24, 3.1, 8), dark);
@@ -26,9 +26,8 @@ for (let i = 0; i < 4; i ++) {
   rotor.add(blade);
 }
 root.add(rotor);
-const cone = new THREE.Mesh(new THREE.ConeGeometry(5, 27, 24, 1, true), new THREE.MeshBasicMaterial({
-  color: 0xc9fbff, transparent: true, opacity: .09, depthWrite: false, side: THREE.DoubleSide
-}));
+const cone = new THREE.Mesh(new THREE.ConeGeometry(5, 27, 24, 1, true), new THREE.MeshBasicMaterial({ color:
+0xc9fbff, transparent: true, opacity: .09, depthWrite: false, side: THREE.DoubleSide }));
 cone.position.set(0, - 13, - 1);
 cone.rotation.x = Math.PI;
 root.add(cone);

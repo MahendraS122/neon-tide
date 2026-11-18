@@ -17,13 +17,10 @@ import { mergeGeometries } from './mergeGeometry.js';
 * look of its buildings, how many signs it gets, and the name the HUD shows there.
 */
 export const DISTRICTS =[{ id: 'shore', name: 'Shoreline', cols:[0], rows:[0, 1, 2], style: 'deco',
-neon: 2, palms: true }, {
-  id: 'ocean', name: 'Ocean Drive', cols:[0], rows:[3, 4, 5], style: 'deco', neon: 3, palms: true
-}, {
-  id: 'neon', name: 'Neon Row', cols:[1], rows:[1, 2, 3], style: 'deco', neon: 4, palms: true
-}, {
-  id: 'downtown', name: 'Solara Heights', cols:[2, 3], rows:[2, 3, 4], style: 'glass', neon: 1
-}, {
+neon: 2, palms: true }, { id: 'ocean', name: 'Ocean Drive', cols:[0], rows:[3, 4, 5], style: 'deco',
+neon: 3, palms: true }, { id: 'neon', name: 'Neon Row', cols:[1], rows:[1, 2, 3], style: 'deco',
+neon: 4, palms: true }, { id: 'downtown', name: 'Solara Heights', cols:[2, 3], rows:[2, 3, 4], style:
+'glass', neon: 1 }, {
   id: 'lagoon', name: 'Lagoon Quarter', cols:[1, 2], rows:[0], style: 'apartment', neon: 2, palms:
   true
 }, {

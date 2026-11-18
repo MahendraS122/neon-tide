@@ -96,6 +96,11 @@ function update(dt, input) {
     cashLabel: `+$${mission.reward.toLocaleString('en-US')}`,
   });
   if (objectiveComplete(game, stage, runtime, dt)) {
+    if (stage.type === 'drop') {
+      game.cash += 350;
+      game.hud.setCash(game.cash);
+      game.hud.float('CASH DROP · +$350', 'cash');
+    }
     state.stage ++;
     if (state.stage === mission.stages.length) pass();
     else beginStage();

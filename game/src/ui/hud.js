@@ -26,6 +26,7 @@ function setMission(mission) {
   q('mp-chapter').textContent = mission.chapter ?? 'SIDE JOB';
   q('mp-name').textContent = mission.name ?? '';
   q('mp-objective').innerHTML = mission.objective ?? '';
+  q('mp-next').textContent = mission.next ? `NEXT: ${mission.next}`: '';
   const timer = q('mp-timer');
   if (mission.timeLeft == null) {
     timer.textContent = '--:--';
@@ -143,11 +144,16 @@ function setWeapons(slots, active) {
     }
   });
 }
-function setDriving(speedKmh, gear, nitro) {
+function setDriving(speedKmh, gear, nitro, installed = true) {
   q('speedo').classList.toggle('hidden', !state.inCar);
   q('spd-kmh').innerHTML = `${Math.round(Math.abs(speedKmh))}<span> KM/H</span>`;
   q('spd-gear').textContent = gear;
+  q('nitro-label').textContent = installed ? 'NITRO · N': 'NITRO · NOT FITTED';
   q('nitro-wrap').firstElementChild.style.width = `${Math.max(0, Math.min(1, nitro)) * 100}%`;
+}
+function setRespect(points) {
+  q('respect').querySelector('b').textContent = `LVL ${String(1 + Math.floor(points / 300)).padStart(2, '0')}`;
+  q('respect').querySelector('i').style.width = `${(points % 300) / 3}%`;
 }
 function setRadio(station, song) {
   state.radio = { station, song };
@@ -239,7 +245,7 @@ setStatus();
 setVitals(state.health, state.armour, state.district);
 setRadio(state.radio.station, state.radio.song);
 return {
-  state, setMission, setPolice, setVitals, setWeapons, setDriving, setRadio, setCash, setStars,
-  setClock, showDialogue, hideDialogue, float, banner, hideBanner, showHud, hideLoading,
+  state, setMission, setPolice, setVitals, setWeapons, setDriving, setRadio, setRespect, setCash,
+  setStars, setClock, showDialogue, hideDialogue, float, banner, hideBanner, showHud, hideLoading,
 };
 }

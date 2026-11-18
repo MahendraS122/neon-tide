@@ -52,9 +52,9 @@ const lateral = car.velocity.dot(right);
 car.speed = speed;
 car.lateral = lateral;
 const throttle = Math.max(- 1, Math.min(1, ctl.throttle));
-const boosting = ctl.nitro && car.upgrades?.nitro && (car.nitro ?? 1) > 0.02;
-car.nitro = Math.max(0, Math.min(1, (car.nitro ?? 1) + dt * (boosting ? -0.24 : 0.055)));
-const top = car.topSpeed * (boosting ? 1.35 : 1);
+const boosting = ctl.nitro && car.upgrades?.nitro &&(car.nitro ?? 1) > 0.02;
+car.nitro = Math.max(0, Math.min(1,(car.nitro ?? 1) + dt *(boosting ? - 0.24: 0.055)));
+const top = car.topSpeed *(boosting ? 1.35: 1);
 if (boosting) car.velocity.addScaledVector(forward, car.accel * 1.3 * dt);
 // Thrust: strong off the line, tapering toward the top speed. Reverse is slower and capped.
 if (throttle > 0.01) {
@@ -83,7 +83,7 @@ if (vSq > 0.0001) car.velocity.addScaledVector(car.velocity, - VEHICLE.drag * 0.
 // Steering: rate falls with speed so the car does not snap at 200 km/h; the handbrake sharpens it.
 const speedAbs = Math.abs(speed);
 const speedFactor = 1 /(1 + speedAbs * 0.055);
-const grip = car.handbrake ? VEHICLE.handbrakeGrip : VEHICLE.grip * (car.upgrades?.tyres ? 1.35 : 1);
+const grip = car.handbrake ? VEHICLE.handbrakeGrip: VEHICLE.grip *(car.upgrades?.tyres ? 1.35: 1);
 const steerAuthority = VEHICLE.steer * speedFactor *(car.handbrake ? 1.35: 1);
 const desiredSteer = Math.max(- 1, Math.min(1, ctl.steer));
 car.steer +=(desiredSteer - car.steer) * Math.min(1, dt * 9);
@@ -137,7 +137,7 @@ for (const box of world.colliders) {
     car.position.z += dir *(overlapZ + 0.01);
     car.velocity.z *= - 0.15;
   }
-  car.health = Math.max(0, car.health - (car.upgrades?.armour ? 0.3 : 1));
+  car.health = Math.max(0, car.health -(car.upgrades?.armour ? 0.3: 1));
 }
 }
 /** Where a passenger sits in the car's local frame. */
