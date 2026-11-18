@@ -1,157 +1,137 @@
 import * as THREE from 'three';
-import {
-  createVehicle
-}
-from './vehicle.js';
-import {
-  createFigure, poseFigure, CAST
-}
-from './character.js';
-export function createPolice (scene, world) {
-  const units = [];
-  const officers = [];
-  let serial = 20;
-  let clock = 0;
-  let footClock = 0;
-  let arrest = 0;
-  function spawn (player, amount = 2) {
-    for (let i = 0; i < amount; i ++) {
-      const angle = i * Math.PI * .72 + Math.PI;
-      const x = player.x + Math.sin (angle) * (14 + i * 5), z = player.z + Math.cos (angle) * (14 + i * 5);
-      const car = createVehicle ({
-        kind : 'police', color : 0xf1f2ed, x, z, heading : Math.atan2 (player.x - x, player.z - z),
-        plate : `SPD ${++serial}`
-      }
-      );
-      car.position.y = world.groundHeight (x, z);
-      world.root.add (car.group);
-      units.push ({
-        id : `UNIT ${serial}`, kind : 'cruiser', status : i === 0 ? 'RAMMING' : 'PURSUIT', car,
-        position : car.position, sightRange : 90, health : 100, occluded : false
-      }
-      );
-    }
+import { createVehicle } from './vehicle.js';
+import { createFigure, poseFigure, CAST } from './character.js';
+export function createPolice(scene, world) { const units =[];
+const officers =[];
+let serial = 20;
+let clock = 0;
+let footClock = 0;
+let arrest = 0;
+function spawn(player, amount = 2) {
+  for (let i = 0; i < amount; i ++) {
+    const angle = i * Math.PI * .72 + Math.PI;
+    const x = player.x + Math.sin(angle) *(14 + i * 5), z = player.z + Math.cos(angle) *(14 + i * 5);
+    const car = createVehicle({
+      kind: 'police', color: 0xf1f2ed, x, z, heading: Math.atan2(player.x - x, player.z - z), plate:
+      `SPD ${++serial}`
+    });
+    car.position.y = world.groundHeight(x, z);
+    world.root.add(car.group);
+    units.push({
+      id: `UNIT ${serial}`, kind: 'cruiser', status: i === 0 ? 'RAMMING': 'PURSUIT', car, position:
+      car.position, sightRange: 90, health: 100, occluded: false
+    });
   }
-  function spawnOfficer (player, index = officers.length) {
-    const a = index * Math.PI + Math.PI / 2;
-    const x = player.x + Math.sin (a) * (8 + index * 2), z = player.z + Math.cos (a) * (8 + index * 2);
-    const figure = createFigure (CAST.cop);
-    figure.root.position.set (x, world.groundHeight (x, z), z);
-    figure.root.rotation.y = Math.atan2 (player.x - x, player.z - z);
-    scene.add (figure.root);
-    officers.push ({
-      id : `OFFICER ${++serial}`, kind : 'officer', figure, position : figure.root.position, health :
-      100, cooldown : .4 + index * .45, phase : 0, sightRange : 55
-    }
-    );
+}
+function spawnOfficer(player, index = officers.length) {
+  const a = index * Math.PI + Math.PI / 2;
+  const x = player.x + Math.sin(a) *(8 + index * 2), z = player.z + Math.cos(a) *(8 + index * 2);
+  const figure = createFigure(CAST.cop);
+  figure.root.position.set(x, world.groundHeight(x, z), z);
+  figure.root.rotation.y = Math.atan2(player.x - x, player.z - z);
+  scene.add(figure.root);
+  officers.push({
+    id: `OFFICER ${++serial}`, kind: 'officer', figure, position: figure.root.position, health:
+    100, cooldown: .4 + index * .45, phase: 0, sightRange: 55
+  });
+}
+function update(dt, player, stars, weapons = null, wanted = null, hud = null) {
+  const target = player.position ?? player;
+  clock += dt;
+  footClock += dt;
+  const active = stars > 0;
+  if (active && units.length < Math.min(3, stars) && clock > 2.6) {
+    spawn(target, 1);
+    clock = 0;
   }
-  function update (dt, player, stars, weapons = null, wanted = null, hud = null) {
-    const target = player.position ?? player;
-    clock += dt;
-    footClock += dt;
-    const active = stars > 0;
-    if (active && units.length < Math.min (3, stars) && clock > 2.6) {
-      spawn (target, 1);
-      clock = 0;
+  if (stars >= 2 && officers.length < Math.min(2, Math.ceil(stars / 2)) && footClock > 2) {
+    spawnOfficer(target);
+    footClock = 0;
+  }
+  if (!active) {
+    for (const u of units) world.root.remove(u.car.group);
+    units.length = 0;
+    for (const o of officers) scene.remove(o.figure.root);
+    officers.length = 0;
+    arrest = 0;
+  }
+  for (const u of units) {
+    const c = u.car;
+    if (c.wrecked) continue;
+    const dx = target.x - c.position.x, dz = target.z - c.position.z, d = Math.hypot(dx, dz);
+    u.status = d < 5 ? 'RAMMING': 'PURSUIT';
+    if (active && d < 100) {
+      const desired = Math.atan2(dx, dz);
+      let diff = desired - c.heading;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      while (diff < - Math.PI) diff += Math.PI * 2;
+      c.heading += Math.sign(diff) * Math.min(Math.abs(diff), dt * 1.6);
+      const f = new THREE.Vector3(Math.sin(c.heading), 0, Math.cos(c.heading));
+      c.speed = Math.min(24, c.speed + dt * 2);
+      c.position.addScaledVector(f, c.speed * dt);
+      c.position.y = world.groundHeight(c.position.x, c.position.z);
+      c.updateModel();
     }
-    if (stars >= 2 && officers.length < Math.min (2, Math.ceil (stars / 2)) && footClock > 2) {
-      spawnOfficer (target);
-      footClock = 0;
+    u.occluded = world.hitsBuilding((u.position.x + target.x) / 2,(u.position.z + target.z) / 2,
+    .2, 0) !== null;
+    const phase = Math.sin(clock * 13 + c.id.length);
+    if (c.lights.red) {
+      c.lights.red.material.opacity = phase > 0 ? 1: .12;
+      c.lights.red.material.transparent = true;
     }
-    if (!active) {
-      for (const u of units) world.root.remove (u.car.group);
-      units.length = 0;
-      for (const o of officers) scene.remove (o.figure.root);
-      officers.length = 0;
-      arrest = 0;
+    if (c.lights.blue) {
+      c.lights.blue.material.opacity = phase < 0 ? 1: .12;
+      c.lights.blue.material.transparent = true;
     }
-    for (const u of units) {
-      const c = u.car;
-      if (c.wrecked) continue;
-      const dx = target.x - c.position.x, dz = target.z - c.position.z, d = Math.hypot (dx, dz);
-      u.status = d < 5 ? 'RAMMING' : 'PURSUIT';
-      if (active && d < 100) {
-        const desired = Math.atan2 (dx, dz);
-        let diff = desired - c.heading;
-        while (diff > Math.PI) diff -= Math.PI * 2;
-        while (diff < - Math.PI) diff += Math.PI * 2;
-        c.heading += Math.sign (diff) * Math.min (Math.abs (diff), dt * 1.6);
-        const f = new THREE.Vector3 (Math.sin (c.heading), 0, Math.cos (c.heading));
-        c.speed = Math.min (24, c.speed + dt * 2);
-        c.position.addScaledVector (f, c.speed * dt);
-        c.position.y = world.groundHeight (c.position.x, c.position.z);
-        c.updateModel ();
-      }
-      u.occluded = world.hitsBuilding ((u.position.x + target.x) / 2, (u.position.z + target.z) / 2,
-      .2, 0) !== null;
-      const phase = Math.sin (clock * 13 + c.id.length);
-      if (c.lights.red) {
-        c.lights.red.material.opacity = phase > 0 ? 1 : .12;
-        c.lights.red.material.transparent = true;
-      }
-      if (c.lights.blue) {
-        c.lights.blue.material.opacity = phase < 0 ? 1 : .12;
-        c.lights.blue.material.transparent = true;
-      }
-      if (c.lights.redPool) c.lights.redPool.intensity = phase > 0 ? 7 : 0;
-      if (c.lights.bluePool) c.lights.bluePool.intensity = phase < 0 ? 7 : 0;
-    }
-    let arresting = false;
-    for (const o of officers) {
-      if (o.health <= 0) continue;
-      o.cooldown -= dt;
-      o.phase += dt;
-      const d = Math.hypot (o.position.x - player.position.x, o.position.z - player.position.z);
-      o.figure.root.rotation.y = Math.atan2 (player.position.x - o.position.x, player.position.z - o.position.z);
-      poseFigure (o.figure, o.phase, 0, {
-        aim : true
-      }
-      );
-      if (active && d < 32 && o.cooldown <= 0) {
-        o.cooldown = 1.3 + (o.id.length % 3) * .15;
-        if (weapons) {
-          weapons.addTracer (o.position.clone ().add (new THREE.Vector3 (0, 1.2, 0)), player.position.clone ().add (new THREE.Vector3 (0,
-          1, 0)), 0x83caff);
-          if (d < 20) {
-            player.armour = Math.max (0, player.armour - 3);
-            if (player.armour === 0) player.health = Math.max (0, player.health - 2);
-            player.hurt = .45;
-          }
+    if (c.lights.redPool) c.lights.redPool.intensity = phase > 0 ? 7: 0;
+    if (c.lights.bluePool) c.lights.bluePool.intensity = phase < 0 ? 7: 0;
+  }
+  let arresting = false;
+  for (const o of officers) {
+    if (o.health <= 0) continue;
+    o.cooldown -= dt;
+    o.phase += dt;
+    const d = Math.hypot(o.position.x - player.position.x, o.position.z - player.position.z);
+    o.figure.root.rotation.y = Math.atan2(player.position.x - o.position.x, player.position.z - o.position.z);
+    poseFigure(o.figure, o.phase, 0, { aim: true });
+    if (active && d < 32 && o.cooldown <= 0) {
+      o.cooldown = 1.3 +(o.id.length % 3) * .15;
+      if (weapons) {
+        weapons.addTracer(o.position.clone().add(new THREE.Vector3(0, 1.2, 0)), player.position.clone().add(new THREE.Vector3(0,
+        1, 0)), 0x83caff);
+        if (d < 20) {
+          player.armour = Math.max(0, player.armour - 3);
+          if (player.armour === 0) player.health = Math.max(0, player.health - 2);
+          player.hurt = .45;
         }
       }
-      if (!player.inVehicle && active && d < 2.6) arresting = true;
     }
-    if (arresting) {
-      arrest += dt;
-      if (arrest > 2.4 && wanted && hud) wanted.bust (hud);
-    }
-    else arrest = Math.max (0, arrest - dt * 1.5);
+    if (!player.inVehicle && active && d < 2.6) arresting = true;
   }
-  function list (player, helicopter, roadblocks = []) {
-    const rows = units.map (u => ({
-      label : u.id, distance : Math.hypot (u.position.x - player.x, u.position.z - player.z), status :
-      u.status
-    }
-    ));
-    for (const o of officers) if (o.health > 0) rows.push ({
-      label : o.id, distance : Math.hypot (o.position.x - player.x, o.position.z - player.z), status :
-      'PURSUIT'
-    }
-    );
-    for (const b of roadblocks) rows.push ({
-      label : b.label, distance : Math.hypot (b.position.x - player.x, b.position.z - player.z),
-      status : 'ROADBLOCK'
-    }
-    );
-    if (helicopter) rows.push ({
-      label : helicopter.label, distance : Math.hypot (helicopter.position.x - player.x, helicopter.position.z - player.z),
-      status : 'HELI'
-    }
-    );
-    return rows.sort ((a, b) => a.distance - b.distance).slice (0, 4);
+  if (arresting) {
+    arrest += dt;
+    if (arrest > 2.4 && wanted && hud) wanted.bust(hud);
   }
-  return {
-    units, officers, spawn, update, list
-  }
-  ;
+  else arrest = Math.max(0, arrest - dt * 1.5);
+}
+function list(player, helicopter, roadblocks =[]) {
+  const rows = units.map(u =>({
+    label: u.id, distance: Math.hypot(u.position.x - player.x, u.position.z - player.z), status:
+    u.status
+  }));
+  for (const o of officers) if (o.health > 0) rows.push({
+    label: o.id, distance: Math.hypot(o.position.x - player.x, o.position.z - player.z), status:
+    'PURSUIT'
+  });
+  for (const b of roadblocks) rows.push({
+    label: b.label, distance: Math.hypot(b.position.x - player.x, b.position.z - player.z), status:
+    'ROADBLOCK'
+  });
+  if (helicopter) rows.push({
+    label: helicopter.label, distance: Math.hypot(helicopter.position.x - player.x, helicopter.position.z - player.z),
+    status: 'HELI'
+  });
+  return rows.sort((a, b) => a.distance - b.distance).slice(0, 4);
+}
+return { units, officers, spawn, update, list };
 }
