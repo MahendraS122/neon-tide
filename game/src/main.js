@@ -23,6 +23,7 @@ import { createWeapons, createGang } from './combat/weapons.js';
 import { createMissions } from './missions/missions.js';
 import { createDialogue } from './ui/dialogue.js';
 import { createTitleScreen } from './ui/titleScreen.js';
+import { createCityMap } from './ui/cityMap.js';
 const params = new URLSearchParams(window.location.search);
 const shotName = params.get('shot');
 const seedParam = Number.parseInt(params.get('seed') ?? '', 10);
@@ -75,6 +76,7 @@ game.mode = 'play';
 game.dialogue = createDialogue(game);
 game.settings = { volume: 0.35, sensitivity: 1 };
 game.title = createTitleScreen(game);
+game.cityMap = createCityMap(game);
 game.newGame = function newGame() {
   game.missions.restore();
   game.cash = 500;
@@ -125,6 +127,16 @@ function updateCamera(dt) {
 }
 function stepGame() {
   const dt = STEP;
+  if (game.mode === 'map') {
+    if (input.pressed('KeyM') || input.pressed('Escape')) game.cityMap.hide();
+    input.endFrame();
+    return;
+  }
+  if (game.mode === 'play' && input.pressed('KeyM')) {
+    game.cityMap.show();
+    input.endFrame();
+    return;
+  }
   if (game.mode === 'title') {
     game.title.update(dt);
     if (input.pressed('Escape')) game.title.closeOptions();

@@ -55,6 +55,60 @@ button:focus-visible { outline: 2px solid #25e6d0; outline-offset: 4px; }
   font-size: 11px; letter-spacing: 4px; }
 #title-screen footer small { font-size: 8px; color: #8dadae; letter-spacing: 2px; }
 .options-screen { z-index: 45; background: #021019b8; }
+#city-map { background: #071720; font-size: 12px; }
+.atlas-head { height: 77px; border-bottom: 1px solid #638e8a55; display: flex;
+  padding: 0 28px; align-items: center; justify-content: space-between; }
+.atlas-head b { display: block; font-size: 25px; letter-spacing: 7px; color: #f5d4a5; }
+.atlas-head small { display: block; color: #729d9f; font-size: 9px; letter-spacing: 3px; margin-top: 4px; }
+.atlas-head button { color: #a5c8c4; border: 1px solid #618c8c66; padding: 10px 16px;
+  background: transparent; font-size: 10px; letter-spacing: 2px; }
+.atlas-clock { color: #e2c79f; letter-spacing: 3px; font-size: 11px; }
+.atlas-body { height: calc(100% - 78px); display: grid; grid-template-columns: 280px 1fr 214px; }
+.story-list { padding: 14px; border-right: 1px solid #638e8a55; overflow: auto; }
+#city-map h3 { font-size: 11px; color: #67c7bd; letter-spacing: 3px; margin: 0 0 14px; }
+.story-list h3 span { font-size: 7px; color: #739397; letter-spacing: 1px; float: right; }
+.story-row { width: 100%; color: #d1d2bf; text-align: left; background: #11242b; border: 1px solid #37545a;
+  display: flex; padding: 6px; margin-bottom: 6px; gap: 9px; }
+.story-row.active { background: #233f3e; border-color: #f2bc72; box-shadow: inset 3px 0 #f2bc72; }
+.story-row:disabled { opacity: 0.48; cursor: default; }
+.story-row canvas { width: 39px; height: 44px; object-fit: cover; }
+.story-row > div { flex: 1; min-width: 0; }
+.story-row small { display: block; font-size: 7px; color: #8faeab; letter-spacing: 0.6px; }
+.story-row b { display: block; font-size: 11px; margin: 5px 0; }
+.story-row span { display: block; font-size: 7px; color: #5fd7bd; letter-spacing: 1px; }
+.story-row em { float: right; font-style: normal; color: #e2bb82; }
+.atlas-stats { padding-top: 14px; }
+.atlas-stats dl { margin: 0; }
+.atlas-stats dl > div { display: flex; justify-content: space-between; line-height: 1.9;
+  border-bottom: 1px solid #668b8a22; }
+.atlas-stats dt { font-size: 9px; letter-spacing: 1px; color: #85a3a0; }
+.atlas-stats dd { margin: 0; font-size: 11px; color: #e2cea7; }
+.map-area { position: relative; overflow: hidden; }
+.map-area > canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
+.map-caption { position: absolute; top: 21px; left: 20px; color: #89b0b3; font-size: 8px; letter-spacing: 2px; }
+.map-north { position: absolute; top: 24px; right: 23px; font-size: 19px; color: #c6d1ba; }
+.map-scale { position: absolute; bottom: 22px; left: 20px; font-size: 9px; color: #acc6be; }
+.map-hint { position: absolute; bottom: 22px; right: 20px; font-size: 8px; letter-spacing: 1px; color: #769997; }
+.atlas-right { border-left: 1px solid #638e8a55; padding: 20px 18px; overflow: auto; }
+.current-job { border-bottom: 1px solid #5d878455; padding-bottom: 22px; margin-bottom: 24px; }
+.current-job h2 { font-size: 23px; color: #f6cf94; margin: 18px 0 10px; font-weight: 600; }
+.current-job small { font-size: 8px; letter-spacing: 2px; color: #6ec8bc; }
+.current-job p { color: #a4bdb9; font-size: 12px; line-height: 1.7; }
+.job-stage { display: flex; gap: 5px; margin: 20px 0 9px; }
+.job-stage i { flex: 1; height: 4px; background: #34504d; }
+.job-stage i.lit { background: #ffc17a; }
+.current-job strong { font-size: 8px; letter-spacing: 2px; color: #d7ad7b; }
+.map-legend > div { display: flex; align-items: center; gap: 10px; color: #a8bcb4; margin: 13px 0; font-size: 11px; }
+.map-legend b { width: 20px; height: 20px; border: 1px solid; border-radius: 50%;
+  display: grid; place-items: center; font-size: 10px; }
+.atlas-note { color: #426968; letter-spacing: 3px; font-size: 10px; line-height: 2; margin-top: 30px; }
+@media (max-height: 760px) {
+  .story-row { padding: 4px; margin-bottom: 4px; }
+  .story-row canvas { width: 34px; height: 38px; }
+  .story-row b { margin: 3px 0; }
+  .atlas-stats { padding-top: 7px; }
+  .map-legend > div { margin: 10px 0; }
+}
 @media (max-height: 730px) {
   .title-left { top: 3vh; }
   #neon-logo { height: 140px; width: 410px; }
