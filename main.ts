@@ -1,108 +1,108 @@
-// Validate and hand in NEON TIDE's game, screenshots, and generated dossier.
-import { copyFileSync, existsSync, lstatSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
-import { dirname, join, relative, resolve, sep } from "node:path";
-import { fileURLToPath } from "node:url";
-import { buildDossier } from "./vendor/makefun-game.ts";
+// Validate and package NEON TIDE: Port Solara for the make.fun hand-in.
+import { copyFileSync, lstatSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { parseArgs } from 'node:util';
+import { buildDossier } from './vendor/makefun-game.ts';
 
-const projectDir = dirname(fileURLToPath(import.meta.url));
-const screenshotLimit = 256 * 1024;
+const repo = import.meta.dirname;
+const screenshotCap = { max: 4, max_bytes: 256 * 1024 };
+const dossierCaps: Parameters<typeof buildDossier>[1] = {
+  screenshots: screenshotCap,
+  text_max_bytes: 1024 * 1024,
+  game_max_files: 1024,
+  game_max_bytes: 64 * 1024 * 1024,
+  game_path_max_bytes: 256,
+};
 
-type TreeFile = { source: string; name: string };
+type Tree = { dirs: string[]; files: string[] };
 
 function resolveOutputDir(): string {
-  const outputDir = resolve(process.env.MAKEFUN_OUTPUT_DIR ?? "/output");
-  const fromProject = relative(projectDir, outputDir);
-  const toProject = relative(outputDir, projectDir);
-  for (const folder of ["game", "screenshots", "vendor", ".git", ".makefun"]) {
-    if (fromProject === folder || fromProject.startsWith(folder + sep)) {
-      throw new Error(`Output directory overlaps protected project data: ${outputDir}`);
-    }
-  }
-  if (toProject === "" || (!toProject.startsWith(".." + sep) && toProject !== "..")) {
-    throw new Error("Output directory must not contain the repository.");
-  }
-  return outputDir;
+  return resolve(process.env.MAKEFUN_OUTPUT_DIR ?? '/output');
 }
 
 function assertGameEntry(): void {
-  const entry = join(projectDir, "game", "index.html");
-  if (!existsSync(entry) || !statSync(entry).isFile()) {
-    throw new Error("The game entry is missing: game/index.html");
-  }
+  const entry = lstatSync(join(repo, 'game/index.html'), { throwIfNoEntry: false });
+  if (!entry?.isFile()) throw new Error('Expected a regular file at game/index.html');
 }
 
-function listTree(directory: string, prefix = ""): TreeFile[] {
-  const files: TreeFile[] = [];
-  for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)) {
-    const source = join(directory, entry.name);
-    const name = join(prefix, entry.name);
-    if (entry.isDirectory()) {
-      files.push(...listTree(source, name));
-    } else if (entry.isFile()) {
-      files.push({ source, name });
+function scanTree(root: string): Tree {
+  const tree: Tree = { dirs: [], files: [] };
+  function visit(path: string): void {
+    const source = join(repo, path);
+    const info = lstatSync(source);
+    if (info.isDirectory()) {
+      tree.dirs.push(path);
+      for (const name of readdirSync(source).sort()) visit(`${path}/${name}`);
+    } else if (info.isFile()) {
+      tree.files.push(path);
     } else {
-      throw new Error(`Only regular files and directories are supported: ${source}`);
+      throw new Error(`Cannot hand in ${path}: expected a regular file or directory`);
     }
   }
-  return files;
+  visit(root);
+  if (tree.dirs[0] !== root) throw new Error(`Expected a directory at ${root}/`);
+  return tree;
 }
 
-function collectScreenshots(): TreeFile[] {
-  const files = listTree(join(projectDir, "screenshots"));
-  if (files.length < 3 || files.length > 4) {
-    throw new Error(`Expected 3 or 4 screenshots; found ${files.length}.`);
+function collectScreenshots(tree: Tree): string[] {
+  const images = tree.files.filter((path) => /^screenshots\/[^/]+\.(png|jpe?g)$/i.test(path));
+  if (images.length < 3 || images.length > screenshotCap.max) {
+    throw new Error(`Expected 3 or 4 PNG/JPEG files in screenshots/; found ${images.length}`);
   }
-  for (const file of files) {
-    if (!/\.(png|jpe?g)$/i.test(file.name)) {
-      throw new Error(`Screenshot must be PNG or JPEG: ${file.name}`);
-    }
-    const size = lstatSync(file.source).size;
-    if (size === 0 || size > screenshotLimit) {
-      throw new Error(`Screenshot must be nonempty and at most 256 KiB: ${file.name}`);
+  for (const path of images) {
+    if (lstatSync(join(repo, path)).size > screenshotCap.max_bytes) {
+      throw new Error(`${path} exceeds the 256 KiB limit`);
     }
   }
-  return files;
+  return images;
 }
 
-function copyTree(files: TreeFile[], destination: string): void {
-  mkdirSync(destination, { recursive: true });
-  for (const file of files) {
-    const target = join(destination, file.name);
-    mkdirSync(dirname(target), { recursive: true });
-    copyFileSync(file.source, target);
-  }
+function copyTree(tree: Tree, output: string): void {
+  for (const dir of tree.dirs) mkdirSync(join(output, dir), { recursive: true });
+  for (const path of tree.files) copyFileSync(join(repo, path), join(output, path));
 }
 
-function writeDossier(outputDir: string, dossier: Uint8Array): void {
-  writeFileSync(join(outputDir, "dossier.json"), dossier);
+function writeDossier(output: string, bytes: Uint8Array): void {
+  writeFileSync(join(output, 'dossier.json'), bytes);
 }
 
 function main(): void {
-  const flags = new Set(process.argv.slice(2));
-  for (const flag of flags) {
-    if (flag !== "--dry-run" && flag !== "--quiet") {
-      throw new Error(`Unknown argument: ${flag}`);
-    }
-  }
-  const outputDir = resolveOutputDir();
-  assertGameEntry();
-  const screenshots = collectScreenshots();
-  const gameFiles = listTree(join(projectDir, "game"));
-  const dossier = buildDossier(projectDir, { text_max_bytes: 256 * 1024 });
+  const { values: flags } = parseArgs({
+    options: {
+      'dry-run': { type: 'boolean' },
+      quiet: { type: 'boolean' },
+      list: { type: 'boolean' },
+    },
+  });
 
-  if (!flags.has("--dry-run")) {
-    copyTree(gameFiles, join(outputDir, "game"));
-    copyTree(screenshots, join(outputDir, "screenshots"));
-    writeDossier(outputDir, dossier);
+  const output = resolveOutputDir();
+  assertGameEntry();
+  const game = scanTree('game');
+  const screenshotTree = scanTree('screenshots');
+  const screenshots = collectScreenshots(screenshotTree);
+  const dossier = buildDossier(repo, dossierCaps);
+
+  if (flags.list) {
+    console.log([...game.files, ...screenshotTree.files, 'dossier.json'].sort().join('\n'));
+    return;
   }
-  if (!flags.has("--quiet")) {
-    console.log(`NEON TIDE: Port Solara handed in: ${gameFiles.length} game files, ${screenshots.length} screenshots, dossier ${(dossier.byteLength / 1024).toFixed(1)} KB`);
+
+  if (!flags['dry-run']) {
+    copyTree(game, output);
+    copyTree(screenshotTree, output);
+    writeDossier(output, dossier);
+  }
+
+  if (!flags.quiet) {
+    const action = flags['dry-run'] ? 'dry run (nothing written)' : 'handed in';
+    const size = (dossier.byteLength / 1024).toFixed(1);
+    console.log(`NEON TIDE: Port Solara ${action}: ${game.files.length} game files, ${screenshots.length} screenshots, dossier ${size} KB`);
   }
 }
 
 try {
   main();
 } catch (error) {
-  console.error(`Hand-in failed: ${error instanceof Error ? error.message : String(error)}`);
+  console.error(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;
 }
