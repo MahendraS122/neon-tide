@@ -55,6 +55,25 @@ button:focus-visible { outline: 2px solid #25e6d0; outline-offset: 4px; }
   font-size: 11px; letter-spacing: 4px; }
 #title-screen footer small { font-size: 8px; color: #8dadae; letter-spacing: 2px; }
 .options-screen { z-index: 45; background: #021019b8; }
+#garage-screen { background: linear-gradient(90deg, #05141cf5 0%, #05141cb8 30%, transparent 66%); }
+.customs-panel { position: absolute; left: 4vw; top: 5vh; width: 320px; }
+.customs-panel > small { font-size: 8px; letter-spacing: 2px; color: #81a8a5; }
+.customs-panel h1 { font-size: 42px; font-style: italic; margin: 16px 0 8px; line-height: 0.9;
+  letter-spacing: 3px; color: #ffd4ab; }
+.customs-panel h1 span { color: #5ce9d0; font-size: 32px; }
+.garage-cash { color: #ffd166; float: right; font-size: 22px; }
+.customs-panel p { color: #82a8a7; font-size: 8px; letter-spacing: 2px; margin: 16px 0 22px; }
+.customs-panel h3 { font-size: 11px; letter-spacing: 3px; color: #b4ceca; margin-top: 23px; }
+.customs-panel h3 span { float: right; color: #ffd166; }
+.paint-swatches { display: flex; gap: 9px; }
+.paint-swatches button { width: 43px; height: 29px; border: 2px solid #ffffff66; }
+.customs-panel .menu-button { font-size: 11px; letter-spacing: 1px; padding: 10px 12px; }
+.customs-panel .menu-button em { float: right; font-style: normal; color: #ffbd7d; }
+.customs-panel .menu-button small { font-size: 9px; color: #8caeaa; letter-spacing: 0; }
+.garage-vehicle { position: absolute; bottom: 7vh; right: 5vw; text-align: right; }
+.garage-vehicle b { display: block; font-size: 45px; letter-spacing: 5px; color: #f5d5b7; }
+.garage-vehicle span { color: #5ff7d0; letter-spacing: 3px; font-size: 12px; }
+.garage-vehicle p { color: #b6beb1; font-size: 9px; letter-spacing: 3px; }
 #city-map { background: #071720; font-size: 12px; }
 .atlas-head { height: 77px; border-bottom: 1px solid #638e8a55; display: flex;
   padding: 0 28px; align-items: center; justify-content: space-between; }

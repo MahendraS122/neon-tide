@@ -24,6 +24,8 @@ import { createMissions } from './missions/missions.js';
 import { createDialogue } from './ui/dialogue.js';
 import { createTitleScreen } from './ui/titleScreen.js';
 import { createCityMap } from './ui/cityMap.js';
+import { createGarage } from './ui/garage.js';
+import { createGarages } from './world/garages.js';
 const params = new URLSearchParams(window.location.search);
 const shotName = params.get('shot');
 const seedParam = Number.parseInt(params.get('seed') ?? '', 10);
@@ -77,6 +79,8 @@ game.dialogue = createDialogue(game);
 game.settings = { volume: 0.35, sensitivity: 1 };
 game.title = createTitleScreen(game);
 game.cityMap = createCityMap(game);
+game.garage = createGarage(game);
+game.garages = createGarages(game);
 game.newGame = function newGame() {
   game.missions.restore();
   game.cash = 500;
@@ -127,6 +131,11 @@ function updateCamera(dt) {
 }
 function stepGame() {
   const dt = STEP;
+  if (game.mode === 'garage') {
+    if (input.pressed('Escape') || input.pressed('KeyG')) game.garage.hide();
+    input.endFrame();
+    return;
+  }
   if (game.mode === 'map') {
     if (input.pressed('KeyM') || input.pressed('Escape')) game.cityMap.hide();
     input.endFrame();
@@ -148,6 +157,8 @@ function stepGame() {
     input.endFrame();
     return;
   }
+  game.garages.update(input);
+  if (game.mode !== 'play') { input.endFrame(); return; }
   game.missions.update(dt, input);
   const { player } = playerRig;
   // Mouse turns the view; while driving the camera swings back behind the car on its own.
@@ -173,7 +184,7 @@ function stepGame() {
   }
   if (player.inVehicle) {
     const car = player.inVehicle;
-    stepVehicle(car, dt, carControls(), world);
+    stepVehicle(car, dt, { ...carControls(), nitro: input.down('KeyN') }, world);
     playerRig.syncToVehicle(car);
     // The camera eases behind the car's heading while driving.
     const carYaw = car.heading;
