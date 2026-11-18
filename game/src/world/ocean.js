@@ -2,8 +2,10 @@
 // a hand-written fragment shader so it can hold a sun glitter path that follows the light, a
 // turquoise band near the shore and a hazy far edge that meets the sky.
 import * as THREE from 'three';
-import { CITY, SKY, SUN } from '../config.js';
-
+import {
+  CITY, SKY, SUN
+}
+from '../config.js';
 const VERT = `
 uniform float uTime;
 varying vec3 vWorld;
@@ -43,7 +45,6 @@ void main() {
   gl_Position = projectionMatrix * viewMatrix * world;
 }
 `;
-
 const FRAG = `
 uniform vec3 uDeep;
 uniform vec3 uShallow;
@@ -97,59 +98,81 @@ void main() {
   gl_FragColor = vec4(col, 1.0);
 }
 `;
-
-export function createOcean(scene, sky) {
+export function createOcean (scene, sky) {
   const size = 2400;
-  const geometry = new THREE.PlaneGeometry(size, size, 190, 190);
-  const material = new THREE.ShaderMaterial({
-    vertexShader: VERT,
-    fragmentShader: FRAG,
-    uniforms: {
-      uTime: { value: 0 },
-      uDeep: { value: new THREE.Color(0x123f5e) },
-      uShallow: { value: new THREE.Color(0x2e93a4) },
-      uSky: { value: new THREE.Color(SKY.horizon) },
-      uSunColor: { value: new THREE.Color(SUN.color) },
-      uSunDir: { value: new THREE.Vector3(-0.4, 0.2, -0.3).normalize() },
-      uFogColor: { value: new THREE.Color(SUN.fogColor) },
-      uFogNear: { value: 260 },
-      uFogFar: { value: 1100 },
-      uNight: { value: 0 },
-    },
-    side: THREE.DoubleSide,
-  });
-
-  const mesh = new THREE.Mesh(geometry, material);
+  const geometry = new THREE.PlaneGeometry (size, size, 190, 190);
+  const material = new THREE.ShaderMaterial ({
+    vertexShader : VERT, fragmentShader : FRAG, uniforms : {
+      uTime : {
+        value : 0
+      }
+      , uDeep : {
+        value : new THREE.Color (0x123f5e)
+      }
+      , uShallow : {
+        value : new THREE.Color (0x2e93a4)
+      }
+      , uSky : {
+        value : new THREE.Color (SKY.horizon)
+      }
+      , uSunColor : {
+        value : new THREE.Color (SUN.color)
+      }
+      , uSunDir : {
+        value : new THREE.Vector3 (- 0.4, 0.2, - 0.3).normalize ()
+      }
+      , uFogColor : {
+        value : new THREE.Color (SUN.fogColor)
+      }
+      , uFogNear : {
+        value : 260
+      }
+      , uFogFar : {
+        value : 1100
+      }
+      , uNight : {
+        value : 0
+      }
+      ,
+    }
+    , side : THREE.DoubleSide,
+  }
+  );
+  const mesh = new THREE.Mesh (geometry, material);
   // Rotate so the plane lies flat and its local +Y runs along world -X (out to sea).
-  mesh.rotation.x = -Math.PI / 2;
-  mesh.position.set(CITY.waterX - size / 2 + 30, -0.55, 0);
+  mesh.rotation.x = - Math.PI / 2;
+  mesh.position.set (CITY.waterX - size / 2 + 30, - 0.55, 0);
   mesh.receiveShadow = false;
-  scene.add(mesh);
-
-  const state = { time: 0 };
-
-  function update(dt, camera) {
+  scene.add (mesh);
+  const state = {
+    time : 0
+  }
+  ;
+  function update (dt, camera) {
     state.time += dt;
     material.uniforms.uTime.value = state.time;
     // Keep the plane under the camera so it never ends.
-    mesh.position.z = Math.round(camera.position.z / 40) * 40;
-    const sun = sky.sunDirection();
-    material.uniforms.uSunDir.value.copy(sun);
+    mesh.position.z = Math.round (camera.position.z / 40) * 40;
+    const sun = sky.sunDirection ();
+    material.uniforms.uSunDir.value.copy (sun);
     material.uniforms.uNight.value = sky.state.time === 'night' ? 1 : 0;
     if (sky.state.time === 'night') {
-      material.uniforms.uDeep.value.setHex(0x08182c);
-      material.uniforms.uShallow.value.setHex(0x0f3148);
-      material.uniforms.uSky.value.setHex(0x1a2340);
-      material.uniforms.uSunColor.value.setHex(0x7d95c9);
-      material.uniforms.uFogColor.value.setHex(0x151a2c);
-    } else {
-      material.uniforms.uDeep.value.setHex(0x123f5e);
-      material.uniforms.uShallow.value.setHex(0x2e93a4);
-      material.uniforms.uSky.value.setHex(SKY.horizon);
-      material.uniforms.uSunColor.value.setHex(SUN.color);
-      material.uniforms.uFogColor.value.setHex(SUN.fogColor);
+      material.uniforms.uDeep.value.setHex (0x08182c);
+      material.uniforms.uShallow.value.setHex (0x0f3148);
+      material.uniforms.uSky.value.setHex (0x1a2340);
+      material.uniforms.uSunColor.value.setHex (0x7d95c9);
+      material.uniforms.uFogColor.value.setHex (0x151a2c);
+    }
+    else {
+      material.uniforms.uDeep.value.setHex (0x123f5e);
+      material.uniforms.uShallow.value.setHex (0x2e93a4);
+      material.uniforms.uSky.value.setHex (SKY.horizon);
+      material.uniforms.uSunColor.value.setHex (SUN.color);
+      material.uniforms.uFogColor.value.setHex (SUN.fogColor);
     }
   }
-
-  return { mesh, update, material };
+  return {
+    mesh, update, material
+  }
+  ;
 }

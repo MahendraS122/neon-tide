@@ -1,2 +1,50 @@
 import * as THREE from 'three';
-export function createRoadblocks(scene,world){const blocks=[];let previous=0;function update(player,stars){if(stars<4){for(const b of blocks)world.root.remove(b.group);blocks.length=0;previous=0;return;}if(blocks.length||Date.now()-previous<4500)return;previous=Date.now();const angle=Math.atan2(player.x,player.z);const center=new THREE.Vector3(player.x-Math.sin(angle)*32,0,player.z-Math.cos(angle)*32);const group=new THREE.Group();group.position.copy(center);group.rotation.y=angle;const railMat=new THREE.MeshStandardMaterial({color:0xd6d9dc,metalness:.45,roughness:.36});const stripeMat=new THREE.MeshStandardMaterial({color:0xffb82f,roughness:.55});for(let i=-1;i<=1;i++){const rail=new THREE.Mesh(new THREE.BoxGeometry(i===0?4.5:2.6,.85,.25),railMat);rail.position.set(i*3,.55,0);group.add(rail);const stripe=new THREE.Mesh(new THREE.BoxGeometry(.55,.9,.28),stripeMat);stripe.position.set(i*3,.56,.02);group.add(stripe);}for(const side of [-1,1]){const beacon=new THREE.PointLight(side<0?0xff2d47:0xffd33f,5,8);beacon.position.set(side*5,1,0);group.add(beacon);}world.root.add(group);blocks.push({group,position:center,label:'SPD BARRICADE',kind:'roadblock'});}return {blocks,update};}
+export function createRoadblocks (scene, world) {
+  const blocks = [];
+  let previous = 0;
+  function update (player, stars) {
+    if (stars < 4) {
+      for (const b of blocks) world.root.remove (b.group);
+      blocks.length = 0;
+      previous = 0;
+      return;
+    }
+    if (blocks.length || Date.now () - previous < 4500) return;
+    previous = Date.now ();
+    const angle = Math.atan2 (player.x, player.z);
+    const center = new THREE.Vector3 (player.x - Math.sin (angle) * 32, 0, player.z - Math.cos (angle) * 32);
+    const group = new THREE.Group ();
+    group.position.copy (center);
+    group.rotation.y = angle;
+    const railMat = new THREE.MeshStandardMaterial ({
+      color : 0xd6d9dc, metalness : .45, roughness : .36
+    }
+    );
+    const stripeMat = new THREE.MeshStandardMaterial ({
+      color : 0xffb82f, roughness : .55
+    }
+    );
+    for (let i = - 1; i <= 1; i ++) {
+      const rail = new THREE.Mesh (new THREE.BoxGeometry (i === 0 ? 4.5 : 2.6, .85, .25), railMat);
+      rail.position.set (i * 3, .55, 0);
+      group.add (rail);
+      const stripe = new THREE.Mesh (new THREE.BoxGeometry (.55, .9, .28), stripeMat);
+      stripe.position.set (i * 3, .56, .02);
+      group.add (stripe);
+    }
+    for (const side of [- 1, 1]) {
+      const beacon = new THREE.PointLight (side < 0 ? 0xff2d47 : 0xffd33f, 5, 8);
+      beacon.position.set (side * 5, 1, 0);
+      group.add (beacon);
+    }
+    world.root.add (group);
+    blocks.push ({
+      group, position : center, label : 'SPD BARRICADE', kind : 'roadblock'
+    }
+    );
+  }
+  return {
+    blocks, update
+  }
+  ;
+}
