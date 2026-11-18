@@ -1,89 +1,87 @@
-// NEON TIDE: Port Solara — our make.fun hand-in program.
-// Package the offline city, missions and browser screenshots beside this file.
-// The unchanged make.fun library describes those copied files in dossier.json.
-// Run with Node 22.18+; MAKEFUN_OUTPUT_DIR overrides the grader's /output path.
-
-import { cpSync, lstatSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+// Package NEON TIDE: Port Solara and build its make.fun judging dossier.
+import { copyFileSync, lstatSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { buildDossier } from './vendor/makefun-game.ts';
 
-const repositoryDir = fileURLToPath(new URL('.', import.meta.url));
-const screenshotByteLimit = 256 * 1024;
+const gameDir = join(import.meta.dirname, 'game');
+const screenshotDir = join(import.meta.dirname, 'screenshots');
+const maxScreenshots = 4;
+const maxScreenshotBytes = 256 * 1024;
+const maxDossierTextBytes = 160 * 1024;
 
-function requireGamePage(): void {
-  const page = join(repositoryDir, 'game', 'index.html');
-  if (!lstatSync(page, { throwIfNoEntry: false })?.isFile()) {
-    throw new Error('game/index.html must exist as a regular file before hand-in.');
+function resolveOutputDir(): string {
+  return resolve(process.env.MAKEFUN_OUTPUT_DIR ?? '/output');
+}
+
+function assertGameEntry(): void {
+  const entry = lstatSync(join(gameDir, 'index.html'), { throwIfNoEntry: false });
+  if (!entry?.isFile()) {
+    throw new Error('game/index.html must be a regular file');
   }
 }
 
-function validateScreenshots(): void {
-  const directory = join(repositoryDir, 'screenshots');
-  if (!lstatSync(directory, { throwIfNoEntry: false })?.isDirectory()) {
-    throw new Error('screenshots/ must contain 3 or 4 JPEG or PNG renders of Port Solara.');
+function collectScreenshots(): string[] {
+  const images = readdirSync(screenshotDir, { withFileTypes: true })
+    .filter((entry) => !entry.name.startsWith('.'));
+
+  if (images.length < 3 || images.length > maxScreenshots) {
+    throw new Error(`Expected 3 or 4 screenshots, found ${images.length}`);
   }
-  const entries = readdirSync(directory, { withFileTypes: true });
-  if (entries.length < 3 || entries.length > 4) {
-    throw new Error(`screenshots/ contains ${entries.length} entries; expected 3 or 4 images.`);
-  }
+
+  return images.map((entry) => {
+    if (!entry.isFile() || !/^[a-z0-9_][a-z0-9_.-]*\.(png|jpe?g)$/i.test(entry.name)
+        || entry.name.length > 128) {
+      throw new Error(`Invalid PNG or JPEG screenshot name or file: ${entry.name}`);
+    }
+    if (lstatSync(join(screenshotDir, entry.name)).size > maxScreenshotBytes) {
+      throw new Error(`Screenshot exceeds 256 KiB: ${entry.name}`);
+    }
+    return entry.name;
+  }).sort();
+}
+
+function copyTree(source: string, destination: string): number {
+  const entries = readdirSync(source, { withFileTypes: true });
+  mkdirSync(destination, { recursive: true });
+  let files = 0;
   for (const entry of entries) {
-    const filename = join(directory, entry.name);
-    if (!entry.isFile() || !/^[a-z0-9_][a-z0-9_.-]{0,127}$/i.test(entry.name)
-      || !/\.(?:jpe?g|png)$/i.test(entry.name)) {
-      throw new Error(`screenshots/${entry.name} must be a regular JPEG or PNG with a valid filename.`);
-    }
-    const size = lstatSync(filename).size;
-    if (size > screenshotByteLimit) {
-      throw new Error(`screenshots/${entry.name} is ${size} bytes; the limit is 256 KiB.`);
-    }
-    const bytes = readFileSync(filename);
-    const png = bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
-    const jpeg = bytes.length >= 3 && bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255;
-    if (!png && !jpeg) {
-      throw new Error(`screenshots/${entry.name} has no PNG or JPEG signature.`);
+    const from = join(source, entry.name);
+    const to = join(destination, entry.name);
+    if (entry.isDirectory()) {
+      files += copyTree(from, to);
+    } else if (entry.isFile()) {
+      copyFileSync(from, to);
+      files += 1;
+    } else {
+      throw new Error(`Expected a regular game file or directory: ${from}`);
     }
   }
+  return files;
 }
 
-function copyHandInFolder(name: 'game' | 'screenshots', outputDir: string): void {
-  cpSync(join(repositoryDir, name), join(outputDir, name), { recursive: true });
-}
-
-function countFiles(directory: string): number {
-  return readdirSync(directory, { withFileTypes: true }).reduce((total, entry) => {
-    if (entry.isDirectory()) return total + countFiles(join(directory, entry.name));
-    return total + (entry.isFile() ? 1 : 0);
-  }, 0);
-}
-
-function handInPortSolara(): void {
-  requireGamePage();
-  validateScreenshots();
-
-  const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
-  mkdirSync(outputDir, { recursive: true });
-  copyHandInFolder('game', outputDir);
-  copyHandInFolder('screenshots', outputDir);
-
-  // Keep the dossier's source budget and refusal limits aligned with the kit.
+function writeDossier(outputDir: string): number {
   const dossier = buildDossier(outputDir, {
-    text_max_bytes: 163840,
-    screenshots: { max: 4, max_bytes: screenshotByteLimit },
-    game_max_files: 993,
-    game_max_bytes: 50331648,
-    game_path_max_bytes: 1000,
+    text_max_bytes: maxDossierTextBytes,
+    screenshots: { max: maxScreenshots, max_bytes: maxScreenshotBytes },
   });
   writeFileSync(join(outputDir, 'dossier.json'), dossier);
-
-  const gameFiles = countFiles(join(outputDir, 'game'));
-  const screenshotFiles = countFiles(join(outputDir, 'screenshots'));
-  console.log(`NEON TIDE hand-in ready at ${outputDir}: ${gameFiles} game files, ${screenshotFiles} screenshots, dossier.json ${dossier.byteLength} bytes.`);
+  return dossier.byteLength;
 }
 
-try {
-  handInPortSolara();
-} catch (error) {
-  console.error(`NEON TIDE hand-in failed: ${error instanceof Error ? error.message : String(error)}`);
-  process.exitCode = 1;
+function main(): void {
+  const outputDir = resolveOutputDir();
+  assertGameEntry();
+  const screenshots = collectScreenshots();
+  const gameFiles = copyTree(gameDir, join(outputDir, 'game'));
+
+  const screenshotOutput = join(outputDir, 'screenshots');
+  mkdirSync(screenshotOutput, { recursive: true });
+  for (const name of screenshots) {
+    copyFileSync(join(screenshotDir, name), join(screenshotOutput, name));
+  }
+
+  const dossierKB = (writeDossier(outputDir) / 1024).toFixed(1);
+  console.log(`NEON TIDE: Port Solara handed in: ${gameFiles} game files, ${screenshots.length} screenshots, dossier ${dossierKB} KB`);
 }
+
+main();
