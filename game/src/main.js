@@ -21,6 +21,7 @@ import { createHelicopter } from './entities/helicopter.js';
 import { createRoadblocks } from './world/roadblocks.js';
 import { createWeapons, createGang } from './combat/weapons.js';
 import { createMissions } from './missions/missions.js';
+import { createDialogue } from './ui/dialogue.js';
 const params = new URLSearchParams(window.location.search);
 const shotName = params.get('shot');
 const seedParam = Number.parseInt(params.get('seed') ?? '', 10);
@@ -69,6 +70,8 @@ const game = {
 game.parkCar = parkCar;
 game.stats = { respect: 0, carsStolen: 0, tokens:[], properties: 1 };
 game.missions = createMissions(game);
+game.mode = 'play';
+game.dialogue = createDialogue(game);
 const input = createInput(canvas);
 /** Every car the player can drive right now: traffic, parked and police. */
 function allVehicles() {
@@ -113,6 +116,11 @@ function updateCamera(dt) {
 }
 function stepGame() {
   const dt = STEP;
+  if (game.mode === 'dialogue') {
+    game.dialogue.update(dt, input);
+    input.endFrame();
+    return;
+  }
   game.missions.update(dt, input);
   const { player } = playerRig;
   // Mouse turns the view; while driving the camera swings back behind the car on its own.

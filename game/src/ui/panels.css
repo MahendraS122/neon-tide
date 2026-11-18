@@ -1,0 +1,31 @@
+/* Shared menu typography and letterboxed story conversations. */
+[hidden] { display: none !important; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible { outline: 2px solid #25e6d0; outline-offset: 4px; }
+#cutscene { position: fixed; inset: 0; z-index: 35; pointer-events: none; }
+.cinema-top, .cinema-bottom { position: absolute; background: #080d16f5; left: 0; right: 0; }
+.cinema-top { top: 0; height: 62px; display: flex; justify-content: space-between;
+  align-items: center; padding: 0 5vw; color: #758da0; font-size: 11px; letter-spacing: 4px; }
+.cinema-bottom { bottom: 0; min-height: 145px; padding: 24px 6vw; display: flex;
+  align-items: center; gap: 24px; border-top: 2px solid #25e6d0; }
+.cinema-bottom canvas { width: 104px; height: 104px; border: 1px solid #ffb27366; }
+.speech { flex: 1; }
+.speech small { letter-spacing: 4px; color: #98a7b9; font-size: 10px; }
+.speech h2 { margin: 5px 0 10px; letter-spacing: 3px; font-size: 20px; }
+.speech p { min-height: 45px; max-width: 760px; font-size: 20px; line-height: 1.5; margin: 0; }
+.cinema-bottom button { pointer-events: auto; background: none; border: 0; color: #ffd166;
+  font-size: 11px; letter-spacing: 2px; align-self: flex-end; white-space: nowrap; }
+.screen { position: fixed; inset: 0; z-index: 25; color: #f5efe4;
+  font-family: 'Arial Narrow', 'Segoe UI', sans-serif; }
+.menu-button { display: block; width: 100%; text-align: left; background: #0b1722c9;
+  border: 1px solid #ffffff26; padding: 13px 18px; color: #f9f0e4; margin: 8px 0;
+  font-size: 16px; font-weight: 700; letter-spacing: 3px; }
+.menu-button:hover { background: #25e6d0; color: #071724; }
+.menu-button:disabled { opacity: 0.4; cursor: default; }
+.menu-button small { display: block; font-size: 10px; letter-spacing: 1px;
+  font-weight: 400; margin-top: 6px; line-height: 1.5; }
+.modal-card { background: #081520f5; border: 1px solid #57b8b366; padding: 30px;
+  width: min(540px, 82vw); margin: 8vh auto; box-shadow: 0 20px 100px #0008; }
+.modal-card h1 { letter-spacing: 5px; color: #ffd166; }
+.modal-card p { line-height: 1.8; color: #bbc9cf; }
