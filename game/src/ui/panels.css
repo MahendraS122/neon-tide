@@ -55,6 +55,10 @@ button:focus-visible { outline: 2px solid #25e6d0; outline-offset: 4px; }
   font-size: 11px; letter-spacing: 4px; }
 #title-screen footer small { font-size: 8px; color: #8dadae; letter-spacing: 2px; }
 .options-screen { z-index: 45; background: #021019b8; }
+.pause-screen { background: #03131bc9; backdrop-filter: blur(6px); z-index: 24; }
+.pause-screen .modal-card { max-width: 380px; margin-top: 6vh; }
+.pause-screen small { color: #7cb5ad; letter-spacing: 3px; font-size: 9px; }
+.pause-status { font-size: 11px; min-height: 32px; }
 #garage-screen { background: linear-gradient(90deg, #05141cf5 0%, #05141cb8 30%, transparent 66%); }
 .customs-panel { position: absolute; left: 4vw; top: 5vh; width: 320px; }
 .customs-panel > small { font-size: 8px; letter-spacing: 2px; color: #81a8a5; }

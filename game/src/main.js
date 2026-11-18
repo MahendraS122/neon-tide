@@ -26,6 +26,12 @@ import { createTitleScreen } from './ui/titleScreen.js';
 import { createCityMap } from './ui/cityMap.js';
 import { createGarage } from './ui/garage.js';
 import { createGarages } from './world/garages.js';
+import { createSave } from './systems/save.js';
+import { createRadio } from './systems/radio.js';
+import { createRaces } from './systems/races.js';
+import { createCollectibles } from './systems/collectibles.js';
+import { createClock } from './systems/clock.js';
+import { createPauseMenu } from './ui/pauseMenu.js';
 const params = new URLSearchParams(window.location.search);
 const shotName = params.get('shot');
 const seedParam = Number.parseInt(params.get('seed') ?? '', 10);
@@ -81,9 +87,41 @@ game.title = createTitleScreen(game);
 game.cityMap = createCityMap(game);
 game.garage = createGarage(game);
 game.garages = createGarages(game);
+game.save = createSave(game);
+game.radio = createRadio(game);
+game.races = createRaces(game);
+game.collectibles = createCollectibles(game);
+game.clock = createClock(game);
+game.pause = createPauseMenu(game);
+window.addEventListener('pointerdown', function unlockAudio() { game.radio.unlock(); }, { once: true });
+game.resetWorld = function resetWorld() {
+  playerRig.exitVehicle();
+  wanted.clear();
+  playerRig.player.health = 100;
+  playerRig.player.armour = 0;
+  playerRig.player.dead = false;
+  playerRig.player.busted = false;
+  game.races.stop();
+  for (const car of parked) if (car !== starter) car.group.removeFromParent();
+  parked.splice(0, parked.length, starter);
+  starter.health = 100;
+  starter.velocity.set(0, 0, 0);
+  game.lastVehicle = starter;
+  game.gang.members.forEach(member => { member.dead = true; member.figure.root.visible = false; });
+  police.update(0, playerRig.player, 0);
+  helicopter.update(0, playerRig.player.position, 0);
+  roadblocks.update(playerRig.player.position, 0);
+  hud.hideBanner();
+};
 game.newGame = function newGame() {
+  game.resetWorld();
   game.missions.restore();
   game.cash = 500;
+  game.time = { day: 1, dayName: 'MON', minutes: 1100 };
+  game.stats = { respect: 0, carsStolen: 0, tokens: [], properties: 1 };
+  game.collectibles.reset();
+  game.clock.refresh();
+  hud.setCash(game.cash);
   playerRig.teleport(-282, 270);
   game.missions.start(0);
 };
@@ -131,6 +169,22 @@ function updateCamera(dt) {
 }
 function stepGame() {
   const dt = STEP;
+  game.radio.update(dt, input);
+  if (game.title.optionsOpen) {
+    if (input.pressed('Escape')) game.title.closeOptions();
+    input.endFrame();
+    return;
+  }
+  if (game.mode === 'pause') {
+    if (input.pressed('Escape')) game.pause.hide();
+    input.endFrame();
+    return;
+  }
+  if (game.mode === 'play' && input.pressed('Escape')) {
+    game.pause.show();
+    input.endFrame();
+    return;
+  }
   if (game.mode === 'garage') {
     if (input.pressed('Escape') || input.pressed('KeyG')) game.garage.hide();
     input.endFrame();
@@ -160,10 +214,15 @@ function stepGame() {
   game.garages.update(input);
   if (game.mode !== 'play') { input.endFrame(); return; }
   game.missions.update(dt, input);
+  if (game.mode !== 'play') { input.endFrame(); return; }
+  game.races.update(dt, input);
+  game.collectibles.update(dt);
+  game.clock.update(dt);
+  if (input.pressed('KeyH')) game.save.save();
   const { player } = playerRig;
   // Mouse turns the view; while driving the camera swings back behind the car on its own.
   const look = input.mouseLook();
-  cameraState.yaw -= look.x * CAMERA.sensitivity;
+  cameraState.yaw -= look.x * CAMERA.sensitivity * game.settings.sensitivity;
   cameraState.pitch = Math.max(CAMERA.pitchMin, Math.min(CAMERA.pitchMax, cameraState.pitch + look.y * CAMERA.sensitivity));
   if (input.pressed('KeyF')) {
     if (player.inVehicle) {
@@ -177,6 +236,7 @@ function stepGame() {
         if (traffic.cars.includes(target)) traffic.take(target);
         playerRig.enterVehicle(target);
         game.lastVehicle = target;
+        if (!target.stolen) { game.stats.carsStolen++; target.stolen = true; }
         wanted.crime('vehicleTheft');
         hud.float(target.isPolice ? 'POLICE CRUISER STOLEN': 'VEHICLE STOLEN', 'cash');
       }
@@ -239,7 +299,7 @@ function stepGame() {
   else {
     hud.setDriving(0, 'P', 1);
   }
-  const blips =[...game.missions.blips(), { x: world.landmarks.safehouse.x, z: world.landmarks.safehouse.z,
+  const blips =[...game.missions.blips(), ...game.races.blips(), { x: world.landmarks.safehouse.x, z: world.landmarks.safehouse.z,
   kind: 'safehouse' }, { x: world.landmarks.garage.x, z: world.landmarks.garage.z, kind: 'garage' },
   ];
   for (const unit of police.units) blips.push({ x: unit.position.x, z: unit.position.z, kind: 'police' });
