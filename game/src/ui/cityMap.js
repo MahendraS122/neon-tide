@@ -56,7 +56,7 @@ function draw() {
   context.setTransform(2, 0, 0, 2, 0, 0);
   const c = context;
   const scale = Math.min((w - 42) / 940,(h - 72) / 750);
-  const px = x => w / 2 +(x + 100) * scale;
+  const px = x => w / 2 + x * scale;
   const py = z => h / 2 - z * scale;
   projection = { scale, px, py, w, h };
   c.fillStyle = '#102c3b';
@@ -75,17 +75,43 @@ function draw() {
     c.lineTo(w, y);
     c.stroke();
   }
-  c.fillStyle = '#798879';
-  c.fillRect(px(CITY.waterX), py(350),(350 - CITY.waterX) * scale, 700 * scale);
-  c.fillStyle = '#b6aa80';
-  c.fillRect(px(CITY.waterX), py(350),(CITY.promenadeX - CITY.waterX) * scale, 700 * scale);
+  const sea = c.createLinearGradient(px(-550), 0, px(CITY.waterX), 0);
+  sea.addColorStop(0, '#075070');
+  sea.addColorStop(.58, '#0d7187');
+  sea.addColorStop(1, '#34a9ae');
+  c.fillStyle = sea;
+  c.beginPath();
+  c.moveTo(px(-560), py(350));
+  c.lineTo(px(CITY.waterX - 8), py(350));
+  for (let z = 350; z >= -350; z -= 25) {
+    const wiggle = Math.sin(z * .039) * 10 + Math.sin(z * .087) * 4;
+    c.lineTo(px(CITY.waterX + wiggle - 8), py(z));
+  }
+  c.lineTo(px(-560), py(-350));
+  c.closePath();
+  c.fill();
+  c.fillStyle = '#d8c28f';
+  c.beginPath();
+  c.moveTo(px(CITY.waterX - 12), py(350));
+  c.lineTo(px(CITY.beachX - 3), py(350));
+  c.lineTo(px(CITY.beachX - 3), py(-350));
+  for (let z = -350; z <= 350; z += 25) {
+    const wiggle = Math.sin(z * .039) * 10 + Math.sin(z * .087) * 4;
+    c.lineTo(px(CITY.waterX + wiggle - 12), py(z));
+  }
+  c.closePath();
+  c.fill();
   c.fillStyle = '#788e87';
   c.fillRect(px(CITY.promenadeX - 20), py(350), 40 * scale, 700 * scale);
   for (const block of game.world.blocks) {
     const park =(block.col === 1 && block.row === 5) ||(block.col === 3 && block.row === 4);
-    c.fillStyle = park ? '#427364': colors[block.style];
+    c.fillStyle = park ? '#52896d' : colors[block.style];
     c.fillRect(px(block.cx - BLOCK_HALF), py(block.cz + BLOCK_HALF), BLOCK_HALF * 2 * scale, BLOCK_HALF * 2 * scale);
     if (!park) {
+      c.globalAlpha = .2;
+      c.fillStyle = { port: '#bb825f', glass: '#88b9cb', deco: '#e9a6aa', apartment: '#82b7a0' }[block.style];
+      c.fillRect(px(block.cx - BLOCK_HALF), py(block.cz + BLOCK_HALF), BLOCK_HALF * 2 * scale, BLOCK_HALF * 2 * scale);
+      c.globalAlpha = 1;
       c.strokeStyle = '#77928b33';
       c.lineWidth = 1;
       c.strokeRect(px(block.cx - 25), py(block.cz + 25), 50 * scale, 50 * scale);
@@ -111,6 +137,41 @@ function draw() {
   }
   c.fillStyle = '#9b9c88';
   c.fillRect(px(CITY.pierX - CITY.pierLength), py(CITY.pierZ + 9), CITY.pierLength * scale, 18 * scale);
+  // Pier and Ferris wheel: a readable landmark at the irregular shoreline.
+  const ferrisX = px(CITY.ferrisWheelX);
+  const ferrisY = py(CITY.pierZ);
+  c.strokeStyle = '#f0c77b';
+  c.lineWidth = 2;
+  c.beginPath();
+  c.arc(ferrisX, ferrisY - 12, 17, 0, Math.PI * 2);
+  c.moveTo(ferrisX - 17, ferrisY - 12);
+  c.lineTo(ferrisX + 17, ferrisY - 12);
+  c.moveTo(ferrisX, ferrisY - 29);
+  c.lineTo(ferrisX, ferrisY + 5);
+  c.moveTo(ferrisX - 12, ferrisY + 3);
+  c.lineTo(ferrisX + 12, ferrisY + 3);
+  c.stroke();
+  c.fillStyle = '#f0c77b';
+  c.font = 'bold 9px Arial';
+  c.fillText('FERRIS / PIER', ferrisX, ferrisY + 20);
+  // Container port cranes on the eastern industrial waterfront.
+  c.strokeStyle = '#d28f6b';
+  c.lineWidth = 3;
+  for (let i = 0; i < 4; i++) {
+    const craneX = px(255 + i * 18);
+    const craneY = py(-220 + i * 42);
+    c.beginPath();
+    c.moveTo(craneX, craneY + 19);
+    c.lineTo(craneX, craneY - 20);
+    c.lineTo(craneX + 25, craneY - 20);
+    c.lineTo(craneX + 25, craneY - 5);
+    c.moveTo(craneX, craneY - 11);
+    c.lineTo(craneX + 13, craneY - 20);
+    c.stroke();
+  }
+  c.fillStyle = '#d28f6b';
+  c.font = 'bold 9px Arial';
+  c.fillText('CONTAINER PORT', px(281), py(-270));
   c.textAlign = 'center';
   c.font = 'italic 12px Arial';
   c.fillStyle = '#87c8d7';
@@ -134,10 +195,12 @@ function draw() {
   const position = game.playerRig.player.position;
   const route = gpsRoute(position, waypoint ?? game.missions.target());
   if (route.length) {
-    c.strokeStyle = '#ffbe72';
-    c.lineWidth = 3;
-    c.shadowBlur = 9;
-    c.shadowColor = '#ff9c56';
+    c.strokeStyle = '#54f6e0';
+    c.lineWidth = 7;
+    c.lineJoin = 'round';
+    c.lineCap = 'round';
+    c.shadowBlur = 16;
+    c.shadowColor = '#26e8dd';
     c.beginPath();
     route.forEach(([x, z], i) => i ? c.lineTo(px(x), py(z)): c.moveTo(px(x), py(z)));
     c.stroke();
@@ -232,7 +295,7 @@ function hide() {
 root.querySelector('header button').onclick = hide;
 canvas.onclick = function setWaypoint(event) {
   const rect = canvas.getBoundingClientRect();
-  waypoint =[Math.max(- 350, Math.min(320,(event.clientX - rect.left - projection.w / 2) / projection.scale - 100)),
+  waypoint =[Math.max(- 350, Math.min(320,(event.clientX - rect.left - projection.w / 2) / projection.scale)),
   Math.max(- 330, Math.min(330, -(event.clientY - rect.top - projection.h / 2) / projection.scale))];
   draw();
 };

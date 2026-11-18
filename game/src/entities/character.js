@@ -15,16 +15,23 @@ shoes = 0x14161a, jacket = null, cap = null } = { }) {
   const hips = new THREE.Group();
   hips.position.y = 0.92;
   root.add(hips);
-  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.56, 0.26), shirtMaterial);
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.23, 0.32, 5, 10), shirtMaterial);
   torso.position.y = 0.28;
   torso.castShadow = true;
   hips.add(torso);
   if (jacket !== null) {
-    const coat = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.32), new THREE.MeshStandardMaterial({ color:
-    jacket, roughness: 0.78 }),);
+    const coat = new THREE.Mesh(new THREE.CapsuleGeometry(0.265, 0.3, 5, 10), new THREE.MeshStandardMaterial({ color:
+    jacket, roughness: 0.78 }));
     coat.position.y = 0.3;
     coat.castShadow = true;
     hips.add(coat);
+  }
+  const collarMaterial = new THREE.MeshStandardMaterial({ color: 0xe5d4bd, roughness: .72 });
+  for (const side of [-1, 1]) {
+    const collar = new THREE.Mesh(new THREE.ConeGeometry(.1, .18, 3), collarMaterial);
+    collar.position.set(side * .1, .62, .1);
+    collar.rotation.set(-.35, side * .35, side * .25);
+    hips.add(collar);
   }
   // Shoulders, a touch wider than the torso.
   const shoulders = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.14, 0.28), shirtMaterial);
@@ -36,14 +43,17 @@ shoes = 0x14161a, jacket = null, cap = null } = { }) {
   const head = new THREE.Group();
   head.position.y = 0.78;
   hips.add(head);
-  const skull = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.26, 0.23), skinMaterial);
+  const skull = new THREE.Mesh(new THREE.SphereGeometry(0.145, 16, 12), skinMaterial);
+  skull.scale.set(0.86, 1, 0.82);
   skull.castShadow = true;
   head.add(skull);
-  const hairCap = new THREE.Mesh(new THREE.BoxGeometry(0.235, 0.1, 0.245), hairMaterial);
-  hairCap.position.y = 0.11;
+  const hairCap = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 10), hairMaterial);
+  hairCap.scale.set(0.9, 0.48, 0.87);
+  hairCap.position.y = 0.085;
   head.add(hairCap);
-  const backHair = new THREE.Mesh(new THREE.BoxGeometry(0.235, 0.14, 0.06), hairMaterial);
-  backHair.position.set(0, 0.01, - 0.1);
+  const backHair = new THREE.Mesh(new THREE.SphereGeometry(0.115, 12, 8), hairMaterial);
+  backHair.scale.set(1, 1.2, .55);
+  backHair.position.set(0, -0.015, - 0.08);
   head.add(backHair);
   if (cap !== null) {
     const capMesh = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.09, 0.26), new THREE.MeshStandardMaterial({ color:
@@ -64,7 +74,7 @@ shoes = 0x14161a, jacket = null, cap = null } = { }) {
   }
   function limb(width, length, material, radius) {
     const pivot = new THREE.Group();
-    const upper = new THREE.Mesh(new THREE.BoxGeometry(width, length, width *(radius ?? 1)), material);
+    const upper = new THREE.Mesh(new THREE.CapsuleGeometry(width * .5, length - width, 4, 8), material);
     upper.position.y = - length / 2;
     upper.castShadow = true;
     pivot.add(upper);
@@ -78,7 +88,7 @@ shoes = 0x14161a, jacket = null, cap = null } = { }) {
   hips.add(armR);
   // Hands.
   for (const arm of[armL, armR]) {
-    const hand = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.13, 0.12), skinMaterial);
+    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 8), skinMaterial);
     hand.position.y = - 0.66;
     arm.add(hand);
   }

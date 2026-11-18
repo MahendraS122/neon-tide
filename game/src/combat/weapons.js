@@ -144,7 +144,7 @@ scene.add(root);
 const members =[];
 positions.forEach((p, i) => {
   const figure = createFigure({
-    shirt:[0x9b2452, 0x202d42, 0xb53336][i % 3], trousers: 0x151824, jacket: 0x382037, cap: i % 2 ?
+    shirt:[0x8e263a, 0x9e2b40, 0x7f2036][i % 3], trousers: 0x151824, jacket: 0x9b2940, cap: i % 2 ?
     0x171824: null
   });
   figure.root.position.set(p.x, p.y ?? 0, p.z);

@@ -31,9 +31,9 @@ modal.hidden = true;
 document.body.append(modal);
 const logo = root.querySelector('canvas').getContext('2d');
 logo.textAlign = 'center';
-logo.font = 'italic 900 172px Arial';
-logo.lineWidth = 4;
-logo.shadowBlur = 30;
+logo.font = 'italic 900 205px Arial';
+logo.lineWidth = 5;
+logo.shadowBlur = 46;
 logo.shadowColor = '#ff59a6';
 logo.strokeStyle = '#ffb3d2';
 logo.strokeText('NEON TIDE', 545, 205);
@@ -43,7 +43,7 @@ gradient.addColorStop(0.56, '#ffb9b2');
 gradient.addColorStop(1, '#ed3d89');
 logo.fillStyle = gradient;
 logo.fillText('NEON TIDE', 545, 205);
-logo.font = '500 50px Arial';
+logo.font = '500 58px Arial';
 logo.fillStyle = '#72f8e0';
 logo.shadowColor = '#24e9ce';
 logo.shadowBlur = 24;
@@ -88,6 +88,7 @@ function show() {
 function hide() {
   root.hidden = true;
   game.mode = 'play';
+  game.playerRig.figure.root.scale.setScalar(1);
   game.hud.showHud(true);
 }
 function controls() {
@@ -144,8 +145,10 @@ root.querySelector('nav').onclick = function menuClick(event) {
 function update(dt) {
   elapsed += dt;
   const camera = game.view.camera;
-  camera.position.set(- 266 + Math.sin(elapsed * 0.12) * 2.5, 3.6, 201);
-  camera.lookAt(- 291, 3.8, 183);
+  camera.position.set(- 270 + Math.sin(elapsed * 0.12) * 1.5, 2.8, 198);
+  camera.lookAt(- 283, 1.6, 188);
+  camera.updateMatrixWorld();
+  game.playerRig.figure.root.scale.setScalar(1.16);
   game.view.focusShadows(- 282, 188);
   game.sky.update(camera);
 }
