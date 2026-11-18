@@ -1,87 +1,121 @@
-// Package NEON TIDE: Port Solara and build its make.fun judging dossier.
-import { copyFileSync, lstatSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+// Validates the NEON TIDE entry and hands its game, screenshots, and dossier to make.fun.
+import { copyFile, mkdir, readdir, stat, writeFile } from 'node:fs/promises';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
 
-const gameDir = join(import.meta.dirname, 'game');
-const screenshotDir = join(import.meta.dirname, 'screenshots');
-const maxScreenshots = 4;
-const maxScreenshotBytes = 256 * 1024;
-const maxDossierTextBytes = 160 * 1024;
+const root = dirname(fileURLToPath(import.meta.url));
+const screenshotLimit = 256 * 1024;
 
 function resolveOutputDir(): string {
-  return resolve(process.env.MAKEFUN_OUTPUT_DIR ?? '/output');
+  return resolve(process.env.MAKEFUN_OUTPUT_DIR || '/output');
 }
 
-function assertGameEntry(): void {
-  const entry = lstatSync(join(gameDir, 'index.html'), { throwIfNoEntry: false });
-  if (!entry?.isFile()) {
+async function assertGameEntry(): Promise<void> {
+  const entry = join(root, 'game', 'index.html');
+  if (!(await stat(entry)).isFile()) {
     throw new Error('game/index.html must be a regular file');
   }
 }
 
-function collectScreenshots(): string[] {
-  const images = readdirSync(screenshotDir, { withFileTypes: true })
-    .filter((entry) => !entry.name.startsWith('.'));
+async function collectScreenshots(): Promise<string[]> {
+  const dir = join(root, 'screenshots');
+  const names = (await readdir(dir)).sort((a, b) => a.localeCompare(b));
+  const screenshots: string[] = [];
 
-  if (images.length < 3 || images.length > maxScreenshots) {
-    throw new Error(`Expected 3 or 4 screenshots, found ${images.length}`);
+  for (const name of names) {
+    if (!/\.(png|jpe?g)$/i.test(name)) continue;
+    const path = join(dir, name);
+    const info = await stat(path);
+    if (!info.isFile()) throw new Error(`Screenshot is not a regular file: ${name}`);
+    if (info.size > screenshotLimit) throw new Error(`Screenshot exceeds 256 KiB: ${name}`);
+    screenshots.push(name);
   }
 
-  return images.map((entry) => {
-    if (!entry.isFile() || !/^[a-z0-9_][a-z0-9_.-]*\.(png|jpe?g)$/i.test(entry.name)
-        || entry.name.length > 128) {
-      throw new Error(`Invalid PNG or JPEG screenshot name or file: ${entry.name}`);
-    }
-    if (lstatSync(join(screenshotDir, entry.name)).size > maxScreenshotBytes) {
-      throw new Error(`Screenshot exceeds 256 KiB: ${entry.name}`);
-    }
-    return entry.name;
-  }).sort();
+  if (screenshots.length < 3 || screenshots.length > 4) {
+    throw new Error(`Expected 3 or 4 PNG/JPEG screenshots; found ${screenshots.length}`);
+  }
+  return screenshots;
 }
 
-function copyTree(source: string, destination: string): number {
-  const entries = readdirSync(source, { withFileTypes: true });
-  mkdirSync(destination, { recursive: true });
+async function copyTree(source: string, destination: string): Promise<number> {
+  await mkdir(destination, { recursive: true });
   let files = 0;
-  for (const entry of entries) {
+  for (const entry of await readdir(source, { withFileTypes: true })) {
     const from = join(source, entry.name);
     const to = join(destination, entry.name);
+    if (entry.isSymbolicLink()) throw new Error(`Symbolic links are not allowed: ${from}`);
     if (entry.isDirectory()) {
-      files += copyTree(from, to);
+      files += await copyTree(from, to);
     } else if (entry.isFile()) {
-      copyFileSync(from, to);
+      await copyFile(from, to);
       files += 1;
     } else {
-      throw new Error(`Expected a regular game file or directory: ${from}`);
+      throw new Error(`Unsupported filesystem entry: ${from}`);
     }
   }
   return files;
 }
 
-function writeDossier(outputDir: string): number {
-  const dossier = buildDossier(outputDir, {
-    text_max_bytes: maxDossierTextBytes,
-    screenshots: { max: maxScreenshots, max_bytes: maxScreenshotBytes },
+async function writeDossier(outputDir: string, dryRun = false): Promise<number> {
+  const bytes = buildDossier(root, {
+    text_max_bytes: 160 * 1024,
+    screenshots: { max: 4, max_bytes: screenshotLimit },
+    game_max_files: 993,
+    game_max_bytes: 48 * 1024 * 1024,
+    game_path_max_bytes: 1000,
   });
-  writeFileSync(join(outputDir, 'dossier.json'), dossier);
+  const dossier = Buffer.from(bytes);
+  const json = JSON.parse(dossier.toString('utf8')) as unknown;
+  if (!json || typeof json !== 'object' || Array.isArray(json)) {
+    throw new Error('buildDossier did not return a JSON object');
+  }
+  if (dossier.byteLength > 1.5 * 1024 * 1024) throw new Error('Dossier exceeds 1.5 MiB');
+  if (!dryRun) await writeFile(join(outputDir, 'dossier.json'), dossier);
   return dossier.byteLength;
 }
 
-function main(): void {
-  const outputDir = resolveOutputDir();
-  assertGameEntry();
-  const screenshots = collectScreenshots();
-  const gameFiles = copyTree(gameDir, join(outputDir, 'game'));
+async function main(): Promise<void> {
+  const dryRun = process.argv.slice(2).includes('--dry-run');
+  const extraArgs = process.argv.slice(2).filter((arg) => arg !== '--dry-run');
+  if (extraArgs.length) throw new Error(`Unknown argument: ${extraArgs[0]}`);
 
-  const screenshotOutput = join(outputDir, 'screenshots');
-  mkdirSync(screenshotOutput, { recursive: true });
-  for (const name of screenshots) {
-    copyFileSync(join(screenshotDir, name), join(screenshotOutput, name));
+  await assertGameEntry();
+  const screenshots = await collectScreenshots();
+  const outputDir = resolveOutputDir();
+  let gameFiles: number;
+  let dossierBytes: number;
+
+  if (dryRun) {
+    gameFiles = await countTreeFiles(join(root, 'game'));
+    dossierBytes = await writeDossier(outputDir, true);
+  } else {
+    await mkdir(outputDir, { recursive: true });
+    gameFiles = await copyTree(join(root, 'game'), join(outputDir, 'game'));
+    await mkdir(join(outputDir, 'screenshots'), { recursive: true });
+    for (const name of screenshots) {
+      await copyFile(join(root, 'screenshots', name), join(outputDir, 'screenshots', name));
+    }
+    dossierBytes = await writeDossier(outputDir);
   }
 
-  const dossierKB = (writeDossier(outputDir) / 1024).toFixed(1);
-  console.log(`NEON TIDE: Port Solara handed in: ${gameFiles} game files, ${screenshots.length} screenshots, dossier ${dossierKB} KB`);
+  const dossierKb = (dossierBytes / 1024).toFixed(1);
+  console.log(`NEON TIDE: Port Solara handed in: ${gameFiles} game files, ${screenshots.length} screenshots, dossier ${dossierKb} KB`);
 }
 
-main();
+async function countTreeFiles(source: string): Promise<number> {
+  let files = 0;
+  for (const entry of await readdir(source, { withFileTypes: true })) {
+    const path = join(source, entry.name);
+    if (entry.isSymbolicLink()) throw new Error(`Symbolic links are not allowed: ${path}`);
+    if (entry.isDirectory()) files += await countTreeFiles(path);
+    else if (entry.isFile()) files += 1;
+    else throw new Error(`Unsupported filesystem entry: ${path}`);
+  }
+  return files;
+}
+
+main().catch((error: unknown) => {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exitCode = 1;
+});
