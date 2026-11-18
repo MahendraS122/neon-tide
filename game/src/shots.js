@@ -329,7 +329,14 @@ function addMuzzleFlash(game, x, z) {
   return { group: g, light: l, line };
 }
 export async function stageShot(name, game) { try {
-  if (name === 'onfoot') await onfootShot(game);
+  if (name === 'title') {
+    game.title.show();
+    game.title.update(0);
+    game.view.draw();
+    await wait(180);
+    game.view.draw();
+    window.__shotReady = true;
+  } else if (name === 'onfoot') await onfootShot(game);
   else await chaseShot(game);
 }
 catch (error) {

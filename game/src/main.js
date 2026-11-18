@@ -22,6 +22,7 @@ import { createRoadblocks } from './world/roadblocks.js';
 import { createWeapons, createGang } from './combat/weapons.js';
 import { createMissions } from './missions/missions.js';
 import { createDialogue } from './ui/dialogue.js';
+import { createTitleScreen } from './ui/titleScreen.js';
 const params = new URLSearchParams(window.location.search);
 const shotName = params.get('shot');
 const seedParam = Number.parseInt(params.get('seed') ?? '', 10);
@@ -72,6 +73,14 @@ game.stats = { respect: 0, carsStolen: 0, tokens:[], properties: 1 };
 game.missions = createMissions(game);
 game.mode = 'play';
 game.dialogue = createDialogue(game);
+game.settings = { volume: 0.35, sensitivity: 1 };
+game.title = createTitleScreen(game);
+game.newGame = function newGame() {
+  game.missions.restore();
+  game.cash = 500;
+  playerRig.teleport(-282, 270);
+  game.missions.start(0);
+};
 const input = createInput(canvas);
 /** Every car the player can drive right now: traffic, parked and police. */
 function allVehicles() {
@@ -116,6 +125,12 @@ function updateCamera(dt) {
 }
 function stepGame() {
   const dt = STEP;
+  if (game.mode === 'title') {
+    game.title.update(dt);
+    if (input.pressed('Escape')) game.title.closeOptions();
+    input.endFrame();
+    return;
+  }
   if (game.mode === 'dialogue') {
     game.dialogue.update(dt, input);
     input.endFrame();

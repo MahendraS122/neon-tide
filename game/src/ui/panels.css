@@ -29,3 +29,37 @@ button:focus-visible { outline: 2px solid #25e6d0; outline-offset: 4px; }
   width: min(540px, 82vw); margin: 8vh auto; box-shadow: 0 20px 100px #0008; }
 .modal-card h1 { letter-spacing: 5px; color: #ffd166; }
 .modal-card p { line-height: 1.8; color: #bbc9cf; }
+#title-screen { background: linear-gradient(90deg, #07131ae8 0%, #07131a82 34%, transparent 67%); }
+.title-shade { position: absolute; inset: 0;
+  background: linear-gradient(0deg, #07131a 0%, transparent 36%, transparent 87%, #07131a88); }
+.title-left { position: absolute; left: 4.4vw; top: 5vh; width: 450px; }
+.eyebrow { color: #dfb79b; letter-spacing: 4px; font-size: 9px; }
+#neon-logo { width: 490px; height: 174px; margin: 0 0 -15px -22px; }
+.title-rule { font-size: 10px; letter-spacing: 2.5px; color: #eebea5; margin: 6px 0 23px; }
+.title-left nav { width: 300px; }
+.title-left .menu-button:first-child { border-left: 3px solid #25e6d0; }
+.how-play { margin-top: 22px; font-size: 10px; color: #bdcbc9; letter-spacing: 1px; }
+.how-play b { color: #ffd4a3; letter-spacing: 3px; }
+.how-play p { line-height: 2; margin-top: 8px; }
+.cast-lineup { position: absolute; bottom: 88px; right: 3vw; }
+.cast-lineup header { color: #f1bc96; letter-spacing: 3px; font-size: 9px; margin-bottom: 10px; }
+.cast-lineup > div { display: flex; gap: 7px; }
+.cast-lineup article { width: 85px; background: #091824d9; border-bottom: 2px solid #f68d83;
+  box-shadow: 0 6px 16px #0006; }
+.cast-lineup canvas { width: 85px; height: 91px; object-fit: cover; }
+.cast-lineup b { display: block; font-size: 8px; margin: 6px 5px 3px; letter-spacing: 0.3px; }
+.cast-lineup small { display: block; font-size: 7px; color: #67cbbd; margin: 0 5px 7px;
+  letter-spacing: 1px; }
+#title-screen footer { position: absolute; bottom: 25px; left: 4.4vw; right: 3vw;
+  display: flex; justify-content: space-between; border-top: 1px solid #ffffff26; padding-top: 17px;
+  font-size: 11px; letter-spacing: 4px; }
+#title-screen footer small { font-size: 8px; color: #8dadae; letter-spacing: 2px; }
+.options-screen { z-index: 45; background: #021019b8; }
+@media (max-height: 730px) {
+  .title-left { top: 3vh; }
+  #neon-logo { height: 140px; width: 410px; }
+  .title-rule { margin-bottom: 12px; }
+  .title-left .menu-button { padding: 10px 16px; }
+  .how-play { margin-top: 14px; }
+  .cast-lineup { bottom: 80px; }
+}
