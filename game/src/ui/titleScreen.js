@@ -9,7 +9,7 @@ root.innerHTML = `
     <div class="title-shade"></div>
     <div class="title-left">
       <div class="eyebrow">AN ORIGINAL OPEN WORLD CRIME STORY</div>
-      <canvas id="neon-logo" width="1100" height="390"></canvas>
+      <canvas id="neon-logo" width="1100" height="320" role="img" aria-label="Neon Tide: Port Solara"></canvas>
       <div class="title-rule">SIX YEARS INSIDE. ONE CITY LEFT TO LOSE.</div>
       <nav aria-label="Main menu">
         <button class="menu-button" data-action="continue">CONTINUE<small></small></button>
@@ -30,24 +30,29 @@ modal.className = 'screen options-screen';
 modal.hidden = true;
 document.body.append(modal);
 const logo = root.querySelector('canvas').getContext('2d');
-logo.textAlign = 'center';
+const wordmark = 'NEON TIDE';
+logo.textAlign = 'left';
 logo.font = 'italic 900 205px Arial';
+const bounds = logo.measureText(wordmark);
+const logoX = 12 + bounds.actualBoundingBoxLeft;
+const logoWidth = Math.min(1060, bounds.actualBoundingBoxLeft + bounds.actualBoundingBoxRight);
 logo.lineWidth = 5;
 logo.shadowBlur = 46;
 logo.shadowColor = '#ff59a6';
 logo.strokeStyle = '#ffb3d2';
-logo.strokeText('NEON TIDE', 545, 205);
+logo.strokeText(wordmark, logoX, 190, 1060);
 const gradient = logo.createLinearGradient(0, 60, 0, 225);
 gradient.addColorStop(0, '#fff3d4');
 gradient.addColorStop(0.56, '#ffb9b2');
 gradient.addColorStop(1, '#ed3d89');
 logo.fillStyle = gradient;
-logo.fillText('NEON TIDE', 545, 205);
+logo.fillText(wordmark, logoX, 190, 1060);
+logo.textAlign = 'center';
 logo.font = '500 58px Arial';
 logo.fillStyle = '#72f8e0';
 logo.shadowColor = '#24e9ce';
 logo.shadowBlur = 24;
-logo.fillText('P O R T   S O L A R A', 550, 295);
+logo.fillText('P O R T   S O L A R A', 12 + logoWidth * .5, 272);
 const cast = root.querySelector('.cast-lineup > div');
 for (const key of['dex', 'mara', 'nina', 'tavo', 'garza', 'hollis']) {
   const card = document.createElement('article');

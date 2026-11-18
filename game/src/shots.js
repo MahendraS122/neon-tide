@@ -1,8 +1,7 @@
 // Live, deterministic scenes. Capture code only arranges our own game objects.
 import * as THREE from 'three';
-import { createVehicle } from './entities/vehicle.js';
 import { createGang } from './combat/weapons.js';
-import { poseFigure } from './entities/character.js';
+import { poseShowcaseAim } from './entities/character.js';
 import { dressNeonRow, fireWreck, muzzleFlash, tracer, clearCamera } from './world/sceneDetails.js';
 
 function car(game, x, z, kind, color, heading = 0) {
@@ -49,7 +48,7 @@ function chaseShot(game) {
   game.helicopter.update(0, { x, z }, 4);
   game.helicopter.root.position.set(x, 11, z - 28);
   game.helicopter.root.scale.setScalar(1.35);
-  camera(game, [x + 3.4, 4.2, z + 7.5], [x - 1, 1.15, z - 12], 42);
+  camera(game, [x + 2, 3.25, z + 12], [x - 1.8, .55, z - 12], 42);
   fill(game, 0xffd4b5, 2, [x + 5, 8, z + 10]);
   const smoke = new THREE.MeshBasicMaterial({
     color: 0xe2c8d4, transparent: true, opacity: .23, depthWrite: false
@@ -88,36 +87,60 @@ function chaseShot(game) {
 function onfootShot(game) {
   const { hud, playerRig } = game;
   const x = -182, z = 94;
+  const { scene, renderer, state } = game.view;
   game.sky.setTime('night');
-  playerRig.teleport(x, z, Math.PI / 2);
+  renderer.toneMappingExposure = 1.78;
+  state.skyFill.color.setHex(0xa6baff);
+  state.skyFill.groundColor.setHex(0x835a83);
+  state.skyFill.intensity = 1.45;
+  const heading = Math.PI / 2 + .26;
+  playerRig.teleport(x, z, heading);
   playerRig.player.aiming = true;
-  poseFigure(playerRig.figure, 0, 0, { aim: true });
-  game.cameraState.yaw = Math.PI / 2;
-  game.weapons.state.active = 2;
+  const gunPosition = poseShowcaseAim(playerRig.figure);
+  game.cameraState.yaw = heading;
+  game.weapons.state.active = 1;
   game.gang.root.visible = false;
-  game.gang = createGang(game.view.scene, [[9, -2], [15, 4], [22, -4], [29, 2]].map(([dx, dz]) => ({
+  game.gang = createGang(scene, [[8.2, -2.4], [10, 1.8], [13, -5.2], [16, 4.5]].map(([dx, dz]) => ({
     x: x + dx, y: 0, z: z + dz
   })));
-  for (const enemy of game.gang.members) {
-    enemy.figure.root.rotation.y = -Math.PI / 2;
-    poseFigure(enemy.figure, 0, 0, { aim: true });
+  const enemyMuzzles = [];
+  for (const [i, enemy] of game.gang.members.entries()) {
+    const yaw = Math.atan2(x - enemy.position.x, z - enemy.position.z);
+    enemy.figure.root.rotation.y = yaw;
+    const grip = poseShowcaseAim(enemy.figure);
+    enemy.gun.position.copy(enemy.figure.root.worldToLocal(grip.clone()));
+    enemy.gun.position.z += .1;
+    enemyMuzzles.push(grip.add(new THREE.Vector3(Math.sin(yaw) * .43, .02, Math.cos(yaw) * .43)));
+    const light = new THREE.PointLight(i % 2 ? 0xffc58e : 0xffa2c7, 9, 5);
+    light.position.set(enemy.position.x - 1.1, 2.9, enemy.position.z + .5);
+    scene.add(light);
   }
   game.weapons.setTargets(game.gang.members);
   dressNeonRow(game, x, z);
-  fireWreck(game, x + 12, z + 6);
-  const cover = car(game, x + 22, z - 5, 'sedan', 0x477d91, .2);
-  camera(game, [x - 2.8, 2.15, z + 1.45], [x + 12, 1.35, z], 68);
-  fill(game, 0x8bcfff, 2.5, [x - 4, 7, z + 2]);
+  fireWreck(game, x + 14.8, z + 8.0);
+  const cover = car(game, x + 8.8, z + 6.9, 'sedan', 0x285966, -.09);
+  camera(game, [x - 3.32, 1.9, z - 1.91], [x + 10, 2.85, z + .5], 89);
+  fill(game, 0x9cd4ff, 1.55, [x - 9, 7, z + 2]);
+  const rim = new THREE.PointLight(0x39eaff, 21, 7);
+  rim.position.set(x + 1.3, 2.45, z - 1.2);
+  scene.add(rim);
   game.weapons.update(0, 0, null, game.view.camera, playerRig.player);
-  game.weapons.gun.position.set(x + .67, 1.4, z - .2);
-  game.weapons.gun.rotation.set(0, Math.PI / 2, 0);
-  muzzleFlash(game.view.scene, x + 1, 1.4, z - .2);
-  muzzleFlash(game.view.scene, x + 8.3, 1.4, z - 2);
-  tracer(game.view.scene, [x + 8.3, 1.4, z - 2], [x + 1.5, 1.1, z], 0xffbe63);
-  for (let i = 0; i < 9; i++) {
-    const p = cover.position;
-    tracer(game.view.scene, [p.x - 1, 1.1, p.z + .5],
-      [p.x - 1.4 - i * .09, 1.2 + (i % 3) * .18, p.z + .2 + i * .1], 0xffd783);
+  const gun = game.weapons.gun;
+  gun.position.copy(gunPosition);
+  gun.rotation.set(0, heading, 0);
+  gun.scale.z = .67;
+  const muzzle = gun.localToWorld(new THREE.Vector3(0, .017, .49));
+  muzzleFlash(scene, ...muzzle, game.view.camera, .115);
+  const returnFire = enemyMuzzles[1];
+  muzzleFlash(scene, ...returnFire, game.view.camera, .22);
+  tracer(scene, returnFire.toArray(), [x + 2.8, 1.19, z + 1.15], 0xffa458, .95, .022);
+  tracer(scene, muzzle.toArray(), [x + 5.5, 1.52, z - 1.53], 0xffe4a3, .77, .012);
+  const impact = cover.group.localToWorld(new THREE.Vector3(-cover.shape.width * .53, .8, .35)).toArray();
+  muzzleFlash(scene, ...impact, game.view.camera, .12);
+  for (let i = 0; i < 15; i++) {
+    const angle = i * 2.4;
+    tracer(scene, impact, [impact[0] - .17 - i * .037,
+      impact[1] + .6 * Math.sin(angle), impact[2] + .67 * Math.cos(angle)], 0xffc478, .94, .018);
   }
   hud.state.inCar = false;
   hud.setDriving(0, '', 0);
@@ -130,12 +153,20 @@ function onfootShot(game) {
     timeLeft: null, stages: 4, stageIndex: 1, cashLabel: '+$1,200'
   });
   hud.setPolice([{ label: 'UNIT 07', distance: 41, status: 'PURSUIT' }], { searching: true });
-  hud.setWeapons(game.weapons.hudSlots(), 2);
+  hud.setWeapons(game.weapons.hudSlots(), 1);
   hud.setRadio('K-WAVE 104.2', '“Night Bloom”');
   hud.setVitals(74, 42, 'Neon Row');
   game.minimap.draw(playerRig.player.position, Math.PI / 2, game.gang.members.map(enemy => ({
     x: enemy.position.x, z: enemy.position.z, kind: 'enemy'
   })));
+  const reward = document.createElement('div');
+  reward.className = 'shot-reward';
+  reward.innerHTML = '<b>HEADSHOT</b><span>+$150</span>';
+  const hit = game.gang.members[0].position.clone().add(new THREE.Vector3(0, 2.16, 0));
+  hit.project(game.view.camera);
+  reward.style.left = `${50 + 50 * hit.x}%`;
+  reward.style.top = `${50 - 50 * hit.y}%`;
+  document.body.append(reward);
 }
 
 export async function stageShot(name, game) {

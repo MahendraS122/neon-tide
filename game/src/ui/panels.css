@@ -52,9 +52,9 @@ button:focus-visible { outline: 2px solid #25e6d0; outline-offset: 4px; }
 #title-screen { background: linear-gradient(90deg, #07131ae8 0%, #07131a82 34%, transparent 67%); }
 .title-shade { position: absolute; inset: 0;
   background: linear-gradient(0deg, #07131a 0%, transparent 36%, transparent 87%, #07131a88); }
-.title-left { position: absolute; left: 4.4vw; top: 4vh; width: 610px; }
+.title-left { position: absolute; left: clamp(18px, 3.75vw, 48px); top: 4vh; width: min(735px, 92vw); }
 .eyebrow { color: #dfb79b; letter-spacing: 4px; font-size: 9px; }
-#neon-logo { width: 735px; height: 261px; margin: 0 0 -54px -35px; }
+#neon-logo { display: block; width: 100%; height: auto; }
 .title-rule { font-size: 10px; letter-spacing: 2.5px; color: #eebea5; margin: 6px 0 23px; }
 .title-left nav { width: 300px; }
 .title-left .menu-button:first-child { border-left: 3px solid #25e6d0; }
@@ -154,9 +154,14 @@ button:focus-visible { outline: 2px solid #25e6d0; outline-offset: 4px; }
 }
 @media (max-height: 730px) {
   .title-left { top: 3vh; }
-  #neon-logo { height: 220px; width: 620px; }
+  #neon-logo { max-width: 620px; }
   .title-rule { margin-bottom: 12px; }
   .title-left .menu-button { padding: 10px 16px; }
   .how-play { margin-top: 14px; }
   .cast-lineup { bottom: 80px; }
 }
+
+.shot-reward { position: absolute; pointer-events: none; transform: translate(-50%, -100%);
+  font: 800 clamp(13px, 1.6vw, 22px)/1.1 Arial, sans-serif; letter-spacing: .09em;
+  color: #fff7e5; text-align: center; white-space: nowrap; text-shadow: 0 2px 4px #100b22, 0 0 12px #ff4587; }
+.shot-reward span { display: block; margin-top: 3px; font-size: .78em; color: #ffd27b; }

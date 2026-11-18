@@ -196,7 +196,7 @@ function draw() {
   const route = gpsRoute(position, waypoint ?? game.missions.target());
   if (route.length) {
     c.strokeStyle = '#54f6e0';
-    c.lineWidth = 7;
+    c.lineWidth = 9;
     c.lineJoin = 'round';
     c.lineCap = 'round';
     c.shadowBlur = 16;
@@ -205,6 +205,9 @@ function draw() {
     route.forEach(([x, z], i) => i ? c.lineTo(px(x), py(z)): c.moveTo(px(x), py(z)));
     c.stroke();
     c.shadowBlur = 0;
+    c.strokeStyle = '#bcfff2';
+    c.lineWidth = 2;
+    c.stroke();
     const end = route.at(- 1);
     c.strokeRect(px(end[0]) - 6, py(end[1]) - 6, 12, 12);
   }

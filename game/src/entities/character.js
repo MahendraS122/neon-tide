@@ -10,6 +10,9 @@ shoes = 0x14161a, jacket = null, cap = null } = { }) {
   const skinMaterial = new THREE.MeshStandardMaterial({ color: skin, roughness: 0.72 });
   const hairMaterial = new THREE.MeshStandardMaterial({ color: hair, roughness: 0.9 });
   const shirtMaterial = new THREE.MeshStandardMaterial({ color: shirt, roughness: 0.82 });
+  const coatMaterial = jacket === null ? shirtMaterial : new THREE.MeshStandardMaterial({
+    color: jacket, roughness: .74
+  });
   const trouserMaterial = new THREE.MeshStandardMaterial({ color: trousers, roughness: 0.86 });
   const shoeMaterial = new THREE.MeshStandardMaterial({ color: shoes, roughness: 0.7 });
   const hips = new THREE.Group();
@@ -17,12 +20,13 @@ shoes = 0x14161a, jacket = null, cap = null } = { }) {
   root.add(hips);
   const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.23, 0.32, 5, 10), shirtMaterial);
   torso.position.y = 0.28;
+  torso.scale.set(1, 1, .65);
   torso.castShadow = true;
   hips.add(torso);
   if (jacket !== null) {
-    const coat = new THREE.Mesh(new THREE.CapsuleGeometry(0.265, 0.3, 5, 10), new THREE.MeshStandardMaterial({ color:
-    jacket, roughness: 0.78 }));
+    const coat = new THREE.Mesh(new THREE.CapsuleGeometry(.25, .27, 6, 12), coatMaterial);
     coat.position.y = 0.3;
+    coat.scale.set(1, 1, .72);
     coat.castShadow = true;
     hips.add(coat);
   }
@@ -34,7 +38,8 @@ shoes = 0x14161a, jacket = null, cap = null } = { }) {
     hips.add(collar);
   }
   // Shoulders, a touch wider than the torso.
-  const shoulders = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.14, 0.28), shirtMaterial);
+  const shoulders = new THREE.Mesh(new THREE.SphereGeometry(.25, 12, 8), coatMaterial);
+  shoulders.scale.set(1.12, .48, .64);
   shoulders.position.y = 0.54;
   hips.add(shoulders);
   const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.1, 8), skinMaterial);
@@ -65,49 +70,87 @@ shoes = 0x14161a, jacket = null, cap = null } = { }) {
     brim.position.set(0, 0.1, 0.16);
     head.add(brim);
   }
-  // Face: two dark eye dots and a jaw shade, so the head reads from behind the camera.
+  const jawMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color(skin).multiplyScalar(.69) });
+  const jaw = new THREE.Mesh(new THREE.SphereGeometry(.102, 12, 8), jawMaterial);
+  jaw.scale.set(1, .68, .89);
+  jaw.position.set(0, -.065, .036);
+  head.add(jaw);
+  const nose = new THREE.Mesh(new THREE.SphereGeometry(.032, 8, 6), skinMaterial);
+  nose.position.set(0, -.012, .121);
+  head.add(nose);
   const eyeMaterial = new THREE.MeshBasicMaterial({ color: 0x20232a });
-  for (const side of[- 1, 1]) {
-    const eye = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.03, 0.02), eyeMaterial);
-    eye.position.set(side * 0.055, 0.02, 0.118);
-    head.add(eye);
+  for (const side of [-1, 1]) {
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(.011, 8, 6), eyeMaterial);
+    eye.position.set(side * .048, .02, .109);
+    const ear = new THREE.Mesh(new THREE.SphereGeometry(.032, 8, 6), skinMaterial);
+    ear.scale.set(.65, 1.2, .76);
+    ear.position.set(side * .119, -.014, -.012);
+    head.add(eye, ear);
   }
-  function limb(width, length, material, radius) {
-    const pivot = new THREE.Group();
-    const upper = new THREE.Mesh(new THREE.CapsuleGeometry(width * .5, length - width, 4, 8), material);
-    upper.position.y = - length / 2;
-    upper.castShadow = true;
-    pivot.add(upper);
-    return pivot;
+
+  function limb(anchor, width, length, lowerWidth, lowerLength, material, end) {
+    const joint = new THREE.Group();
+    const hinge = new THREE.Group();
+    const tip = new THREE.Group();
+    const upper = segment(width, length, material);
+    const lower = segment(lowerWidth, lowerLength, material);
+    joint.position.set(...anchor);
+    tip.add(end);
+    hinge.add(lower, tip);
+    joint.add(upper, hinge);
+    hips.add(joint);
+    return { joint, hinge, tip, upper, lower, length, lowerLength };
   }
-  const armL = limb(0.13, 0.62, shirtMaterial, 0.9);
-  armL.position.set(- 0.3, 0.5, 0);
-  hips.add(armL);
-  const armR = limb(0.13, 0.62, shirtMaterial, 0.9);
-  armR.position.set(0.3, 0.5, 0);
-  hips.add(armR);
-  // Hands.
-  for (const arm of[armL, armR]) {
-    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 8), skinMaterial);
-    hand.position.y = - 0.66;
-    arm.add(hand);
-  }
-  const legL = limb(0.17, 0.86, trouserMaterial, 1);
-  legL.position.set(- 0.13, 0, 0);
-  hips.add(legL);
-  const legR = limb(0.17, 0.86, trouserMaterial, 1);
-  legR.position.set(0.13, 0, 0);
-  hips.add(legR);
-  for (const leg of[legL, legR]) {
-    const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.1, 0.3), shoeMaterial);
-    shoe.position.set(0, - 0.86, 0.06);
-    shoe.castShadow = true;
-    leg.add(shoe);
-  }
-  return {
-    root, hips, torso, head, armL, armR, legL, legR, materials: { shirtMaterial, trouserMaterial,
-    skinMaterial }
-  };
+  const arms = [-1, 1].map(side => {
+    const hand = new THREE.Mesh(new THREE.SphereGeometry(.06, 10, 8), skinMaterial);
+    hand.scale.set(.83, 1.12, .88);
+    return limb([side * .251, .51, 0], .153, .29, .119, .282, coatMaterial, hand);
+  });
+  const legs = [-1, 1].map(side => {
+    const shoe = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), shoeMaterial);
+    shoe.position.set(0, -.021, .065);
+    shoe.scale.set(.094, .061, .162);
+    return limb([side * .124, 0, 0], .196, .43, .146, .42, trouserMaterial, shoe);
+  });
+  return { root, hips, torso, head, arms, legs, materials: { shirtMaterial, trouserMaterial, skinMaterial } };
+}
+
+function segment(width, length, material) {
+  const mesh = new THREE.Mesh(new THREE.CapsuleGeometry(width / 2, length - width / 2, 5, 10), material);
+  mesh.position.y = -length / 2;
+  mesh.castShadow = true;
+  return mesh;
+}
+
+const DOWN = new THREE.Vector3(0, -1, 0);
+
+function placeLimb(limb, bend, end) {
+  const first = new THREE.Vector3(...bend).sub(limb.joint.position);
+  limb.joint.quaternion.setFromUnitVectors(DOWN, first.clone().normalize());
+  limb.upper.scale.y = first.length() / limb.length;
+  limb.upper.position.y = -first.length() / 2;
+  limb.hinge.position.y = -first.length();
+  const second = new THREE.Vector3(...end).sub(new THREE.Vector3(...bend));
+  second.applyQuaternion(limb.joint.quaternion.clone().invert());
+  limb.hinge.quaternion.setFromUnitVectors(DOWN, second.clone().normalize());
+  limb.lower.scale.y = second.length() / limb.lowerLength;
+  limb.lower.position.y = -second.length() / 2;
+  limb.tip.position.y = -second.length();
+  limb.tip.quaternion.copy(limb.joint.quaternion).multiply(limb.hinge.quaternion).invert();
+}
+
+// The static combat frame uses explicit elbow, wrist, knee and ankle targets.
+// Return the grip in world coordinates so the prop stays registered to both hands.
+export function poseShowcaseAim(figure) {
+  figure.hips.position.y = .865;
+  figure.hips.rotation.x = .06;
+  figure.head.rotation.y = -.07;
+  figure.head.rotation.x = .08;
+  placeLimb(figure.arms[0], [-.235, .415, .259], [-.023, .495, .48]);
+  placeLimb(figure.arms[1], [.235, .455, .272], [.047, .5, .467]);
+  placeLimb(figure.legs[0], [-.213, -.398, .197], [-.247, -.81, .184]);
+  placeLimb(figure.legs[1], [.205, -.423, -.064], [.295, -.837, -.244]);
+  return figure.hips.localToWorld(new THREE.Vector3(.022, .579, .543));
 }
 /**
 * Pose a figure. `phase` is the walk cycle in radians (advance it by speed while moving), `speed`
@@ -117,24 +160,21 @@ shoes = 0x14161a, jacket = null, cap = null } = { }) {
 export function poseFigure(figure, phase, speed, { aim = false, sit = false, hurt = 0 } = { }) {
   const swing = Math.sin(phase) * Math.min(1.1, speed) * 0.75;
   const swingB = Math.sin(phase + Math.PI) * Math.min(1.1, speed) * 0.75;
-  figure.legL.rotation.x = sit ? - 1.15: swing;
-  figure.legR.rotation.x = sit ? - 1.15: swingB;
-  if (sit) {
-    figure.legL.rotation.x = - 1.25;
-    figure.legR.rotation.x = - 1.2;
-  }
-  if (aim) {
-    figure.armR.rotation.x = - 1.45;
-    figure.armR.rotation.z = - 0.12;
-    figure.armL.rotation.x = - 1.3;
-    figure.armL.rotation.z = 0.34;
-  }
-  else {
-    figure.armR.rotation.x = swingB * 0.85 -(sit ? 0.5: 0);
-    figure.armL.rotation.x = swing * 0.85 -(sit ? 0.5: 0);
-    figure.armR.rotation.z = 0;
-    figure.armL.rotation.z = 0;
-  }
+  figure.arms.forEach((arm, i) => {
+    const stride = i ? swingB : swing;
+    const tuck = i ? -.29 : .29;
+    arm.joint.rotation.set(aim ? -1.27 : stride * .85 - (sit ? .5 : 0), 0, aim ? tuck : 0);
+    arm.hinge.rotation.x = aim ? -.34 : -.07 - Math.max(0, stride) * .45;
+    arm.hinge.position.y = -arm.length;
+    arm.tip.position.y = -arm.lowerLength;
+  });
+  figure.legs.forEach((leg, i) => {
+    const stride = i ? swingB : swing;
+    leg.joint.rotation.x = sit ? -1.22 : stride;
+    leg.hinge.rotation.x = sit ? 1.24 : Math.max(0, -stride) * .74;
+    leg.hinge.position.y = -leg.length;
+    leg.tip.position.y = -leg.lowerLength;
+  });
   // A run leans the torso in; a hurt figure doubles over.
   figure.hips.rotation.x =(sit ? - 0.1: 0) + hurt * 0.6 + Math.min(0.22, Math.max(0, speed - 1) * 0.16);
   // Bob: the whole body rises and falls twice a stride.

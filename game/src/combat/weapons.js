@@ -154,7 +154,7 @@ positions.forEach((p, i) => {
   gun.position.set(.28, 1.22, .24);
   figure.root.add(gun);
   members.push({
-    figure, position: figure.root.position, health: 100, dead: false, cooldown: .7 + i * .65, phase:
+    figure, gun, position: figure.root.position, health: 100, dead: false, cooldown: .7 + i * .65, phase:
     i * .7
   });
 });
