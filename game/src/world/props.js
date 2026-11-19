@@ -17,7 +17,9 @@ leafGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices,
 leafGeometry.setIndex(indices);
 leafGeometry.computeVertexNormals();
 leafMaterial.side = THREE.DoubleSide;
-const lampMaterial = new THREE.MeshStandardMaterial({ color: '#ffdda0', emissive: '#ffbc66', emissiveIntensity: 2 });
+const lampMaterial = new THREE.MeshStandardMaterial({
+  color: '#ffdda0', emissive: '#ffbc66', emissiveIntensity: 2
+});
 
 export function createPalm(parent, x, z, scale = 1, angle = 0) {
   const group = new THREE.Group();
@@ -75,7 +77,9 @@ export function createTrafficLight(parent, x, z, rotation = 0) {
   box(group, 0, 4.95, 3.5, 0.45, 1.15, 0.4, '#25373a');
   const lights = [];
   ['#ff4d51', '#ffbf59', '#80e5ad'].forEach((color, index) => {
-    const material = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: index === 2 ? 2 : 0 });
+    const material = new THREE.MeshStandardMaterial({
+      color, emissive: color, emissiveIntensity: index === 2 ? 2 : 0
+    });
     const lens = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 6), material);
     lens.position.set(0, 5.3 - index * 0.34, 3.72);
     group.add(lens);

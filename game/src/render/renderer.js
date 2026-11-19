@@ -19,5 +19,14 @@ export function createRenderer(canvas) {
   }
   addEventListener('resize', resize);
   resize();
-  return { renderer, camera, scene };
+  let slowFrames = 0;
+  let renderScale = Math.min(devicePixelRatio, 1.5);
+  function adaptResolution(dt) {
+    slowFrames = dt > 0.045 ? slowFrames + 1 : Math.max(0, slowFrames - 1);
+    if (slowFrames < 24 || renderScale <= 0.75) return;
+    renderScale = Math.max(0.75, renderScale - 0.25);
+    renderer.setPixelRatio(renderScale);
+    slowFrames = 0;
+  }
+  return { renderer, camera, scene, adaptResolution };
 }

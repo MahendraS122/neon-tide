@@ -39,6 +39,10 @@ export function createOcean(parent) {
   water.rotation.x = -Math.PI / 2;
   water.position.set(695, -0.12, 0);
   parent.add(water);
+  const harbor = new THREE.Mesh(new THREE.PlaneGeometry(520, 500, 36, 36), material);
+  harbor.rotation.x = -Math.PI / 2;
+  harbor.position.set(-116, -0.12, 525);
+  parent.add(harbor);
   return { update(time, night) {
     uniforms.time.value = time;
     uniforms.night.value = night ? 1 : 0;

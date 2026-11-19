@@ -32,7 +32,7 @@ export function createBuilding(parent, spec, textures, windowMaterials) {
     emissiveMap: facadeMap, emissive: '#e6be75', emissiveIntensity: 0.08
   });
   windowMaterials.push(facade);
-  box(group, 0, h / 2 + 0.22, 0, w, h, d, [facade, facade, plain, plain, facade, facade]);
+  box(group, 0, h / 2 + 0.22, 0, w, h, d, facade);
   box(group, 0, h + 0.42, 0, w + 0.5, 0.42, d + 0.5, '#f7e7d0');
   box(group, 0, 0.4, 0, w + 0.4, 0.7, d + 0.4, '#e4d8c4');
   if (style === 'deco') {

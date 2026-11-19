@@ -1,0 +1,93 @@
+// Dex walks, sprints and jumps with a collision-aware shoulder camera and mouse look.
+import * as THREE from '../../vendor/three.module.min.js';
+import { moveWithCollisions, cameraObstruction, shortestAngle } from './collision.js';
+
+export function createPlayer(scene, character, input, city) {
+  const position = new THREE.Vector3(109, 0.22, 15);
+  scene.add(character.root);
+  character.root.position.copy(position);
+  let yaw = 0;
+  let pitch = 0.15;
+  let verticalSpeed = 0;
+  let grounded = true;
+  let vehicle = null;
+  let walkingSpeed = 0;
+  const cameraTarget = position.clone().add(new THREE.Vector3(0, 1.25, 0));
+  function update(dt) {
+    const mouse = input.mouse();
+    yaw -= mouse.x * 0.0024;
+    pitch = THREE.MathUtils.clamp(pitch + mouse.y * 0.0017, -0.3, 0.85);
+    if (vehicle) {
+      position.copy(vehicle.position);
+      character.root.visible = false;
+      return;
+    }
+    character.root.visible = true;
+    const forward = Number(input.down('KeyW') || input.down('ArrowUp'))
+      - Number(input.down('KeyS') || input.down('ArrowDown'));
+    const sideways = Number(input.down('KeyD') || input.down('ArrowRight'))
+      - Number(input.down('KeyA') || input.down('ArrowLeft'));
+    const speed = input.down('ShiftLeft') || input.down('ShiftRight') ? 7.7 : 3.5;
+    const movement = new THREE.Vector3(
+      -Math.sin(yaw) * forward + Math.cos(yaw) * sideways, 0,
+      -Math.cos(yaw) * forward - Math.sin(yaw) * sideways
+    );
+    if (movement.lengthSq() > 0) movement.normalize().multiplyScalar(speed);
+    walkingSpeed = movement.length();
+    if (walkingSpeed > 0) {
+      const facing = Math.atan2(movement.x, movement.z);
+      character.root.rotation.y += shortestAngle(character.root.rotation.y, facing) * Math.min(1, dt * 14);
+    }
+    moveWithCollisions(position, movement.x * dt, movement.z * dt, 0.34, city, position.y);
+    if (input.take('Space') && grounded) {
+      verticalSpeed = 6.7;
+      grounded = false;
+    }
+    verticalSpeed -= 19 * dt;
+    position.y += verticalSpeed * dt;
+    if (position.y <= 0.22) {
+      position.y = 0.22;
+      verticalSpeed = 0;
+      grounded = true;
+    }
+    character.root.position.copy(position);
+    character.animate(dt, grounded ? walkingSpeed : 0);
+  }
+  function updateCamera(camera, dt, snap = false) {
+    const moving = vehicle && Math.abs(vehicle.speed) > 2;
+    if (moving) yaw += shortestAngle(yaw, vehicle.yaw + Math.PI) * (1 - Math.exp(-dt * 2.1));
+    const target = position.clone().add(new THREE.Vector3(0, vehicle ? 1.1 : 1.3, 0));
+    const distance = vehicle ? 7.8 + Math.min(3, Math.abs(vehicle.speed) * 0.055) : 4.7;
+    const height = vehicle ? 2.65 : 1.25;
+    const desired = target.clone().add(new THREE.Vector3(
+      Math.sin(yaw) * distance, height + Math.sin(pitch) * distance,
+      Math.cos(yaw) * distance
+    ));
+    if (!vehicle) desired.add(new THREE.Vector3(Math.cos(yaw) * 0.6, 0, -Math.sin(yaw) * 0.6));
+    const safe = cameraObstruction(target, desired, city.colliders);
+    const blend = snap ? 1 : 1 - Math.exp(-dt * (vehicle ? 6 : 14));
+    camera.position.lerp(safe, blend);
+    cameraTarget.lerp(target, snap ? 1 : 1 - Math.exp(-dt * 18));
+    camera.lookAt(cameraTarget);
+    const fov = vehicle ? 58 + Math.min(12, Math.abs(vehicle.speed) * 0.22) : 58;
+    camera.fov += (fov - camera.fov) * blend;
+    camera.updateProjectionMatrix();
+  }
+  return {
+    position, character, update, updateCamera,
+    get vehicle() { return vehicle; },
+    set vehicle(value) {
+      vehicle = value;
+      if (value) {
+        yaw = value.yaw + Math.PI;
+        pitch = 0.05;
+        position.copy(value.position);
+      } else {
+        pitch = 0.15;
+      }
+      character.root.visible = !value;
+    },
+    get walkingSpeed() { return walkingSpeed; },
+    get grounded() { return grounded; }
+  };
+}

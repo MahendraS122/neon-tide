@@ -46,7 +46,7 @@ export function createSky(scene) {
   scene.add(ambient);
   const sun = new THREE.DirectionalLight('#ffd4a0', 3.5);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.mapSize.set(1024, 1024);
   Object.assign(sun.shadow.camera, { left: -70, right: 70, top: 70, bottom: -70, near: 1, far: 300 });
   sun.shadow.bias = -0.0003;
   sun.shadow.normalBias = 0.035;

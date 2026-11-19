@@ -78,7 +78,23 @@ export function createTextures() {
       }
     });
   });
-  return { asphalt, sidewalk, sand, facades };
+  const environment = canvasTexture(512, 256, (ctx, w, h) => {
+    const gradient = ctx.createLinearGradient(0, 0, 0, h);
+    gradient.addColorStop(0, '#6698c0');
+    gradient.addColorStop(0.48, '#ffe1b1');
+    gradient.addColorStop(0.55, '#b4c8c6');
+    gradient.addColorStop(1, '#394955');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(320, 70, 80, 36);
+    ctx.fillStyle = '#799295';
+    for (let i = 0; i < 30; i += 1) {
+      ctx.fillRect(i * 18, 128 - random() * 35, 12, 45);
+    }
+  });
+  environment.mapping = THREE.EquirectangularReflectionMapping;
+  return { asphalt, sidewalk, sand, facades, environment };
 }
 
 export function signTexture(text, color = '#7cffe0', background = '#142a35') {

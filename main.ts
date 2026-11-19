@@ -1,17 +1,13 @@
 // Hand in NEON TIDE: Port Solara with its local game files, screenshots, and official dossier.
 
 import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
 const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
-if (resolveOutput() === here) throw new Error('Output must not overwrite the source repository.');
-
-function resolveOutput() {
-  return fileURLToPath(new URL(`${out.replace(/\/$/, '')}/`, `file://${here}`));
-}
+if (resolve(out) === resolve(here)) throw new Error('Output must not overwrite the source repository.');
 
 mkdirSync(out, { recursive: true });
 cpSync(join(here, 'game'), join(out, 'game'), { recursive: true });

@@ -43,6 +43,10 @@ export function createCity(scene, textures) {
   const sand = textures.sand.clone();
   sand.repeat.set(7, 80);
   groundPlane(root, 129, 25, 38, 500, new THREE.MeshStandardMaterial({ map: sand }), -0.02);
+  const promenadeMap = textures.sidewalk.clone();
+  promenadeMap.repeat.set(1, 60);
+  box(root, 112, 0.08, 2, 7.6, 0.2, 396,
+    new THREE.MeshStandardMaterial({ map: promenadeMap, roughness: 0.9 }));
   for (const x of ROAD_X) {
     const map = textures.asphalt.clone();
     map.repeat.set(1, 8);

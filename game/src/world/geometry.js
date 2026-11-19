@@ -55,7 +55,9 @@ export function batchStatic(root) {
     const materialKey = Array.isArray(object.material)
       ? object.material.map(material => material.uuid).join(',')
       : object.material.uuid;
-    const key = `${object.geometry.uuid}/${materialKey}`;
+    const cellX = Math.floor(object.matrixWorld.elements[12] / 65);
+    const cellZ = Math.floor(object.matrixWorld.elements[14] / 65);
+    const key = `${object.geometry.uuid}/${materialKey}/${cellX}/${cellZ}`;
     if (!batches.has(key)) batches.set(key, []);
     batches.get(key).push(object);
   });
