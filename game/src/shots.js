@@ -68,7 +68,7 @@ export function setupShot(name, game, random) {
     player.vehicle = hero;
     vitals.health = 91;
     vitals.armour = 58;
-    const cruisers = [[99.8, 15.4, 2.94], [108.1, 15.2, 3.34], [95, 18.3, 3.08]];
+    const cruisers = [[99.8, 11.9, 2.94], [108.1, 11.7, 3.34], [95, 7.8, 3.08]];
     cruisers.forEach(([x, z, yaw], index) => {
       const unit = police.spawn(x, z, yaw);
       unit.status = index === 0 ? 'RAMMING' : 'PURSUIT';
@@ -77,8 +77,7 @@ export function setupShot(name, game, random) {
     wanted.report('Grand theft', 4);
     wanted.update(0, { seen: true });
     helicopter.setActive(true);
-    helicopter.root.scale.setScalar(1.45);
-    helicopter.pose(new THREE.Vector3(101.5, 13.9, -4.2), new THREE.Vector3(104, 0, 9.5), 0.85, 4.2);
+    helicopter.pose(new THREE.Vector3(101.5, 9.5, -4.2), new THREE.Vector3(104, 0, 9.5), 0.85, 4.2);
     roadblocks.deploy(100, -34, false);
     const taxi = vehicles.add('taxi', '#eebb47', 95.0, -16, 0);
     taxi.driverHead.visible = true;
