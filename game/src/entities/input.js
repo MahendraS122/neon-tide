@@ -1,4 +1,5 @@
 // Keyboard edges and pointer-lock mouse motion are sampled by the fixed-step simulation.
+// The returned helpers consume press edges and accumulated mouse deltas on request.
 export function createInput(canvas) {
   const held = new Set();
   const pressed = new Set();

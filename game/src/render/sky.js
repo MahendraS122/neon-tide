@@ -1,6 +1,7 @@
 // A procedural atmospheric dome and a moving local shadow volume.
 import * as THREE from '../../vendor/three.module.min.js';
 
+// Install the sky dome, sun rig, and day/night controls on a scene.
 export function createSky(scene) {
   const uniforms = {
     topColor: { value: new THREE.Color('#655774') },

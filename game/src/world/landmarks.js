@@ -3,6 +3,7 @@ import * as THREE from '../../vendor/three.module.min.js';
 import { box, cylinder, beam, surface } from './geometry.js';
 import { createSign } from './buildings.js';
 
+// Add the cargo district geometry and its collision rectangles.
 export function createPort(parent, random, colliders) {
   box(parent, -5, 0.04, 233, 210, 0.2, 78, '#7f8e8b');
   createSign(parent, 'PORT SOLARA / CARGO', -70, 8, 199, 22, '#ffcd7a');
@@ -33,6 +34,7 @@ export function createPort(parent, random, colliders) {
   }
 }
 
+// Add the pier and return its independently rotating observation wheel.
 export function createPier(parent) {
   box(parent, 179, 1, -108, 132, 0.6, 16, '#a89472');
   for (let x = 120; x < 242; x += 8) {

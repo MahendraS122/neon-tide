@@ -1,6 +1,7 @@
-// Short-lived arcade muzzle flashes, luminous streaks and impact particles.
+// Arcade muzzle flashes, luminous streaks and impact particles share timed cleanup.
 import * as THREE from '../../vendor/three.module.min.js';
 
+// Create the scene effects and their per-frame lifetime updater.
 export function createCombatEffects(scene, random) {
   const active = [];
   const shape = new THREE.Shape();

@@ -1,6 +1,7 @@
 // A rippling coastal sheet uses a compact shader and rolling surf ribbons.
 import * as THREE from '../../vendor/three.module.min.js';
 
+// Attach ocean and harbor surfaces, returning their shared shader-time updater.
 export function createOcean(parent) {
   const uniforms = { time: { value: 0 }, night: { value: 0 } };
   const material = new THREE.ShaderMaterial({

@@ -1,4 +1,5 @@
 // Pause suspends the simulation and points players to the safehouse save service.
+// This menu's active getter is the simulation's pause-state signal.
 export function createPauseMenu({ canSave, save, openMap }) {
   const root = document.createElement('section');
   root.id = 'pause-menu';

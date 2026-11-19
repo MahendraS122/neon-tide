@@ -3,8 +3,10 @@ import * as THREE from '../vendor/three.module.min.js';
 import { createNeonRow } from './world/neonRow.js';
 import { createShotEffects } from './render/shotEffects.js';
 
+const SHOT_NAMES = ['chase', 'onfoot', 'start', 'title', 'map'];
+
 export function setupShot(name, game, random) {
-  if (!['chase', 'onfoot', 'start', 'title', 'map'].includes(name)) return null;
+  if (!SHOT_NAMES.includes(name)) return null;
   if (name === 'map') {
     game.player.position.set(-52, 0.22, 83);
     return { static: true, hideReticle: true };

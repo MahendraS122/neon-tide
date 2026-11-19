@@ -1,6 +1,7 @@
 // Draw the title over a staged sunset view of the playable coast.
 import { drawPortrait, portraitNames } from './portraits.js';
 
+// Create the title menu, its controls panel, and the staged camera update.
 export function createTitleScreen({ player, camera, hero, onStart, saveDetail, shot }) {
   const root = document.createElement('main');
   root.id = 'title-screen';

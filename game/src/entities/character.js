@@ -20,6 +20,7 @@ function rounded(parent, x, y, z, sx, sy, sz, color, geometry = sphere) {
   return mesh;
 }
 
+// Build a character rig; animate below only changes the existing joint transforms.
 export function createCharacter(options = {}) {
   const { shirt = '#f1dfca', trousers = '#263f4a', skin = '#b98361', hair = '#241e22' } = options;
   const root = new THREE.Group();

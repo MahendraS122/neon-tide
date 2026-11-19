@@ -62,6 +62,7 @@ function labelMaterial(text, color, background) {
   return new THREE.MeshStandardMaterial({ map: texture, roughness: 0.45 });
 }
 
+// Assemble one vehicle from the selected type's fixed dimensions and materials.
 export function createVehicleModel(type = 'sports', color = '#13baaf') {
   const spec = VEHICLE_TYPES[type];
   const root = new THREE.Group();

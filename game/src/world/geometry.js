@@ -4,6 +4,7 @@ import * as THREE from '../../vendor/three.module.min.js';
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
 const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 10);
 const materials = new Map();
+const BATCH_CELL_SIZE = 65;
 
 export function surface(color, roughness = 0.8, metalness = 0) {
   const key = `${color}/${roughness}/${metalness}`;
@@ -55,8 +56,8 @@ export function batchStatic(root) {
     const materialKey = Array.isArray(object.material)
       ? object.material.map(material => material.uuid).join(',')
       : object.material.uuid;
-    const cellX = Math.floor(object.matrixWorld.elements[12] / 65);
-    const cellZ = Math.floor(object.matrixWorld.elements[14] / 65);
+    const cellX = Math.floor(object.matrixWorld.elements[12] / BATCH_CELL_SIZE);
+    const cellZ = Math.floor(object.matrixWorld.elements[14] / BATCH_CELL_SIZE);
     const key = `${object.geometry.uuid}/${materialKey}/${cellX}/${cellZ}`;
     if (!batches.has(key)) batches.set(key, []);
     batches.get(key).push(object);

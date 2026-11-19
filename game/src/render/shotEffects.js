@@ -22,6 +22,7 @@ function particleTexture(flame, random) {
   return texture;
 }
 
+// Prepare reusable particle textures and return the shot-only visual helpers.
 export function createShotEffects(game, random) {
   const { scene } = game;
   const smoke = particleTexture(false, random);
