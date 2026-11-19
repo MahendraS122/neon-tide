@@ -1,5 +1,5 @@
 // Foundation HUD displays only live free-roam state; mission and police panels come later.
-export function createHud(player, vehicleSystem, city) {
+export function createHud(player, vehicleSystem, city, wanted) {
   const district = document.querySelector('#district');
   const speedometer = document.querySelector('#speedometer');
   const speed = document.querySelector('#speed');
@@ -7,12 +7,20 @@ export function createHud(player, vehicleSystem, city) {
   const condition = document.querySelector('#condition');
   const hint = document.querySelector('#hint');
   const clock = document.querySelector('#clock');
+  const stars = document.querySelector('#stars');
+  const wantedLabel = document.querySelector('#wanted-label');
+  const failure = document.querySelector('#failure');
   let elapsed = 0;
   let lastUpdate = 0;
   function update(dt, night) {
     elapsed += dt;
     if (elapsed - lastUpdate < 0.08) return;
     lastUpdate = elapsed;
+    stars.textContent = '★'.repeat(wanted.stars) + '☆'.repeat(5 - wanted.stars);
+    stars.classList.toggle('searching', wanted.status === 'SEARCHING');
+    wantedLabel.textContent = wanted.arrest > 0 ? `ARREST ${Math.ceil(wanted.arrest * 100)}%` : wanted.status;
+    failure.hidden = !wanted.ending;
+    failure.firstElementChild.textContent = wanted.ending;
     const position = player.position;
     district.textContent = city.districtAt(position.x, position.z);
     const vehicle = player.vehicle;

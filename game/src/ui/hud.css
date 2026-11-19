@@ -26,6 +26,11 @@ footer { font-size: 9px; letter-spacing: 1px; color: #9faeb2; }
 #wallet { right: 34px; top: 28px; text-align: right; text-shadow: 0 2px 10px #0008; }
 #wallet b { display: block; font-size: 27px; letter-spacing: 1px; }
 #wallet span { font-size: 10px; letter-spacing: 2px; }
+#stars { font-size: 23px; color: #ffd078; letter-spacing: 4px; margin: 5px 0; }
+#stars.searching { animation: search-pulse 0.85s alternate infinite; }
+@keyframes search-pulse { to { opacity: 0.38; } }
+#failure { inset: 0; display: grid; align-content: center; text-align: center; background: #160e21ce; z-index: 4; }
+#failure strong { color: #ff8194; font-size: clamp(3rem, 12vw, 8rem); font-style: italic; letter-spacing: 0.08em; }
 #location { left: 34px; bottom: 56px; text-shadow: 0 2px 8px #000b; }
 h2 { margin: 6px 0 12px; font-size: 30px; font-style: italic; font-weight: 500; }
 .vitals { display: flex; gap: 4px; width: 210px; }
