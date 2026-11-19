@@ -209,7 +209,8 @@ export function createVehicleSystem(scene, input, city, player, onEject, buildMo
   function nearestHint() {
     if (noticeTimer > 0) return notice;
     if (player.vehicle) return 'WASD DRIVE · SPACE HANDBRAKE · F EXIT · N NIGHT';
-    const nearest = vehicles.find(vehicle => !vehicle.service && vehicle.position.distanceTo(player.position) < 4.2);
+    const nearest = vehicles.find(vehicle => !vehicle.service
+      && vehicle.position.distanceTo(player.position) < 4.2);
     return nearest ? `F ${nearest.occupied ? 'STEAL' : 'ENTER'} ${nearest.spec.name.toUpperCase()}` : null;
   }
   return { add, vehicles, update, nearestHint, enterOrExit };

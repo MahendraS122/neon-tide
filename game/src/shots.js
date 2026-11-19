@@ -132,7 +132,9 @@ export function setupShot(name, game, random) {
       district: 'Neon Row · Glasswater',
       mission: { chapter: 'CHAPTER 03 · AFTER DARK', name: 'No Safe Corners', stage: 40,
         objective: 'Take out the Lavado lookouts 2/5', next: 'Reach the lounge’s back entrance' },
-      dialogue: { speaker: 'MARA REYES · COMMS', line: 'The lounge is their front. You want the door in back.' },
+      dialogue: {
+        speaker: 'MARA REYES · COMMS', line: 'The lounge is their front. You want the door in back.'
+      },
       hint: 'WASD MOVE   /   LMB FIRE   /   R RELOAD   /   1–5 WEAPON SLOTS'
     });
   }

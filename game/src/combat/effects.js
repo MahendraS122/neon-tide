@@ -14,7 +14,9 @@ export function createCombatEffects(scene, random) {
   }
   shape.closePath();
   const star = new THREE.ShapeGeometry(shape);
-  const flashMaterial = new THREE.MeshBasicMaterial({ color: '#ffdc89', side: THREE.DoubleSide, toneMapped: false });
+  const flashMaterial = new THREE.MeshBasicMaterial({
+    color: '#ffdc89', side: THREE.DoubleSide, toneMapped: false
+  });
   const sparkGeometry = new THREE.SphereGeometry(0.035, 5, 4);
   const sparkMaterial = new THREE.MeshBasicMaterial({ color: '#ffb358', toneMapped: false });
   const streak = new THREE.CylinderGeometry(0.016, 0.008, 1, 5);

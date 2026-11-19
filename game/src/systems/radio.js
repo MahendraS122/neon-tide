@@ -1,7 +1,9 @@
 // Two original procedural car-radio loops and an off position.
 const stations = [
-  { station: 'SOLARA FM', song: 'Kite Arc — Tidal Static', bpm: 115, notes: [45, 45, 48, 43, 45, 52, 48, 43] },
-  { station: 'NIGHT SIGNAL', song: 'Dusk Relay — Blue Exit', bpm: 94, notes: [42, 45, 49, 40, 42, 52, 49, 45] },
+  { station: 'SOLARA FM', song: 'Kite Arc — Tidal Static', bpm: 115,
+    notes: [45, 45, 48, 43, 45, 52, 48, 43] },
+  { station: 'NIGHT SIGNAL', song: 'Dusk Relay — Blue Exit', bpm: 94,
+    notes: [42, 45, 49, 40, 42, 52, 49, 45] },
   { station: 'RADIO OFF', song: 'V tune' }
 ];
 

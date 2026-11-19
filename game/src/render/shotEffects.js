@@ -62,16 +62,20 @@ export function createShotEffects(game, random) {
     }
   }
   function flash(car, index) {
-    car.flashMaterials.forEach((material, i) => { material.emissiveIntensity = (i + index) % 2 ? 7 : 3.7; });
+    car.flashMaterials.forEach((material, i) => {
+      material.emissiveIntensity = (i + index) % 2 ? 7 : 3.7;
+    });
     for (const [side, color] of [[-1, '#ff1446'], [1, '#226cff']]) {
       const x = car.position.x + side * 0.78;
       const z = car.position.z;
       const light = new THREE.PointLight(color, 98, 11, 1.48);
       light.position.set(x, 1.64, z);
       scene.add(light);
-      const pool = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 8.5), new THREE.MeshBasicMaterial({
-        map: smoke, color, opacity: 0.59, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
-      }));
+      const material = new THREE.MeshBasicMaterial({
+        map: smoke, color, opacity: 0.59, transparent: true,
+        depthWrite: false, blending: THREE.AdditiveBlending
+      });
+      const pool = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 8.5), material);
       pool.position.set(x, 0.091, z + 0.4);
       pool.rotation.x = -Math.PI / 2;
       scene.add(pool);
@@ -88,7 +92,8 @@ export function createShotEffects(game, random) {
       const x = (0.54 + random() * 0.47) * side;
       const y = -0.34 - random() * 0.7;
       const stretch = 0.055 + random() * 0.24;
-      lines.push(x * width, y * height, -depth, x * width * (1 + stretch), y * height * (1 + stretch), -depth);
+      lines.push(x * width, y * height, -depth,
+        x * width * (1 + stretch), y * height * (1 + stretch), -depth);
     }
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(lines, 3));

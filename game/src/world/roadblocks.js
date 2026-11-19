@@ -5,7 +5,9 @@ export function createRoadblocks(scene, city) {
   const group = new THREE.Group();
   scene.add(group);
   const foot = new THREE.MeshStandardMaterial({ color: '#233542' });
-  const stripe = new THREE.MeshStandardMaterial({ color: '#ffd76c', emissive: '#dd670e', emissiveIntensity: 0.4 });
+  const stripe = new THREE.MeshStandardMaterial({
+    color: '#ffd76c', emissive: '#dd670e', emissiveIntensity: 0.4
+  });
   const beam = new THREE.BoxGeometry(0.5, 0.18, 0.15);
   const base = new THREE.BoxGeometry(0.14, 0.95, 0.58);
   for (const x of [-5, -3.2, 1.8, 3.6, 5.4]) {

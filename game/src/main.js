@@ -125,7 +125,9 @@ function responseUnits() {
   return [...police.units, ...(roadblocks.active ? [roadblocks.unit] : []),
     ...(helicopter.active ? [helicopter.unit] : [])];
 }
-const hud = createHud(player, vehicles, city, { wanted, vitals, weapons, gangs, radio, progress, units: responseUnits });
+const hud = createHud(player, vehicles, city, {
+  wanted, vitals, weapons, gangs, radio, progress, units: responseUnits
+});
 const actorBatch = createActorBatch(scene);
 const game = { scene, camera, renderer, city, sky, player, vehicles, traffic, pedestrians, hero,
   wanted, police, helicopter, roadblocks, weapons, vitals, effects, gangs, progress, radio, textures,

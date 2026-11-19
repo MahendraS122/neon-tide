@@ -38,7 +38,10 @@ function glowMaterial(tint, opacity) {
     uniforms: { tint: { value: new THREE.Color(tint) }, opacity: { value: opacity } },
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     vertexShader: `varying vec2 pos;
-      void main() { pos = uv * 2. - 1.; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+      void main() {
+        pos = uv * 2. - 1.;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
+      }`,
     fragmentShader: `uniform vec3 tint; uniform float opacity; varying vec2 pos;
       void main() {
         float falloff = pow(max(0., 1. - dot(pos, pos)), 2.1);
@@ -74,7 +77,9 @@ export function createNeonRow(scene, textures, random) {
     store.position.set(24 + side * 11.7, 0, z);
     store.rotation.y = -side * Math.PI / 2;
     group.add(store);
-    const box = (w, h, d, mat, x, y, offset) => mesh(store, new THREE.BoxGeometry(w, h, d), mat, x, y, offset);
+    const box = (w, h, d, mat, x, y, offset) => {
+      return mesh(store, new THREE.BoxGeometry(w, h, d), mat, x, y, offset);
+    };
     box(14, 5.4, 2.7, wall, 0, 2.7, -0.58);
     box(14.6, 0.3, 3.3, trim, 0, 5.32, -0.37);
     box(14.2, 0.19, 2.9, bronze, 0, 4.16, -0.32);
@@ -87,7 +92,8 @@ export function createNeonRow(scene, textures, random) {
       box(2.48, 0.07, 0.15, trim, i * 2.63, 1.28, 0.87);
       box(0.07, 2.37, 0.18, bronze, i * 2.63, 1.66, 0.87);
       for (let j = 0; j < 4; j += 1) {
-        const item = box(0.13 + random() * 0.14, 0.18 + random() * 0.31, 0.04, trim,
+        const item = box(0.13 + random() * 0.14, 0.18 + random() * 0.31,
+          0.04, trim,
           i * 2.63 - 0.76 + j * 0.48, 1.48, 0.89);
         item.rotation.z = (random() - 0.5) * 0.32;
       }

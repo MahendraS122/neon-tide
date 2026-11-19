@@ -32,7 +32,9 @@ function portrait(canvas) {
   ellipse(42, 35, 2, 3, '#ffe2a0');
 }
 
-export function createHud(player, vehicles, city, { wanted, vitals, weapons, gangs, radio, progress, units }) {
+export function createHud(player, vehicles, city, {
+  wanted, vitals, weapons, gangs, radio, progress, units
+}) {
   const el = id => document.getElementById(id);
   const map = createMinimap(el('minimap'), city, player);
   const weaponRows = weapons.slots.map((slot, index) => {

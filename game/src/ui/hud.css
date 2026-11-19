@@ -62,9 +62,12 @@ footer { font-size: 9px; letter-spacing: 0.65px; color: #bed0d4; }
 #weapons.stowed { opacity: 0.76; }
 #reticle { top: 50%; left: 50%; width: 10px; height: 10px; transform: translate(-50%, -50%); }
 #reticle { border: 1px solid #f5ffed; border-radius: 50%; box-shadow: 0 0 4px #071322; }
-#failure { inset: 0; display: grid; align-content: center; text-align: center; background: #160e21ce; z-index: 4; }
-#failure strong { color: #ff8194; font-size: clamp(3rem, 12vw, 8rem); font-style: italic; letter-spacing: 0.08em; }
-#location { left: 28px; bottom: 26px; width: 175px; text-shadow: 0 2px 5px #071322; }
+#failure { inset: 0; display: grid; align-content: center; text-align: center;
+  background: #160e21ce; z-index: 4; }
+#failure strong { color: #ff8194; font-size: clamp(3rem, 12vw, 8rem);
+  font-style: italic; letter-spacing: 0.08em; }
+#location { left: 28px; bottom: 26px; width: 175px;
+  text-shadow: 0 2px 5px #071322; }
 #minimap { display: block; width: 147px; height: 147px; border-radius: 50%; background: #132538; }
 #minimap { border: 1px solid #c0eee38c; outline: 3px solid #0d1d2c80; box-shadow: 0 6px 16px #08162575; }
 h2 { margin: 10px 0 6px; font-size: 17px; font-style: italic; }
@@ -75,7 +78,8 @@ h2 { margin: 10px 0 6px; font-size: 17px; font-style: italic; }
 #respect::before { background: #ffc581; }
 #speedometer { right: 28px; bottom: 26px; width: 168px; text-align: right; text-shadow: 0 3px 9px #081724; }
 .dial { display: flex; justify-content: flex-end; align-items: end; gap: 8px; margin-bottom: 4px; }
-.dial strong { font-size: 69px; font-weight: 700; font-style: italic; line-height: 0.86; letter-spacing: -5px; }
+.dial strong { font-size: 69px; font-weight: 700; font-style: italic;
+  line-height: 0.86; letter-spacing: -5px; }
 .dial b, .dial span { display: block; font-size: 9px; color: var(--aqua); }
 .dial b { font-size: 15px; border: 1px solid #a2ece380; text-align: center; margin-bottom: 4px; }
 h3 { font-size: 13px; margin: 9px 0 3px; letter-spacing: 1.6px; }
@@ -90,7 +94,8 @@ h3 { font-size: 13px; margin: 9px 0 3px; letter-spacing: 1.6px; }
 #eq.on i:nth-child(3n) { animation-delay: -0.15s; }
 @keyframes beat { to { transform: scaleY(0.24); } }
 #dialogue { left: 50%; bottom: 57px; transform: translateX(-50%); width: min(440px, 59vw); }
-#dialogue { display: flex; gap: 12px; align-items: center; border-left-color: var(--aqua); padding: 8px 12px; }
+#dialogue { display: flex; gap: 12px; align-items: center;
+  border-left-color: var(--aqua); padding: 8px 12px; }
 #portrait { width: 42px; height: 42px; border: 1px solid var(--edge); }
 #speaker { color: var(--aqua); }
 #callout { bottom: 137px; left: 50%; transform: translateX(-50%); color: var(--amber); }

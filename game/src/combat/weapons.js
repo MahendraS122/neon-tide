@@ -4,10 +4,14 @@ import { wallDistance } from '../entities/sight.js';
 
 export const LOADOUT = [
   { name: 'Fists', damage: 28, range: 2.1, cadence: 0.48 },
-  { name: 'Pistol', magazine: 12, reserve: 60, damage: 36, range: 70, cadence: 0.25, spread: 0.008, reload: 1.05 },
-  { name: 'SMG', magazine: 30, reserve: 120, damage: 19, range: 55, cadence: 0.095, spread: 0.026, reload: 1.35 },
-  { name: 'Shotgun', magazine: 6, reserve: 30, damage: 16, range: 38, cadence: 0.68, spread: 0.075, reload: 1.65 },
-  { name: 'Rifle', magazine: 24, reserve: 96, damage: 31, range: 100, cadence: 0.14, spread: 0.014, reload: 1.45 }
+  { name: 'Pistol', magazine: 12, reserve: 60, damage: 36, range: 70,
+    cadence: 0.25, spread: 0.008, reload: 1.05 },
+  { name: 'SMG', magazine: 30, reserve: 120, damage: 19, range: 55,
+    cadence: 0.095, spread: 0.026, reload: 1.35 },
+  { name: 'Shotgun', magazine: 6, reserve: 30, damage: 16, range: 38,
+    cadence: 0.68, spread: 0.075, reload: 1.65 },
+  { name: 'Rifle', magazine: 24, reserve: 96, damage: 31, range: 100,
+    cadence: 0.14, spread: 0.014, reload: 1.45 }
 ];
 
 export function createWeapons(player, input, city, effects, audio, random, callbacks) {
@@ -110,7 +114,11 @@ export function createWeapons(player, input, city, effects, audio, random, callb
     else attack(slot);
   }
   gun.visible = false;
-  return { slots, select, update, gun, get selected() { return selected; }, get reloading() { return reloadTime > 0; } };
+  return {
+    slots, select, update, gun,
+    get selected() { return selected; },
+    get reloading() { return reloadTime > 0; }
+  };
 }
 
 export function createVitals() {

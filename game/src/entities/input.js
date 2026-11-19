@@ -6,7 +6,9 @@ export function createInput(canvas) {
   let mouseY = 0;
   let dragging = false;
   addEventListener('keydown', event => {
-    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.code)) event.preventDefault();
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.code)) {
+      event.preventDefault();
+    }
     if (!event.repeat) pressed.add(event.code);
     held.add(event.code);
   });
