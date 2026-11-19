@@ -1,5 +1,7 @@
 // Draw the street atlas directly from Solara's world coordinates.
 
+const MAP_MARGIN = 24;
+
 export function drawAtlas(canvas, city, player, sites, route) {
   const context = canvas.getContext('2d');
   const { clientWidth: width, clientHeight: height } = canvas;
@@ -14,8 +16,8 @@ export function drawAtlas(canvas, city, player, sites, route) {
   context.fillStyle = sea;
   context.fillRect(0, 0, width, height);
   const bounds = city.bounds;
-  const scale = (height - 24) / 515;
-  const wide = (width - 24) / 520;
+  const scale = (height - MAP_MARGIN) / 515;
+  const wide = (width - MAP_MARGIN) / 520;
   const x = value => width / 2 + (value + 13) * wide;
   const y = value => height / 2 + (value - 13) * scale;
 

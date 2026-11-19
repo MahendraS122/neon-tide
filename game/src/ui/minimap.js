@@ -1,4 +1,4 @@
-// A heading-up local atlas draws roads, building footprints and tracked entities.
+// Heading-up local atlas for roads, building footprints, routes, and tracked entities.
 export function createMinimap(canvas, city, player) {
   const ctx = canvas.getContext('2d');
   const size = canvas.width;

@@ -1,4 +1,4 @@
-// Shared activity coordinates keep the live world and its atlas in agreement.
+// Shared activity coordinates keep world placement and atlas markers in sync.
 export const safehouse = { name: 'Ocean Drive Safehouse', icon: '⌂', color: '#6bf4cf', x: 109, z: 15 };
 export const garageSite = { name: 'Marina Motor Works', icon: 'G', color: '#ffbd78', x: 104, z: 156 };
 export const raceSite = { name: 'Glasswater Sprint', icon: '⚑', color: '#ff89bd', x: 24, z: -112 };

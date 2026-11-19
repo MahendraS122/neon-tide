@@ -1,4 +1,4 @@
-// Sculpted palms, boulevard lighting and street furniture are generated from shared geometry.
+// Sculpted palms, boulevard lights and street furniture share reusable geometry.
 import * as THREE from '../../vendor/three.module.min.js';
 import { box, cylinder, beam, surface } from './geometry.js';
 

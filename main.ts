@@ -1,4 +1,4 @@
-// Hand in NEON TIDE by validating, copying its files and writing the official dossier.
+// Validate NEON TIDE, copy its deliverables and write the official dossier on hand-in.
 import { closeSync, cpSync, lstatSync, mkdirSync, openSync, readdirSync, readSync,
   statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -46,6 +46,7 @@ function collectScreenshots() {
   }
   return files;
 }
+
 function copyTree(source, destination) {
   cpSync(source, destination, { recursive: true, dereference: false, errorOnExist: false });
 }

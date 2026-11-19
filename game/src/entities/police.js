@@ -1,16 +1,16 @@
-// SPD cruisers navigate the grid, close in for rams and dismount to pursue on foot.
+// In-game SPD units search the street grid and can switch from driving to foot pursuit.
 import * as THREE from '../../vendor/three.module.min.js';
 import { moveVehicleWithCollisions, moveWithCollisions, shortestAngle } from './collision.js';
 import { canSee } from './sight.js';
 
-const nearest = (lines, value) => lines.reduce((a, b) => Math.abs(a - value) < Math.abs(b - value) ? a : b);
+const nearestRoadLine = (lines, value) => lines.reduce((a, b) => Math.abs(a - value) < Math.abs(b - value) ? a : b);
 
 export function createPolice(scene, city, vehicles, player, makePerson, fire) {
   const units = [];
   const lastSeen = player.position.clone();
   const eye = new THREE.Vector3();
   const target = new THREE.Vector3();
-  let dispatch = 0;
+  let dispatchTimer = 0;
   let serial = 0;
 
   function spawn(x, z, yaw) {
@@ -57,10 +57,10 @@ export function createPolice(scene, city, vehicles, player, makePerson, fire) {
     let dx = goal.x - p.x;
     let dz = goal.z - p.z;
     if (!direct && !canSee(p.clone().setY(1), goal.clone().setY(1), city.colliders, 110)) {
-      const x = nearest(city.roadX, p.x);
-      const z = nearest(city.roadZ, p.z);
-      const endX = nearest(city.roadX, goal.x);
-      const endZ = nearest(city.roadZ, goal.z);
+      const x = nearestRoadLine(city.roadX, p.x);
+      const z = nearestRoadLine(city.roadZ, p.z);
+      const endX = nearestRoadLine(city.roadX, goal.x);
+      const endZ = nearestRoadLine(city.roadZ, goal.z);
       if (Math.abs(p.x - x) < Math.abs(p.z - z) && Math.abs(p.z - z) > 4 && endX !== x) {
         dx = x - p.x;
         dz = z - p.z;
@@ -92,17 +92,17 @@ export function createPolice(scene, city, vehicles, player, makePerson, fire) {
   function update(dt, stars, aerialSight) {
     if (!stars) {
       while (units.length) retire(units[0]);
-      dispatch = 0;
+      dispatchTimer = 0;
       return { seen: false, detained: false };
     }
     target.copy(player.position).y += 1.05;
     let seen = aerialSight;
     let detained = false;
     if (seen) lastSeen.copy(player.position);
-    dispatch -= dt;
-    if (dispatch <= 0 && units.length < Math.min(5, stars + 1)) {
+    dispatchTimer -= dt;
+    if (dispatchTimer <= 0 && units.length < Math.min(5, stars + 1)) {
       dispatchCar();
-      dispatch = 3.8;
+      dispatchTimer = 3.8;
     }
     for (const unit of [...units]) {
       const distance = unit.position.distanceTo(player.position);

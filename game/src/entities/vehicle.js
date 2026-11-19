@@ -1,7 +1,9 @@
-// Arcade acceleration, lateral grip, handbrake slip, collision damage and vehicle theft.
+// Arcade driving, vehicle entry and exit, collision damage, and skid-mark rendering.
 import * as THREE from '../../vendor/three.module.min.js';
 
 import { moveWithCollisions, moveVehicleWithCollisions, overlaps } from './collision.js';
+
+const SKID_MARK_CAPACITY = 360;
 
 export function createVehicle(scene, model, type, x, z, yaw = 0, occupied = false) {
   model.root.position.set(x, 0.12, z);
@@ -33,17 +35,17 @@ export function createVehicleSystem(scene, input, city, player, onEject, buildMo
   const vehicles = [];
   const skidMaterial = new THREE.MeshBasicMaterial({ color: '#182126', transparent: true, opacity: 0.44 });
   const skidGeometry = new THREE.PlaneGeometry(0.2, 1.2);
-  const skidMarks = new THREE.InstancedMesh(skidGeometry, skidMaterial, 360);
+  const skidMarks = new THREE.InstancedMesh(skidGeometry, skidMaterial, SKID_MARK_CAPACITY);
   skidMarks.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   skidMarks.frustumCulled = false;
   scene.add(skidMarks);
-  const dummy = new THREE.Object3D();
-  dummy.scale.setScalar(0);
-  for (let i = 0; i < 360; i += 1) {
-    dummy.updateMatrix();
-    skidMarks.setMatrixAt(i, dummy.matrix);
+  const skidTransform = new THREE.Object3D();
+  skidTransform.scale.setScalar(0);
+  for (let i = 0; i < SKID_MARK_CAPACITY; i += 1) {
+    skidTransform.updateMatrix();
+    skidMarks.setMatrixAt(i, skidTransform.matrix);
   }
-  dummy.scale.setScalar(1);
+  skidTransform.scale.setScalar(1);
   let skidIndex = 0;
   let skidTime = 0;
   let notice = '';
@@ -174,13 +176,13 @@ export function createVehicleSystem(scene, input, city, player, onEject, buildMo
     if (slipping && Math.abs(vehicle.speed) > 7 && skidTime > 0.045) {
       skidTime = 0;
       for (const side of [-1, 1]) {
-        dummy.position.copy(vehicle.position);
-        dummy.position.x += Math.cos(vehicle.yaw) * side * 0.8 - Math.sin(vehicle.yaw) * 1.3;
-        dummy.position.z -= Math.sin(vehicle.yaw) * side * 0.8 + Math.cos(vehicle.yaw) * 1.3;
-        dummy.position.y = 0.075;
-        dummy.rotation.set(-Math.PI / 2, 0, -vehicle.yaw);
-        dummy.updateMatrix();
-        skidMarks.setMatrixAt(skidIndex++ % 360, dummy.matrix);
+        skidTransform.position.copy(vehicle.position);
+        skidTransform.position.x += Math.cos(vehicle.yaw) * side * 0.8 - Math.sin(vehicle.yaw) * 1.3;
+        skidTransform.position.z -= Math.sin(vehicle.yaw) * side * 0.8 + Math.cos(vehicle.yaw) * 1.3;
+        skidTransform.position.y = 0.075;
+        skidTransform.rotation.set(-Math.PI / 2, 0, -vehicle.yaw);
+        skidTransform.updateMatrix();
+        skidMarks.setMatrixAt(skidIndex++ % SKID_MARK_CAPACITY, skidTransform.matrix);
       }
       skidMarks.instanceMatrix.needsUpdate = true;
     }

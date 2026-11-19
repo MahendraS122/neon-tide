@@ -1,5 +1,7 @@
-// Moving actor parts remain articulated while shared meshes render as GPU instances.
+// Batch articulated actor parts by geometry and material while preserving world transforms.
 import * as THREE from '../../vendor/three.module.min.js';
+
+const DRAW_RADIUS = 105;
 
 export function createActorBatch(scene) {
   const groups = new Map();
@@ -42,7 +44,7 @@ export function createActorBatch(scene) {
           parent = parent.parent;
         }
         const elements = mesh.matrixWorld.elements;
-        const near = (elements[12] - focus.x) ** 2 + (elements[14] - focus.z) ** 2 < 105 ** 2;
+        const near = (elements[12] - focus.x) ** 2 + (elements[14] - focus.z) ** 2 < DRAW_RADIUS ** 2;
         if (visible && near) group.batch.setMatrixAt(count++, mesh.matrixWorld);
       });
       group.batch.count = count;

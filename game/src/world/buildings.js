@@ -1,4 +1,4 @@
-// Art-deco hotels, stepped towers and residential storefronts give districts their silhouettes.
+// Art-deco hotels, stepped towers and storefronts shape Solara's district skylines.
 import * as THREE from '../../vendor/three.module.min.js';
 import { box, cylinder, surface } from './geometry.js';
 import { signTexture } from '../render/textures.js';

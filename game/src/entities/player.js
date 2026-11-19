@@ -1,9 +1,11 @@
-// Dex walks, sprints and jumps with a collision-aware shoulder camera and mouse look.
+// Dex's on-foot movement and collision-aware camera, shared with driving mode.
 import * as THREE from '../../vendor/three.module.min.js';
 import { moveWithCollisions, cameraObstruction, shortestAngle } from './collision.js';
 
+const FOOT_HEIGHT = 0.22;
+
 export function createPlayer(scene, character, input, city) {
-  const position = new THREE.Vector3(109, 0.22, 15);
+  const position = new THREE.Vector3(109, FOOT_HEIGHT, 15);
   scene.add(character.root);
   character.root.position.copy(position);
   let yaw = 0;
@@ -46,8 +48,8 @@ export function createPlayer(scene, character, input, city) {
     }
     verticalSpeed -= 19 * dt;
     position.y += verticalSpeed * dt;
-    if (position.y <= 0.22) {
-      position.y = 0.22;
+    if (position.y <= FOOT_HEIGHT) {
+      position.y = FOOT_HEIGHT;
       verticalSpeed = 0;
       grounded = true;
     }
@@ -68,10 +70,10 @@ export function createPlayer(scene, character, input, city) {
       Math.cos(yaw) * distance
     ));
     if (!vehicle) desired.add(new THREE.Vector3(Math.cos(yaw) * 0.6, 0, -Math.sin(yaw) * 0.6));
-    const safe = cameraObstruction(target, desired, city.colliders);
-    const blocked = safe.distanceToSquared(desired) > 0.01;
+    const safePosition = cameraObstruction(target, desired, city.colliders);
+    const blocked = safePosition.distanceToSquared(desired) > 0.01;
     const blend = snap ? 1 : 1 - Math.exp(-dt * (blocked ? 24 : vehicle ? 9 : 14));
-    camera.position.lerp(safe, blend);
+    camera.position.lerp(safePosition, blend);
     if (vehicle) {
       const lead = THREE.MathUtils.clamp(vehicle.speed * 0.057, -1, 2.8);
       target.x += Math.sin(vehicle.yaw) * lead;

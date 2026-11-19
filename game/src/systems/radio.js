@@ -1,4 +1,4 @@
-// Three synthesized stations and a silent position share a small WebAudio sequencer.
+// Three synthesized radio stations and silence share a lightweight WebAudio sequencer.
 const stations = [
   { station: 'SOLARA FM', song: 'Kite Arc — Tidal Static', bpm: 115,
     notes: [45, 45, 48, 43, 45, 52, 48, 43] },
