@@ -68,7 +68,7 @@ export function setupShot(name, game, random) {
     player.vehicle = hero;
     vitals.health = 91;
     vitals.armour = 58;
-    const cruisers = [[100.4, 14.8, 2.94], [107.9, 13.1, 3.34], [97.5, 6.4, 3.08]];
+    const cruisers = [[100.8, 20.2, 2.94], [107.3, 20.2, 3.34], [96.8, 19.1, 3.08]];
     cruisers.forEach(([x, z, yaw], index) => {
       const unit = police.spawn(x, z, yaw);
       unit.status = index === 0 ? 'RAMMING' : 'PURSUIT';
@@ -77,15 +77,15 @@ export function setupShot(name, game, random) {
     wanted.report('Grand theft', 4);
     wanted.update(0, { seen: true });
     helicopter.setActive(true);
-    helicopter.pose(new THREE.Vector3(102, 10.2, -8), new THREE.Vector3(104, 0, 9.5), 1.05, 4.2);
+    helicopter.pose(new THREE.Vector3(102, 17.6, -9), new THREE.Vector3(104, 0, 9.5), 0.85, 4.2);
     roadblocks.deploy(100, -34, false);
     const taxi = vehicles.add('taxi', '#eebb47', 95.0, -16, 0);
     taxi.driverHead.visible = true;
     vehicles.add('suv', '#d6ddd6', 94, -46, 0);
     vehicles.add('muscle', '#e29473', 104, -58, Math.PI);
-    camera.fov = 53;
-    camera.position.set(103.8, 3.75, 20.65);
-    camera.lookAt(103.5, 3.3, 2);
+    camera.fov = 48;
+    camera.position.set(104.5, 4.2, 21.3);
+    camera.lookAt(102.5, 3.7, 8);
     camera.updateProjectionMatrix();
     shotFX.drift(hero);
     shotFX.speedLines(camera);
