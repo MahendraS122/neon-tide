@@ -94,7 +94,20 @@ export function createTextures() {
     }
   });
   environment.mapping = THREE.EquirectangularReflectionMapping;
-  return { asphalt, sidewalk, sand, facades, environment };
+  const windows = canvasTexture(256, 512, (ctx, w, h) => {
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, w, h);
+    for (let y = 24; y < h; y += 64) {
+      for (let x = 17; x < w; x += 56) {
+        if (random() > 0.58) continue;
+        ctx.fillStyle = random() > 0.4 ? '#ffd49a' : '#82bbce';
+        ctx.fillRect(x, y, 31, 37);
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(x, y + 19, 31, 2);
+      }
+    }
+  });
+  return { asphalt, sidewalk, sand, facades, windows, environment };
 }
 
 export function signTexture(text, color = '#7cffe0', background = '#142a35') {

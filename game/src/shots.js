@@ -4,7 +4,11 @@ import { createNeonRow } from './world/neonRow.js';
 import { createShotEffects } from './render/shotEffects.js';
 
 export function setupShot(name, game, random) {
-  if (name !== 'chase' && name !== 'onfoot' && name !== 'start') return null;
+  if (!['chase', 'onfoot', 'start', 'title', 'map'].includes(name)) return null;
+  if (name === 'map') {
+    game.player.position.set(-52, 0.22, 83);
+    return { static: true, hideReticle: true };
+  }
   const { scene, camera, player, vehicles, traffic, pedestrians, gangs, hero, weapons, vitals,
     wanted, police, helicopter, roadblocks, sky, progress, effects, textures } = game;
   const shotFX = createShotEffects(game, random);
@@ -17,6 +21,14 @@ export function setupShot(name, game, random) {
   progress.cash = name === 'chase' ? 8450 : 5825;
   progress.respect = name === 'chase' ? 58 : 34;
   const hud = { static: true, hideReticle: true };
+
+  if (name === 'title') {
+    camera.fov = 58;
+    camera.position.set(118, 8.5, 37);
+    camera.lookAt(102, 2.3, 4);
+    sky.setNight(false);
+    return hud;
+  }
 
   if (name === 'start') {
     sky.setNight(true);
@@ -59,7 +71,7 @@ export function setupShot(name, game, random) {
     player.vehicle = hero;
     vitals.health = 91;
     vitals.armour = 58;
-    const cruisers = [[101, 10, 2.35], [101, 13, 2.66], [101, 16, 2.8]];
+    const cruisers = [[104, 20, Math.PI], [94, 24, Math.PI], [114, 27, Math.PI]];
     cruisers.forEach(([x, z, yaw], index) => {
       const unit = police.spawn(x, z, yaw);
       unit.status = index === 0 ? 'RAMMING' : 'PURSUIT';
@@ -68,14 +80,14 @@ export function setupShot(name, game, random) {
     wanted.report('Grand theft', 4);
     wanted.update(0, { seen: true });
     helicopter.setActive(true);
-    helicopter.pose(new THREE.Vector3(96, 10.8, 2.2), new THREE.Vector3(102, 0, 11), 1.21, 4.2);
+    helicopter.pose(new THREE.Vector3(104, 16, -4), new THREE.Vector3(102, 0, 11), 1.21, 4.2);
     roadblocks.deploy(100, -34, false);
     const taxi = vehicles.add('taxi', '#eebb47', 95.0, -16, 0);
     taxi.driverHead.visible = true;
     vehicles.add('suv', '#d6ddd6', 94, -46, 0);
     vehicles.add('muscle', '#e29473', 104, -58, Math.PI);
-    camera.position.set(110, 3, 13);
-    camera.lookAt(102, 1.6, 13);
+    camera.position.set(110, 8, 29);
+    camera.lookAt(102, 7, 1);
     shotFX.drift(hero);
     shotFX.speedLines(camera);
     progress.callout = 'DRIFT x3 +$60';

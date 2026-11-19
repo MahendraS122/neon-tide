@@ -3,12 +3,16 @@ import { createWanted } from './systems/wanted.js';
 import { createPolice } from './entities/police.js';
 import { createHelicopter } from './entities/helicopter.js';
 import { createRoadblocks } from './world/roadblocks.js';
+import { createMissions } from './missions/missions.js';
 import { createWeapons, createVitals } from './combat/weapons.js';
+import { createDialogue } from './ui/dialogue.js';
+import { createTitleScreen } from './ui/titleScreen.js';
+import { createCityMap } from './ui/cityMap.js';
+import { createRadio } from './systems/radio.js';
+import { createHud } from './ui/hud.js';
 import { createCombatEffects } from './combat/effects.js';
 import { createCombatAudio } from './combat/audio.js';
 import { createGangs } from './entities/gangs.js';
-import { createRadio } from './systems/radio.js';
-import { createHud } from './ui/hud.js';
 import { createPlayer } from './entities/player.js';
 import { createVehicleSystem } from './entities/vehicle.js';
 import { createTraffic } from './entities/traffic.js';
@@ -55,6 +59,7 @@ function crime(reason, amount) {
 }
 const vehicles = createVehicleSystem(scene, input, city, player, (position, yaw) => {
   pedestrians.eject(position, yaw);
+  progress.stolen += 1;
   crime('Grand theft', 1);
 }, createVehicleModel, reward);
 const hero = vehicles.add('sports', '#20d6bf', 104.6, 10, Math.PI);
@@ -77,7 +82,7 @@ const police = createPolice(scene, city, vehicles, player, createCharacter, enem
 const gangs = createGangs(scene, city, player, createCharacter, enemyFire, seededRandom(380));
 for (const [x, z] of [[29, -31], [18, -22], [29, -18], [21, -12], [27, -8]]) gangs.add(x, z);
 const personZones = [[1.03, 0.39], [1.67, 0.22, true]];
-const progress = { cash: 2450, respect: 12, callout: '', flash: 0 };
+const progress = { cash: 2450, respect: 12, stolen: 0, callout: '', flash: 0 };
 function reward(label, value) {
   progress.cash += value;
   progress.respect = Math.min(100, progress.respect + 2);
@@ -134,6 +139,27 @@ const game = { scene, camera, renderer, city, sky, player, vehicles, traffic, pe
   get time() { return time; }, get frames() { return frames; } };
 const shotName = new URLSearchParams(location.search).get('shot');
 const shot = setupShot(shotName, game, seededRandom(shotName === 'chase' ? 209 : 749));
+const missions = createMissions(game, input);
+game.missions = missions;
+const cityMap = createCityMap(game);
+if (shotName === 'map') cityMap.open(true);
+if (shot) missions.destination.set(100, 0.2, -34);
+const dialogue = createDialogue();
+missions.setDialogue(lines => dialogue.enqueue(lines));
+game.dialogue = dialogue;
+function beginStory() {
+  document.body.classList.remove('title-active');
+  input.held.clear();
+  player.position.set(109, 0.22, 15);
+  player.character.root.position.copy(player.position);
+  player.updateCamera(camera, 1 / 60, true);
+  missions.start();
+}
+const title = !shotName || shotName === 'title' ? createTitleScreen({
+  player, camera, hero, shot: shotName === 'title', onNewGame: beginStory, onContinue: beginStory
+}) : null;
+game.title = title;
+document.body.classList.toggle('title-active', Boolean(title));
 actorBatch.add(character.root);
 vehicles.vehicles.forEach(vehicle => actorBatch.add(vehicle.root));
 const registeredPeople = new Set();
@@ -144,10 +170,22 @@ let frames = 0;
 if (!shot) player.updateCamera(camera, 1 / 60, true);
 
 function simulate(dt) {
+  if (title?.active) return;
+  if (input.take('KeyM')) {
+    if (cityMap.active) cityMap.close();
+    else cityMap.open();
+  }
+  if (cityMap.active) {
+    if (input.take('Escape')) cityMap.close();
+    return;
+  }
+  dialogue.update(dt);
+  if (dialogue.active) return;
   time += dt;
   effects.update(dt);
   progress.flash = Math.max(0, progress.flash - dt);
   if (wanted.ending) {
+    if (missions.active) missions.fail(wanted.ending);
     wanted.update(dt);
     return;
   }
@@ -165,10 +203,12 @@ function simulate(dt) {
   roadblocks.update(wanted.stars, player, time);
   const response = police.update(dt, wanted.stars, aerialSight);
   wanted.update(dt, { ...response, health: vitals.health });
+  missions.update(dt);
 }
 
 renderer.setAnimationLoop(() => {
   if (shot) {
+    title?.update(0);
     city.update(0, 5.4, sky.night);
     sky.update(player.position);
     actorBatch.update(player.position);
@@ -192,11 +232,12 @@ renderer.setAnimationLoop(() => {
     actorBatch.add(person.character.root);
     registeredPeople.add(person);
   }
-  player.updateCamera(camera, dt);
+  if (title?.active) title.update(dt);
+  else player.updateCamera(camera, dt);
   city.update(dt, time, sky.night);
   sky.update(player.position);
   actorBatch.update(player.position);
-  hud.update(dt, sky.night);
+  hud.update(dt, sky.night, { mission: missions.presentation(), route: missions.blips.map(blip => blip.position) });
   renderer.render(scene, camera);
   frames += 1;
   if (frames >= 3) window.__shotReady = true;

@@ -145,7 +145,11 @@ export function createCity(scene, textures) {
     });
     if (night === isNight) return;
     night = isNight;
-    windowMaterials.forEach(material => { material.emissiveIntensity = night ? 0.65 : 0.08; });
+    windowMaterials.forEach(({ material, dayColor }) => {
+      material.color.set(night ? '#626075' : dayColor);
+      material.emissive.set(night ? '#ffac64' : '#e6be75');
+      material.emissiveIntensity = night ? 0.82 : 0.08;
+    });
     lampLights.forEach(light => { light.intensity = night ? 150 : 0; });
   }
   return { root, colliders, signals, update, districtAt, bounds: CITY_BOUNDS, roadX: ROAD_X, roadZ: ROAD_Z };

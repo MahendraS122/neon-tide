@@ -3,9 +3,9 @@ import * as THREE from '../../vendor/three.module.min.js';
 
 export function createSky(scene) {
   const uniforms = {
-    topColor: { value: new THREE.Color('#548cb1') },
-    horizonColor: { value: new THREE.Color('#ffcba0') },
-    sunDirection: { value: new THREE.Vector3(-0.91, 0.18, -0.26).normalize() },
+    topColor: { value: new THREE.Color('#655774') },
+    horizonColor: { value: new THREE.Color('#f39a7f') },
+    sunDirection: { value: new THREE.Vector3(-0.22, 0.055, -0.974).normalize() },
     night: { value: 0 }
   };
   const material = new THREE.ShaderMaterial({
@@ -42,9 +42,16 @@ export function createSky(scene) {
   });
   const dome = new THREE.Mesh(new THREE.SphereGeometry(900, 32, 20), material);
   scene.add(dome);
-  const ambient = new THREE.HemisphereLight('#c9edff', '#b37a56', 2.1);
+  const sunDisc = new THREE.Mesh(new THREE.SphereGeometry(12, 24, 16), new THREE.MeshBasicMaterial({
+    color: '#ffbd87', toneMapped: false
+  }));
+  const sunGlow = new THREE.Mesh(new THREE.SphereGeometry(19, 24, 16), new THREE.MeshBasicMaterial({
+    color: '#ff8d72', transparent: true, opacity: 0.19, toneMapped: false
+  }));
+  scene.add(sunDisc, sunGlow);
+  const ambient = new THREE.HemisphereLight('#c9d7e8', '#a06452', 1.35);
   scene.add(ambient);
-  const sun = new THREE.DirectionalLight('#ffd4a0', 3.5);
+  const sun = new THREE.DirectionalLight('#ffbc8d', 2.7);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1024, 1024);
   Object.assign(sun.shadow.camera, { left: -70, right: 70, top: 70, bottom: -70, near: 1, far: 300 });
@@ -55,15 +62,19 @@ export function createSky(scene) {
   function setNight(value) {
     isNight = value;
     uniforms.night.value = value ? 1 : 0;
-    uniforms.topColor.value.set(value ? '#070d27' : '#548cb1');
-    uniforms.horizonColor.value.set(value ? '#242449' : '#ffcba0');
-    ambient.intensity = value ? 0.55 : 2.1;
-    sun.intensity = value ? 0.6 : 3.5;
-    sun.color.set(value ? '#829acb' : '#ffc08c');
+    uniforms.topColor.value.set(value ? '#070d27' : '#655774');
+    uniforms.horizonColor.value.set(value ? '#242449' : '#f39a7f');
+    ambient.intensity = value ? 0.8 : 1.35;
+    sun.intensity = value ? 0.65 : 2.7;
+    sun.color.set(value ? '#829acb' : '#ffbc8d');
     scene.fog = new THREE.FogExp2(value ? '#172039' : '#e6bca0', value ? 0.0037 : 0.0022);
   }
   function update(position) {
     dome.position.copy(position);
+    const discPosition = position.clone().addScaledVector(uniforms.sunDirection.value, 560);
+    sunDisc.position.copy(discPosition);
+    sunGlow.position.copy(discPosition);
+    sunDisc.visible = sunGlow.visible = !isNight;
     sun.target.position.copy(position);
     sun.position.copy(position).addScaledVector(uniforms.sunDirection.value, 180);
   }

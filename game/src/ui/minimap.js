@@ -14,7 +14,7 @@ export function createMinimap(canvas, city, player) {
     ctx.strokeStyle = '#091826';
     ctx.stroke();
   }
-  function draw(units, members, cars) {
+  function draw(units, members, cars, route = []) {
     const p = player.position;
     ctx.clearRect(0, 0, size, size);
     ctx.save();
@@ -38,6 +38,20 @@ export function createMinimap(canvas, city, player) {
     for (const block of city.colliders) {
       if (block.height < 2) continue;
       ctx.fillRect(block.minX, block.minZ, block.maxX - block.minX, block.maxZ - block.minZ);
+    }
+    if (route.length) {
+      ctx.beginPath();
+      ctx.moveTo(player.position.x, player.position.z);
+      route.forEach(point => ctx.lineTo(point.x, point.z));
+      ctx.strokeStyle = '#72ffe4';
+      ctx.lineWidth = 2.8;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.shadowColor = '#54ffe2';
+      ctx.shadowBlur = 8;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      route.forEach((point, index) => blip(point, index ? '#f7d17c' : '#80ffe5', index ? 3 : 4.6));
     }
     for (const car of cars) {
       if (car.root.visible && car !== player.vehicle && !car.service) blip(car.position, '#cce2dc', 2.35);

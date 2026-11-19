@@ -1,0 +1,54 @@
+/* The full-screen navigation atlas uses the same mint and warm amber as Solara's HUD. */
+#city-map {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 26px 22px;
+  background: radial-gradient(ellipse at 65% 10%, #173742, #09141f 78%);
+  color: #f3eee0;
+  font: 13px system-ui, sans-serif;
+}
+#city-map[hidden] { display: none; }
+#city-map header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+#city-map header small { letter-spacing: .24em; color: #72eed5; }
+#city-map h1 { margin: 0; font-size: clamp(25px, 3vw, 45px); line-height: 1.05; letter-spacing: -.05em; }
+#city-map button { color: #bff8ea; background: #18333f; border: 1px solid #4d776f; padding: 10px 16px; }
+.atlas-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: 278px minmax(0, 1fr) 186px; gap: 12px; }
+.atlas-grid > canvas { width: 100%; height: 100%; min-height: 0; border: 1px solid #486574; border-radius: 5px; }
+.atlas-grid aside { min-height: 0; overflow: auto; padding: 12px; background: #101f2bdd; border: 1px solid #304b58; }
+.atlas-grid h2 { margin: 0 0 9px; font-size: 13px; letter-spacing: .18em; color: #7decd4; }
+.atlas-grid h2 span { float: right; color: #faac79; }
+.atlas-grid ul, .atlas-grid ol { list-style: none; margin: 0; padding: 0; }
+.atlas-grid ol li {
+  display: grid;
+  grid-template-columns: 35px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  margin-bottom: 4px;
+  background: #1c2d3b;
+}
+.atlas-grid ol canvas { width: 35px; height: 35px; border-radius: 3px; }
+.atlas-grid ol small { display: block; color: #a6b5bc; font-size: 9px; letter-spacing: .07em; }
+.atlas-grid ol em { color: #a8bbb9; font-size: 9px; font-style: normal; }
+.atlas-grid ol li[data-state="In progress"] { background: #234841; box-shadow: inset 2px 0 #76ebd2; }
+.atlas-grid ol li[data-state="Complete"] em { color: #79dabe; }
+.atlas-grid ol li[data-state="Locked"] canvas { opacity: .45; }
+.atlas-job { border-top: 1px solid #354a55; padding-top: 10px; margin-top: 10px; }
+.atlas-job p { margin: 4px 0 8px; color: #becbd1; }
+.atlas-meter { height: 5px; background: #394a56; }
+.atlas-meter i { display: block; height: 100%; background: #76ebd2; }
+.atlas-grid ul { margin-bottom: 21px; }
+.atlas-grid ul li { display: flex; gap: 8px; align-items: center; padding: 4px 0; }
+.atlas-grid ul b { text-align: center; width: 22px; background: #223747; border-radius: 4px; }
+.atlas-grid dl { display: grid; grid-template-columns: auto auto; gap: 9px; }
+.atlas-grid dd { margin: 0; text-align: right; color: #fac399; }
+@media (max-width: 960px) {
+  .atlas-grid { grid-template-columns: 205px minmax(0, 1fr) 132px; gap: 7px; }
+  #city-map { padding: 12px; }
+  .atlas-grid ol li { grid-template-columns: 26px 1fr; }
+  .atlas-grid ol canvas { width: 26px; height: 26px; }
+  .atlas-grid ol em { grid-column: 2; }
+}

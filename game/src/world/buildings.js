@@ -25,13 +25,15 @@ export function createBuilding(parent, spec, textures, windowMaterials) {
   const plain = surface(style === 'tower' ? '#72979c' : color);
   const facadeMap = textures.facades[index % textures.facades.length].clone();
   facadeMap.repeat.set(Math.max(1, w / 12), Math.max(0.5, h / 22));
+  const windowMap = textures.windows.clone();
+  windowMap.repeat.copy(facadeMap.repeat);
   const facade = new THREE.MeshStandardMaterial({
     map: facadeMap, color: style === 'tower' ? '#729fb2' : '#ffffff',
     roughness: style === 'tower' ? 0.22 : 0.78,
     metalness: style === 'tower' ? 0.55 : 0.04,
-    emissiveMap: facadeMap, emissive: '#e6be75', emissiveIntensity: 0.08
+    emissiveMap: windowMap, emissive: '#e6be75', emissiveIntensity: 0.08
   });
-  windowMaterials.push(facade);
+  windowMaterials.push({ material: facade, dayColor: style === 'tower' ? '#729fb2' : '#ffffff' });
   box(group, 0, h / 2 + 0.22, 0, w, h, d, facade);
   box(group, 0, h + 0.42, 0, w + 0.5, 0.42, d + 0.5, '#f7e7d0');
   box(group, 0, 0.4, 0, w + 0.4, 0.7, d + 0.4, '#e4d8c4');

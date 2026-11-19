@@ -1,0 +1,105 @@
+/* Mission banners and the story menu sit above the live procedural city. */
+#mission-result {
+  position: fixed;
+  z-index: 8;
+  top: 31%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 16px 28px;
+  border: 1px solid #92ffe1;
+  border-left: 5px solid #92ffe1;
+  background: linear-gradient(100deg, #092c32f2, #15192cf2);
+  color: #fff8e8;
+  font-size: clamp(17px, 2.4vw, 30px);
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-align: center;
+  text-shadow: 0 0 14px #61ffe2a0;
+  box-shadow: 0 10px 40px #07121a99;
+}
+#mission-result.failed {
+  border-color: #ff6c80;
+  color: #ffdce0;
+  text-shadow: 0 0 14px #ff566a99;
+}
+#title-screen {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  color: #fff7eb;
+  font-family: Arial, Helvetica, sans-serif;
+}
+#title-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+#title-menu {
+  position: absolute;
+  left: 48px;
+  top: 47%;
+  display: grid;
+  width: 255px;
+  gap: 8px;
+}
+#title-menu button, #title-controls button {
+  border: 1px solid #6ff4d277;
+  border-left: 3px solid #69f2d5;
+  padding: 12px 15px;
+  background: #0c1c2cdb;
+  color: #f8f1e4;
+  cursor: pointer;
+  font: 800 13px Arial, sans-serif;
+  letter-spacing: 2px;
+  text-align: left;
+  text-shadow: 0 1px 8px #06111f;
+}
+#title-menu button:hover, #title-controls button:hover {
+  background: #13434bdc;
+  border-color: #b8ffdf;
+}
+#title-menu button small {
+  display: block;
+  margin-top: 5px;
+  color: #c6d9d4;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+#title-controls {
+  position: absolute;
+  left: 48px;
+  top: 40%;
+  width: min(430px, calc(100vw - 96px));
+  padding: 22px 24px;
+  border: 1px solid #80e8d288;
+  background: #0c1b2df2;
+  box-shadow: 0 16px 50px #050d1acc;
+}
+#title-controls h2 {
+  margin: 0 0 16px;
+  color: #8bf5dc;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+#title-controls p {
+  margin: 8px 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+#title-controls kbd {
+  display: inline-block;
+  min-width: 75px;
+  color: #ffd181;
+  font: 700 11px Arial;
+}
+#title-controls button { margin-top: 12px; }
+#title-screen[hidden] { display: none; }
+body.title-active > header, body.title-active > section, body.title-active > aside,
+body.title-active > #hint, body.title-active > #reticle { visibility: hidden; }
+#title-controls { pointer-events: auto; }
+@media (max-width: 850px) {
+  #title-menu { left: 28px; top: 43%; width: 220px; }
+}

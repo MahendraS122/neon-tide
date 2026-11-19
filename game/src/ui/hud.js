@@ -93,7 +93,7 @@ export function createHud(player, vehicles, city, {
     meter('respect', progress.respect);
     text('health-value', Math.ceil(vitals.health));
     text('armour-value', Math.ceil(vitals.armour));
-    map.draw(entries, gangs.members, vehicles.vehicles);
+    map.draw(entries, gangs.members, vehicles.vehicles, presentation.route ?? []);
     el('speedometer').hidden = !vehicle;
     el('weapons').classList.toggle('stowed', Boolean(vehicle));
     el('reticle').hidden = Boolean(vehicle || !weapons.selected || presentation.hideReticle);
