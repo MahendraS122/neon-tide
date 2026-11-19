@@ -1,4 +1,4 @@
-/* Instrument panels use sea-glass accents and warm alerts over the 3D scene. */
+/* On-screen gameplay panels share a palette of sea-glass accents and warm alerts. */
 :root {
   color-scheme: dark;
   font-family: Arial, Helvetica, sans-serif;
@@ -32,6 +32,8 @@ p { margin: 0; font-size: 12px; color: #e8f1ef; line-height: 1.5; }
 .meter::before { content: ''; display: block; height: 100%; width: var(--fill, 0%); background: var(--aqua); }
 #stage { height: 3px; margin: 12px 0 8px; }
 footer { font-size: 9px; letter-spacing: 0.65px; color: #bed0d4; }
+
+/* Dispatch rows: unit, distance, and status. */
 #response { left: 28px; top: 191px; width: 219px; border-left-color: #79cbff; padding: 10px 12px; }
 #response > small { color: #b9e9ff; }
 #response-list { list-style: none; padding: 0; margin: 5px 0 0; }
@@ -43,6 +45,7 @@ footer { font-size: 9px; letter-spacing: 0.65px; color: #bed0d4; }
 #response li small[data-status='RAMMING'] { color: #ffd7cb; background: #e2644c55; }
 #response li small[data-status='ROADBLOCK'] { color: #ffe0a1; background: #b984314f; }
 #response li small[data-status='HELI'] { color: #b5ffea; background: #268a8066; }
+
 #wallet { right: 28px; top: 22px; text-align: right; text-shadow: 0 2px 8px #071322; }
 #wallet b { display: block; font-size: 30px; letter-spacing: 0.4px; }
 #wallet span { font-size: 10px; letter-spacing: 2px; font-weight: bold; }
@@ -66,6 +69,7 @@ footer { font-size: 9px; letter-spacing: 0.65px; color: #bed0d4; }
   background: #160e21ce; z-index: 4; }
 #failure strong { color: #ff8194; font-size: clamp(3rem, 12vw, 8rem);
   font-style: italic; letter-spacing: 0.08em; }
+
 #location { left: 28px; bottom: 26px; width: 175px;
   text-shadow: 0 2px 5px #071322; }
 #minimap { display: block; width: 147px; height: 147px; border-radius: 50%; background: #132538; }
@@ -76,6 +80,7 @@ h2 { margin: 10px 0 6px; font-size: 17px; font-style: italic; }
 #health::before { background: #8bebaa; }
 #armour::before { background: #74cfff; }
 #respect::before { background: #ffc581; }
+
 #speedometer { right: 28px; bottom: 26px; width: 168px; text-align: right; text-shadow: 0 3px 9px #081724; }
 .dial { display: flex; justify-content: flex-end; align-items: end; gap: 8px; margin-bottom: 4px; }
 .dial strong { font-size: 69px; font-weight: 700; font-style: italic;
@@ -93,6 +98,7 @@ h3 { font-size: 13px; margin: 9px 0 3px; letter-spacing: 1.6px; }
 #eq.on i:nth-child(2n) { animation-delay: -0.3s; }
 #eq.on i:nth-child(3n) { animation-delay: -0.15s; }
 @keyframes beat { to { transform: scaleY(0.24); } }
+
 #dialogue { left: 50%; bottom: 57px; transform: translateX(-50%); width: min(440px, 59vw); }
 #dialogue { display: flex; gap: 12px; align-items: center;
   border-left-color: var(--aqua); padding: 8px 12px; }

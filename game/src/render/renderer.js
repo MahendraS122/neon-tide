@@ -1,4 +1,4 @@
-// Configure the renderer and keep the viewport independent of simulation state.
+// Set up WebGL and keep the camera projection in sync with the viewport.
 import * as THREE from '../../vendor/three.module.min.js';
 
 export function createRenderer(canvas) {
@@ -19,8 +19,10 @@ export function createRenderer(canvas) {
   }
   addEventListener('resize', resize);
   resize();
+
   let slowFrames = 0;
   let renderScale = Math.min(devicePixelRatio, 1.5);
+  // Reduce pixel density after sustained slow frames.
   function adaptResolution(dt) {
     slowFrames = dt > 0.045 ? slowFrames + 1 : Math.max(0, slowFrames - 1);
     if (slowFrames < 24 || renderScale <= 0.75) return;

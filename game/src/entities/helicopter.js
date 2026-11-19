@@ -1,4 +1,4 @@
-// An SPD helicopter joins high heat searches, orbiting with a tracked searchlight.
+// At high heat, an SPD helicopter circles the target and tracks it with a searchlight.
 import * as THREE from '../../vendor/three.module.min.js';
 import { canSee } from './sight.js';
 
@@ -43,6 +43,8 @@ export function createHelicopter(scene, city) {
   for (const angle of [0, Math.PI / 2]) {
     part(rotor, new THREE.BoxGeometry(8.9, 0.045, 0.2), dark, 0, 0.03, 0).rotation.y = angle;
   }
+
+  // Keep the light, visible beam, and ground spot in sync.
   const light = new THREE.SpotLight('#c6f2ff', 1280, 72, 0.23, 0.72, 1.5);
   const coneMaterial = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
@@ -58,7 +60,7 @@ export function createHelicopter(scene, city) {
   spot.rotation.x = -Math.PI / 2;
   scene.add(root, light, light.target, cone, spot);
   const ground = new THREE.Vector3();
-  const axis = new THREE.Vector3(0, 1, 0);
+  const up = new THREE.Vector3(0, 1, 0);
   const beam = new THREE.Vector3();
   const unit = { name: 'AIR 01', status: 'HELI', position: root.position };
   let active = false;
@@ -74,7 +76,7 @@ export function createHelicopter(scene, city) {
     beam.copy(light.position).sub(ground);
     const length = beam.length();
     cone.position.copy(light.position).lerp(ground, 0.5);
-    cone.quaternion.setFromUnitVectors(axis, beam.normalize());
+    cone.quaternion.setFromUnitVectors(up, beam.normalize());
     cone.scale.setScalar(length);
     spot.position.copy(ground);
     spot.scale.setScalar(length * 0.16);
@@ -99,7 +101,7 @@ export function createHelicopter(scene, city) {
     if (active) desired.lerpVectors(root.position, desired, 1 - Math.exp(-dt * 1.9));
     setActive(true);
     pose(desired, target, -orbit, time);
-    return canSee(light.position, target.clone().addScaledVector(axis, 1), city.colliders, 65);
+    return canSee(light.position, target.clone().addScaledVector(up, 1), city.colliders, 65);
   }
   setActive(false);
   return { update, pose, setActive, showcaseLight, unit, get active() { return active; } };

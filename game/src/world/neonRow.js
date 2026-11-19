@@ -1,4 +1,4 @@
-// Roadside neon storefronts, layered glow and wet pavement for the Neon Row block.
+// Neon Row layers illuminated storefronts and soft reflections over wet asphalt.
 import * as THREE from '../../vendor/three.module.min.js';
 
 function mesh(parent, geometry, material, x, y, z) {
@@ -77,8 +77,8 @@ export function createNeonRow(scene, textures, random) {
     store.position.set(24 + side * 11.7, 0, z);
     store.rotation.y = -side * Math.PI / 2;
     group.add(store);
-    const box = (w, h, d, mat, x, y, offset) => {
-      return mesh(store, new THREE.BoxGeometry(w, h, d), mat, x, y, offset);
+    const box = (w, h, d, material, x, y, localZ) => {
+      return mesh(store, new THREE.BoxGeometry(w, h, d), material, x, y, localZ);
     };
     box(14, 5.4, 2.7, wall, 0, 2.7, -0.58);
     box(14.6, 0.3, 3.3, trim, 0, 5.32, -0.37);
@@ -113,6 +113,8 @@ export function createNeonRow(scene, textures, random) {
     group.add(light);
     const haze = mesh(store, plane, glowMaterial(tint, 0.20), 0, 4.12, 1.05);
     haze.scale.set(14.6, 3.9, 1);
+
+    // Stagger tinted glow patches along the pavement beneath each sign.
     for (let i = 0; i < 6; i += 1) {
       const reflection = mesh(group, plane, glowMaterial(tint, 0.15 + random() * 0.14),
         24 + side * (6.8 - i * 0.9), 0.078, z + (random() - 0.5) * 4);

@@ -1,4 +1,4 @@
-// A workshop on Ocean Drive offers resprays, repairs and persistent street tuning.
+// The Ocean Drive workshop handles resprays, repairs, and saved upgrades.
 import * as THREE from '../../vendor/three.module.min.js';
 import { garageSite } from './locations.js';
 
@@ -16,7 +16,7 @@ export function createGarage({ scene, vehicles, player, progress, wanted }) {
   marker.rotation.x = -Math.PI / 2;
   marker.position.set(garageSite.x, .13, garageSite.z);
   scene.add(marker);
-  let record = null;
+  let savedCar = null;
   const nearby = () => Math.hypot(player.position.x - garageSite.x, player.position.z - garageSite.z) < 8;
 
   function service(id, color) {
@@ -34,16 +34,16 @@ export function createGarage({ scene, vehicles, player, progress, wanted }) {
       car.condition = 100;
       wanted.clear();
     }
-    record = { type: car.type, color: `#${car.paint.color.getHexString()}`, upgrades: { ...car.upgrades } };
+    savedCar = { type: car.type, color: `#${car.paint.color.getHexString()}`, upgrades: { ...car.upgrades } };
     return part ? `${part.name} fitted.` : 'Body repaired. SPD cleared.';
   }
 
   function restore(saved) {
     if (!saved || !['sports', 'muscle', 'suv', 'police', 'taxi', 'van'].includes(saved.type)) return;
-    record = saved;
+    savedCar = saved;
     const car = vehicles.add(saved.type, saved.color, 104.4, 18.5, Math.PI);
     car.upgrades = { ...saved.upgrades };
   }
 
-  return { nearby, service, restore, snapshot: () => record };
+  return { nearby, service, restore, snapshot: () => savedCar };
 }

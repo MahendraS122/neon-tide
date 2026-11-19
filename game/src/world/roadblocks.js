@@ -1,4 +1,4 @@
-// High heat deploys a marked roadblock ahead on the nearest usable through street.
+// At high heat, place an in-game cordon ahead on the nearest through street.
 import * as THREE from '../../vendor/three.module.min.js';
 
 export function createRoadblocks(scene, city) {
@@ -21,11 +21,11 @@ export function createRoadblocks(scene, city) {
     }
   }
   const unit = { name: 'CORDON', status: 'ROADBLOCK', position: group.position };
-  const walls = [];
+  const barrierColliders = [];
   let axis = 0;
   function clear() {
-    for (const wall of walls) city.colliders.splice(city.colliders.indexOf(wall), 1);
-    walls.length = 0;
+    for (const wall of barrierColliders) city.colliders.splice(city.colliders.indexOf(wall), 1);
+    barrierColliders.length = 0;
     group.visible = false;
   }
   function deploy(x, z, horizontal) {
@@ -40,7 +40,7 @@ export function createRoadblocks(scene, city) {
         : { minX: x + low, maxX: x + high, minZ: z - 0.38, maxZ: z + 0.38 };
       wall.height = 0.95;
       city.colliders.push(wall);
-      walls.push(wall);
+      barrierColliders.push(wall);
     }
   }
   function update(stars, player, time) {
@@ -49,12 +49,12 @@ export function createRoadblocks(scene, city) {
       return;
     }
     if (!group.visible || player.position.distanceTo(group.position) > 106) {
-      const p = player.position;
+      const position = player.position;
       const yaw = player.vehicle?.yaw ?? player.character.root.rotation.y;
       const horizontal = Math.abs(Math.sin(yaw)) > 0.7;
       const lines = horizontal ? city.roadZ : city.roadX;
-      const along = horizontal ? p.x : p.z;
-      const lateral = horizontal ? p.z : p.x;
+      const along = horizontal ? position.x : position.z;
+      const lateral = horizontal ? position.z : position.x;
       const line = lines.reduce((a, b) => Math.abs(a - lateral) < Math.abs(b - lateral) ? a : b);
       const direction = Math.sign(horizontal ? Math.sin(yaw) : Math.cos(yaw)) || 1;
       const min = horizontal ? city.roadX[0] : city.roadZ[0];

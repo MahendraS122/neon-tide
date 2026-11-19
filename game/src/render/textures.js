@@ -1,4 +1,4 @@
-// All surface art is drawn locally on canvases with a deterministic random stream.
+// Draw repeatable surface art on canvases using a seeded random stream.
 import * as THREE from '../../vendor/three.module.min.js';
 
 export function seededRandom(seed = 27) {
@@ -22,8 +22,8 @@ function canvasTexture(width, height, draw) {
 
 export function createTextures() {
   const random = seededRandom(610);
-  function grain(ctx, width, height, amount) {
-    for (let i = 0; i < amount; i += 1) {
+  function grain(ctx, width, height, speckCount) {
+    for (let i = 0; i < speckCount; i += 1) {
       ctx.fillStyle = random() > 0.5 ? '#ffffff12' : '#00000015';
       ctx.fillRect(random() * width, random() * height, 2, 2);
     }
@@ -47,9 +47,9 @@ export function createTextures() {
     grain(ctx, w, h, 6000);
     ctx.strokeStyle = '#a5a293';
     ctx.lineWidth = 2;
-    for (let p = 0; p <= 256; p += 64) {
-      ctx.strokeRect(p, 0, 64, 256);
-      ctx.strokeRect(0, p, 256, 64);
+    for (let offset = 0; offset <= 256; offset += 64) {
+      ctx.strokeRect(offset, 0, 64, 256);
+      ctx.strokeRect(0, offset, 256, 64);
     }
   });
   const sand = canvasTexture(256, 256, (ctx, w, h) => {

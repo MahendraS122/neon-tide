@@ -1,4 +1,4 @@
-/* The full-screen navigation atlas uses the same mint and warm amber as Solara's HUD. */
+/* Full-screen atlas: a map canvas flanked by jobs and navigation details. */
 #city-map {
   position: fixed;
   pointer-events: auto;
@@ -16,12 +16,15 @@
 #city-map header small { letter-spacing: .24em; color: #72eed5; }
 #city-map h1 { margin: 0; font-size: clamp(25px, 3vw, 45px); line-height: 1.05; letter-spacing: -.05em; }
 #city-map button { color: #bff8ea; background: #18333f; border: 1px solid #4d776f; padding: 10px 16px; }
+
 .atlas-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: 278px minmax(0, 1fr) 186px; gap: 12px; }
 .atlas-grid > canvas { width: 100%; height: 100%; min-height: 0; border: 1px solid #486574; border-radius: 5px; }
 .atlas-grid aside { position: static; pointer-events: auto; min-height: 0; overflow: auto; padding: 12px; background: #101f2bdd; border: 1px solid #304b58; }
 .atlas-grid h2 { margin: 0 0 9px; font-size: 13px; letter-spacing: .18em; color: #7decd4; }
 .atlas-grid h2 span { float: right; color: #faac79; }
 .atlas-grid ul, .atlas-grid ol { list-style: none; margin: 0; padding: 0; }
+
+/* Job thumbnails and status labels. */
 .atlas-grid ol li {
   display: grid;
   grid-template-columns: 35px 1fr auto;
@@ -41,6 +44,7 @@
 .atlas-job p { margin: 4px 0 8px; color: #becbd1; }
 .atlas-meter { height: 5px; background: #394a56; }
 .atlas-meter i { display: block; height: 100%; background: #76ebd2; }
+
 .atlas-grid ul { margin-bottom: 21px; }
 .atlas-grid ul li { display: flex; gap: 8px; align-items: center; padding: 4px 0; }
 .atlas-grid ul b { text-align: center; width: 22px; background: #223747; border-radius: 4px; }

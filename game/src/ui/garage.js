@@ -1,4 +1,4 @@
-// The workshop menu exposes tuning, repairs and paint without moving the car.
+// Build the workshop menu for tuning, repairs, and paint.
 import { paints, upgrades } from '../world/garages.js';
 
 export function createGarageMenu(garage, progress) {
@@ -13,12 +13,12 @@ export function createGarageMenu(garage, progress) {
   const status = root.querySelector('[role="status"]');
   const actions = root.querySelector('.service-actions');
 
-  function displayCash() {
+  function refreshBalance() {
     detail.textContent = `Respray $200 · Balance $${progress.cash.toLocaleString('en-US')}`;
   }
   function buy(id, color) {
     status.textContent = garage.service(id, color);
-    displayCash();
+    refreshBalance();
   }
   function close() {
     root.hidden = true;
@@ -30,6 +30,7 @@ export function createGarageMenu(garage, progress) {
     parent.append(button);
     return button;
   }
+
   for (const paint of paints) {
     const button = addButton(root.querySelector('.swatches'), `Paint ${paint}`, () => buy('paint', paint));
     button.setAttribute('aria-label', button.textContent);
@@ -45,7 +46,7 @@ export function createGarageMenu(garage, progress) {
   return { close, open() {
     if (document.pointerLockElement) document.exitPointerLock();
     status.textContent = '';
-    displayCash();
+    refreshBalance();
     root.hidden = false;
   }, get active() { return !root.hidden; } };
 }

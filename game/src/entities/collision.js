@@ -1,15 +1,16 @@
-// Swept circle movement and camera rays share the city's conservative building bounds.
+// Movement circles and camera rays use the same conservative building bounds.
 import * as THREE from '../../vendor/three.module.min.js';
 
 export function overlaps(position, radius, colliders, height = 0) {
   return colliders.some(box => {
     if (height > box.height + 0.3) return false;
-    const x = Math.max(box.minX, Math.min(position.x, box.maxX));
-    const z = Math.max(box.minZ, Math.min(position.z, box.maxZ));
-    return (position.x - x) ** 2 + (position.z - z) ** 2 < radius ** 2;
+    const closestX = Math.max(box.minX, Math.min(position.x, box.maxX));
+    const closestZ = Math.max(box.minZ, Math.min(position.z, box.maxZ));
+    return (position.x - closestX) ** 2 + (position.z - closestZ) ** 2 < radius ** 2;
   });
 }
 
+// Resolve each axis separately so movement can slide along an obstacle.
 export function moveWithCollisions(position, dx, dz, radius, city, height = 0) {
   const steps = Math.max(1, Math.ceil(Math.hypot(dx, dz) / 0.45));
   let hit = false;

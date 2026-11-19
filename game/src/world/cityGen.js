@@ -1,4 +1,4 @@
-// The city layout is the single source of roads, districts, collision boxes and sidewalks.
+// Build the road grid, sidewalks, and landmarks alongside their gameplay bounds.
 import * as THREE from '../../vendor/three.module.min.js';
 import { seededRandom } from '../render/textures.js';
 import { box, surface, batchStatic } from './geometry.js';
@@ -59,13 +59,15 @@ export function createCity(scene, textures) {
       new THREE.MeshStandardMaterial({ map, roughness: 0.94 }), 0.025);
     road.rotation.z = Math.PI / 2;
   }
+
+  // Cap the road seams and place crosswalks at each intersection.
   for (const x of ROAD_X) {
     for (const z of ROAD_Z) {
       box(root, x, 0.035, z, 16.2, 0.025, 16.2, '#3c464b');
-      for (const sign of [-1, 1]) {
+      for (const side of [-1, 1]) {
         for (let stripe = -5; stripe < 6; stripe += 2) {
-          box(root, x + stripe, 0.06, z + sign * 9.8, 1.2, 0.02, 2.6, '#e5dfc7');
-          box(root, x + sign * 9.8, 0.06, z + stripe, 2.6, 0.02, 1.2, '#e5dfc7');
+          box(root, x + stripe, 0.06, z + side * 9.8, 1.2, 0.02, 2.6, '#e5dfc7');
+          box(root, x + side * 9.8, 0.06, z + stripe, 2.6, 0.02, 1.2, '#e5dfc7');
         }
       }
       if (x > -150 && z > -180) {
@@ -74,7 +76,8 @@ export function createCity(scene, textures) {
       }
     }
   }
-  let index = 0;
+
+  let buildingIndex = 0;
   for (let column = 0; column < ROAD_X.length - 1; column += 1) {
     for (let row = 0; row < ROAD_Z.length - 1; row += 1) {
       const x = (ROAD_X[column] + ROAD_X[column + 1]) / 2;
@@ -107,7 +110,7 @@ export function createCity(scene, textures) {
           x: x + dx, z: z + dz,
           width: beachfront ? 29 : 17 + random() * 5,
           depth: beachfront ? 23 : 17 + random() * 5,
-          height, style: beachfront ? 'deco' : tower ? 'tower' : 'home', index: index++
+          height, style: beachfront ? 'deco' : tower ? 'tower' : 'home', index: buildingIndex++
         };
         colliders.push(createBuilding(root, spec, textures, windowMaterials));
       }

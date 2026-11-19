@@ -1,10 +1,12 @@
-// Synthesize short effects and continuous vehicle sounds on a shared audio context.
+// Share one audio context between synthesized effects, engine noise, and sirens.
 export function createCombatAudio() {
   let context;
   let noise;
   let engine;
   let siren;
   let phase = 0;
+
+  // Start audio on the first user gesture and reuse the noise buffer for effects.
   function unlock() {
     try {
       context ??= new AudioContext();
@@ -53,7 +55,7 @@ export function createCombatAudio() {
 
   function click() {
     if (!context) return;
-    const tick = () => {
+    const playTick = () => {
       const at = context.currentTime;
       const source = context.createOscillator();
       const gain = context.createGain();
@@ -65,9 +67,10 @@ export function createCombatAudio() {
       source.start(at);
       source.stop(at + 0.09);
     };
-    if (context.state === 'running') tick();
-    else context.resume().then(tick).catch(() => {});
+    if (context.state === 'running') playTick();
+    else context.resume().then(playTick).catch(() => {});
   }
+
   function play(power, volume = 0.2) {
     if (context?.state !== 'running' || !noise) return;
     const time = context.currentTime;
