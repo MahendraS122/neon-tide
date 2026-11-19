@@ -78,6 +78,7 @@ export function setupShot(name, game, random) {
     wanted.update(0, { seen: true });
     helicopter.setActive(true);
     helicopter.pose(new THREE.Vector3(101.5, 9.5, -4.2), new THREE.Vector3(104, 0, 9.5), 0.85, 4.2);
+    helicopter.showcaseLight(0.58);
     roadblocks.deploy(100, -34, false);
     const taxi = vehicles.add('taxi', '#eebb47', 95.0, -16, 0);
     taxi.driverHead.visible = true;
@@ -96,6 +97,7 @@ export function setupShot(name, game, random) {
       compactWeapons: true,
       mission: { chapter: 'CHAPTER 03 · HOT WIRE', name: 'Long Way Home', timer: '01:24', stage: 62,
         objective: 'Lose the SPD tail on Ocean Drive', next: 'Meet Mara at the south marina' },
+      dialogue: { speaker: 'MARA REYES · COMMS', line: 'Three cruisers? Keep moving. I’m at the south marina.' },
       hint: 'WASD DRIVE   /   SPACE HANDBRAKE   /   SHIFT NITRO   /   Q / E RADIO'
     });
   } else {

@@ -43,17 +43,17 @@ export function createHelicopter(scene, city) {
   for (const angle of [0, Math.PI / 2]) {
     part(rotor, new THREE.BoxGeometry(8.9, 0.045, 0.2), dark, 0, 0.03, 0).rotation.y = angle;
   }
-  const light = new THREE.SpotLight('#c6f2ff', 2200, 72, 0.23, 0.65, 1.5);
+  const light = new THREE.SpotLight('#c6f2ff', 1280, 72, 0.23, 0.72, 1.5);
   const coneMaterial = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
     vertexShader: `varying vec2 coord;
       void main() { coord = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
     fragmentShader: `varying vec2 coord;
-      void main() { gl_FragColor = vec4(.45, .78, 1., .16 * sin(coord.y * 3.14159)); }`
+      void main() { gl_FragColor = vec4(.45, .78, 1., .075 * sin(coord.y * 3.14159)); }`
   });
   const cone = new THREE.Mesh(new THREE.ConeGeometry(0.23, 1, 32, 1, true), coneMaterial);
   const spot = new THREE.Mesh(new THREE.CircleGeometry(1, 40), new THREE.MeshBasicMaterial({
-    color: '#bcefff', transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending, depthWrite: false
+    color: '#bcefff', transparent: true, opacity: 0.09, blending: THREE.AdditiveBlending, depthWrite: false
   }));
   spot.rotation.x = -Math.PI / 2;
   scene.add(root, light, light.target, cone, spot);
@@ -85,6 +85,10 @@ export function createHelicopter(scene, city) {
     root.visible = light.visible = cone.visible = spot.visible = value;
   }
 
+  function showcaseLight(intensity) {
+    light.intensity = 2200 * intensity;
+  }
+
   function update(dt, time, stars, target) {
     if (stars < 3) {
       setActive(false);
@@ -98,5 +102,5 @@ export function createHelicopter(scene, city) {
     return canSee(light.position, target.clone().addScaledVector(axis, 1), city.colliders, 65);
   }
   setActive(false);
-  return { update, pose, setActive, unit, get active() { return active; } };
+  return { update, pose, setActive, showcaseLight, unit, get active() { return active; } };
 }

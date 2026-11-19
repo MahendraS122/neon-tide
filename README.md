@@ -1,52 +1,58 @@
 # NEON TIDE: Port Solara
 
-Original coastal open-world game. Session A implements the rendering, city and movement foundation.
-The game is plain static files under `game/`; no build or runtime internet access is required.
+[![make.fun · gta6-01](https://make.fun/badge/gta6-01.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+[![rank](https://make.fun/badge/gta6-01/MahendraS122/neon-tide/rank.svg)](https://make.fun/bounty/gta6-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+[![reward](https://make.fun/badge/gta6-01/MahendraS122/neon-tide/reward.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 
-## Run and controls
+NEON TIDE: Port Solara is an original open-world crime game set in a sunlit coastal city, built for make.fun’s “Make GTA 6” bounty. Explore neighborhoods on foot or behind the wheel, take on story missions, and evade a reactive police response.
 
-Run `node serve.ts --port 8090` and open `http://localhost:8090/` in desktop Chrome.
+## Run it
 
-- Click the game to capture the mouse. Escape releases it.
-- WASD or arrow keys: walk or drive.
-- Shift: sprint on foot.
-- Space: jump on foot, handbrake in a vehicle.
-- F: enter or steal a nearby vehicle; exit at low speed.
-- N: toggle golden hour and night.
+```sh
+node serve.ts
+```
 
-Dex starts on Ocean Drive, near the turquoise Solstice GT. The city includes beachfront hotels,
-glass downtown blocks, Las Palmas homes, Reyes Park, Sunbreak Beach, Solara Pier and the cargo port.
-Six vehicle types are available: sports coupe, muscle car, SUV, taxi, police cruiser and van.
-The police cruiser is currently a vehicle model only, with no pursuit behavior.
+The server prints its localhost URL; open that URL in desktop Chrome.
 
-## Architecture
+## Features
 
-`game/src/main.js` wires small independent gameplay modules before world and art imports.
-Player and vehicle physics run at a fixed 60 Hz; the renderer interpolates the camera separately.
-The city generator owns road axes, district names, signal locations and collision bounds.
-Gameplay accepts character and vehicle model factories rather than importing large art modules.
+- Procedural coastal 3D city, traffic, pedestrians, and explorable districts
+- Steal and drive vehicles, with drift, nitro, and a working garage
+- Wanted levels, SPD pursuits, helicopter searches, and roadblocks
+- Story missions, original dialogue, combat, and synthesized radio
+- City atlas, minimap, save system, and title screen
+- Static offline game: geometry, textures, and sound are generated locally
 
-- `entities/`: input, character animation, player movement, vehicle physics, traffic and pedestrians.
-- `world/`: district generation, buildings, palms and furniture, ocean, port and pier landmarks.
-- `render/`: ACES renderer, procedural sky, canvas textures, and moving-actor GPU instancing.
-- `ui/`: a minimal live district, speed, condition, clock and control-hint HUD.
+## Controls
 
-Repeated static geometry is instanced in spatial cells. Articulated actor parts are also instanced,
-with a 105-meter draw radius. Resolution scales down on slow renderers. Shadows use a local sun volume.
-All art is generated in code. The only third-party runtime file is the permitted three.js 0.160.0 build.
+- WASD: walk or drive; mouse: look and aim
+- Shift: sprint on foot or nitro in a vehicle
+- F: enter or leave a vehicle
+- Space: jump on foot or handbrake/drift in a vehicle
+- Left mouse: fire; R: reload; 1–5: select a weapon
+- M: city atlas; K: save at the safehouse; Escape: pause
+- Q/E: change radio station; T: enter a nearby race; G: open a nearby garage
 
-## Verification and remaining work
+## Code layout
 
-Chrome/SwiftShader checks cover walking, sprinting, jumping and landing, building collision,
-entering and exiting, acceleration, handbrake slip, driver ejection, pedestrian fleeing and night mode.
-The browser made no external requests and produced no console errors in those checks.
-The optional `window.__game` object exposes live systems for integration and diagnostics.
-`window.__shotReady` becomes true after three rendered frames; no staged shot scenes exist yet.
+- `game/src/main.js`: bootstrap and gameplay wiring
+- `game/src/systems/`, `game/src/missions/`, `game/src/combat/`: gameplay systems
+- `game/src/entities/`: player, vehicles, police, pedestrians, and helicopter
+- `game/src/world/`: procedural city, roads, landmarks, and locations
+- `game/src/render/` and `game/src/ui/`: rendering, HUD, menus, and maps
+- `game/vendor/three.module.min.js`: vendored Three.js runtime
+- `main.ts`: hand-in program and dossier writer
 
-Items 4–7 remain: wanted/police/helicopter/roadblocks, weapons/gangs/health, the complete HUD/minimap,
-and deterministic chase/on-foot scenes and submission screenshots. Story, activities, sound, menus,
-and saving are also future work. The kit's old `shots.json` and submission screenshots still need
-replacement during the screenshot session. Do not treat this foundation as a completed bounty entry.
+## Screenshots
 
-Keep `vendor/makefun-game.ts`, `LICENSE` and `.makefun/owner.json` intact. `main.ts` retains the official
-hand-in flow. Do not push or submit until the remaining sessions are complete.
+![Ocean Drive pursuit](screenshots/1-chase.jpg)
+
+![Neon Row on foot](screenshots/2-onfoot.jpg)
+
+![Port Solara city atlas](screenshots/3-map.jpg)
+
+![Port Solara title screen](screenshots/4-title.jpg)
+
+---
+
+<sub>Entered on [make.fun](https://make.fun/?ref=grenk69j&utm_source=github&utm_medium=readme&utm_campaign=gta6-01) · AI agents build software for cash rewards</sub>
