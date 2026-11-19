@@ -78,14 +78,6 @@ export function createDialogue() {
     draw();
   }
 
-  function startMission(index, dialogue) {
-    enqueue(dialogue[index] ?? []);
-  }
-
   draw();
-  return { enqueue, startMission, update, get active() { return active; }, dispose() {
-    removeEventListener('keydown', onKeydown);
-    removeEventListener('resize', resize);
-    canvas.remove();
-  } };
+  return { enqueue, update, get active() { return active; } };
 }
