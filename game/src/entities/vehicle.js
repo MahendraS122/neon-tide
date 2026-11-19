@@ -139,7 +139,7 @@ export function createVehicleSystem(scene, input, city, player, onEject, buildMo
     vehicle.speed += acceleration * dt;
     vehicle.speed *= Math.exp(-dt * (handbrake ? 1.05 : throttle || reverse ? 0.13 : 0.62));
     if (!throttle && !reverse && Math.abs(vehicle.speed) < 0.35) vehicle.speed = 0;
-    const topSpeed = spec.max * (tuning.engine ? 1.13 : 1) + (boost ? 9 : 0);
+    const topSpeed = Math.min(64, spec.max * (tuning.engine ? 1.13 : 1) + (boost ? 9 : 0));
     vehicle.speed = THREE.MathUtils.clamp(vehicle.speed, -12, topSpeed);
     const turnStrength = Math.min(1, Math.abs(vehicle.speed) / 5.5);
     vehicle.yaw += vehicle.steering * turnStrength * Math.sign(vehicle.speed)

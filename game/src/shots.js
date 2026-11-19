@@ -93,6 +93,7 @@ export function setupShot(name, game, random) {
     progress.flash = 3;
     Object.assign(hud, {
       district: 'Ocean Drive',
+      chaseFrame: true,
       compactWeapons: true,
       mission: { chapter: 'CHAPTER 03 · HOT WIRE', name: 'Long Way Home', timer: '01:24', stage: 62,
         objective: 'Lose the SPD tail on Ocean Drive', next: 'Meet Mara at the south marina' },

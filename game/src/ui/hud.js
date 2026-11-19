@@ -124,6 +124,7 @@ export function createHud(player, vehicles, city, {
       text('speaker', presentation.dialogue.speaker);
       text('line', presentation.dialogue.line);
     }
+    if (presentation.chaseFrame && !presentation.dialogue) el('dialogue').hidden = true;
     el('callout').hidden = !progress.flash;
     text('callout', progress.callout);
     text('hint', presentation.hint ?? (vehicle ? 'WASD DRIVE · SPACE DRIFT · SHIFT NITRO · Q/E RADIO · M ATLAS · F EXIT'
