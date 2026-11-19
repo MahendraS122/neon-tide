@@ -57,7 +57,7 @@ export function setupShot(name, game, random) {
     });
   } else if (name === 'chase') {
     hero.root.visible = true;
-    hero.position.set(104, 0.12, 13);
+    hero.position.set(104, 0.12, 10.2);
     hero.yaw = Math.PI - 0.46;
     hero.root.rotation.y = hero.yaw;
     hero.root.rotation.z = -0.035;
@@ -68,7 +68,7 @@ export function setupShot(name, game, random) {
     player.vehicle = hero;
     vitals.health = 91;
     vitals.armour = 58;
-    const cruisers = [[101, 9.4, 2.94], [107, 9.4, 3.34], [95, 12, 3.08]];
+    const cruisers = [[99.8, 15.4, 2.94], [108.1, 15.2, 3.34], [95, 18.3, 3.08]];
     cruisers.forEach(([x, z, yaw], index) => {
       const unit = police.spawn(x, z, yaw);
       unit.status = index === 0 ? 'RAMMING' : 'PURSUIT';
@@ -78,15 +78,15 @@ export function setupShot(name, game, random) {
     wanted.update(0, { seen: true });
     helicopter.setActive(true);
     helicopter.root.scale.setScalar(1.45);
-    helicopter.pose(new THREE.Vector3(104, 12.2, 4), new THREE.Vector3(104, 0, 9.5), 0.85, 4.2);
+    helicopter.pose(new THREE.Vector3(101.5, 13.9, -4.2), new THREE.Vector3(104, 0, 9.5), 0.85, 4.2);
     roadblocks.deploy(100, -34, false);
     const taxi = vehicles.add('taxi', '#eebb47', 95.0, -16, 0);
     taxi.driverHead.visible = true;
     vehicles.add('suv', '#d6ddd6', 94, -46, 0);
     vehicles.add('muscle', '#e29473', 104, -58, Math.PI);
     camera.fov = 48;
-    camera.position.set(104, 5.1, 22);
-    camera.lookAt(104, 3.25, 8.2);
+    camera.position.set(103.4, 5.3, 22.4);
+    camera.lookAt(103.7, 3.55, 8.7);
     camera.updateProjectionMatrix();
     shotFX.drift(hero);
     shotFX.speedLines(camera);
