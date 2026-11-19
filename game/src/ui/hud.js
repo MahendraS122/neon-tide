@@ -101,6 +101,7 @@ export function createHud(player, vehicles, city, {
       const slot = weapons.slots[index];
       const active = index === weapons.selected;
       row.classList.toggle('active', active);
+      row.hidden = Boolean(presentation.compactWeapons && !active);
       row.lastElementChild.textContent = active && weapons.reloading ? 'LOAD' : slot.magazine
         ? `${slot.ammo} / ${slot.reserve}` : '—';
     });

@@ -62,7 +62,7 @@ export function createNeonRow(scene, textures, random) {
   const street = mesh(group, new THREE.PlaneGeometry(15.6, 69), asphalt, 24, 0.072, -1.5);
   street.rotation.x = -Math.PI / 2;
   street.receiveShadow = true;
-  const wall = new THREE.MeshStandardMaterial({ color: '#655775', roughness: 0.77 });
+  const wall = new THREE.MeshStandardMaterial({ color: '#362e46', roughness: 0.77 });
   const trim = new THREE.MeshStandardMaterial({ color: '#263347', roughness: 0.38, metalness: 0.3 });
   const bronze = new THREE.MeshStandardMaterial({ color: '#b18e77', roughness: 0.44 });
   const plane = new THREE.PlaneGeometry(1, 1);

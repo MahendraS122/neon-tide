@@ -71,7 +71,7 @@ export function setupShot(name, game, random) {
     player.vehicle = hero;
     vitals.health = 91;
     vitals.armour = 58;
-    const cruisers = [[104, 20, Math.PI], [94, 24, Math.PI], [114, 27, Math.PI]];
+    const cruisers = [[94.7, 20, 2.98], [106.3, 21.5, 3.33], [100, 26, 3.08]];
     cruisers.forEach(([x, z, yaw], index) => {
       const unit = police.spawn(x, z, yaw);
       unit.status = index === 0 ? 'RAMMING' : 'PURSUIT';
@@ -80,24 +80,27 @@ export function setupShot(name, game, random) {
     wanted.report('Grand theft', 4);
     wanted.update(0, { seen: true });
     helicopter.setActive(true);
-    helicopter.pose(new THREE.Vector3(104, 16, -4), new THREE.Vector3(102, 0, 11), 1.21, 4.2);
+    helicopter.pose(new THREE.Vector3(102, 17.9, 0), new THREE.Vector3(104, 0, 9.5), 1.05, 4.2);
     roadblocks.deploy(100, -34, false);
     const taxi = vehicles.add('taxi', '#eebb47', 95.0, -16, 0);
     taxi.driverHead.visible = true;
     vehicles.add('suv', '#d6ddd6', 94, -46, 0);
     vehicles.add('muscle', '#e29473', 104, -58, Math.PI);
-    camera.position.set(110, 8, 29);
-    camera.lookAt(102, 7, 1);
+    camera.fov = 50;
+    camera.position.set(101, 10.5, 48);
+    camera.lookAt(102, 5, 0);
+    camera.updateProjectionMatrix();
     shotFX.drift(hero);
     shotFX.speedLines(camera);
     progress.callout = 'DRIFT x3 +$60';
     progress.flash = 3;
     Object.assign(hud, {
       district: 'Ocean Drive',
-      mission: { chapter: 'CHAPTER 02 · UNDERTOW', name: 'Pressure on Ocean Drive', timer: '01:24', stage: 62,
+      compactWeapons: true,
+      mission: { chapter: 'CHAPTER 03 · HOT WIRE', name: 'Long Way Home', timer: '01:24', stage: 62,
         objective: 'Lose the SPD tail on Ocean Drive', next: 'Meet Mara at the south marina' },
       dialogue: { speaker: 'MARA REYES · COMMS', line: 'Lose the lights first, Dex. Then bring me the car.' },
-      hint: 'WASD DRIVE   /   SPACE HANDBRAKE   /   SHIFT NITRO   /   V TUNE'
+      hint: 'WASD DRIVE   /   SPACE HANDBRAKE   /   SHIFT NITRO   /   Q / E RADIO'
     });
   } else {
     sky.setNight(true);

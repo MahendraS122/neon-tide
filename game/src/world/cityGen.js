@@ -146,9 +146,9 @@ export function createCity(scene, textures) {
     if (night === isNight) return;
     night = isNight;
     windowMaterials.forEach(({ material, dayColor }) => {
-      material.color.set(night ? '#626075' : dayColor);
+      material.color.set(night ? '#36374c' : dayColor);
       material.emissive.set(night ? '#ffac64' : '#e6be75');
-      material.emissiveIntensity = night ? 0.82 : 0.08;
+      material.emissiveIntensity = night ? 1.12 : 0.08;
     });
     lampLights.forEach(light => { light.intensity = night ? 150 : 0; });
   }

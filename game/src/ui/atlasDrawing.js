@@ -14,8 +14,8 @@ export function drawAtlas(canvas, city, player, sites, route) {
   context.fillStyle = sea;
   context.fillRect(0, 0, width, height);
   const bounds = city.bounds;
-  const scale = Math.min((width - 28) / 465, (height - 28) / 515);
-  const x = value => width / 2 + (value + 19) * scale;
+  const scale = Math.min((width - 28) / 500, (height - 28) / 515);
+  const x = value => width / 2 + (value + 10) * scale;
   const y = value => height / 2 + (value - 23) * scale;
 
   function line(points, color, size = 1, fill = false) {
@@ -66,12 +66,12 @@ export function drawAtlas(canvas, city, player, sites, route) {
     context.fillStyle = '#aebac826';
     context.fillRect(x(box.minX), y(box.minZ), (box.maxX - box.minX) * scale, (box.maxZ - box.minZ) * scale);
   }
-  line([[115, -115], [188, -115]], '#ccb792', 8 * scale);
+  line([[115, -115], [224, -108]], '#ccb792', 8 * scale);
   context.textAlign = 'center';
   context.textBaseline = 'middle';
   context.fillStyle = '#f0e7d2';
   context.font = 'bold 29px system-ui';
-  context.fillText('☸', x(180), y(-117));
+  context.fillText('☸', x(224), y(-108));
   for (const a of [-176, -91, -19]) {
     line([[a, 217], [a, 203], [a + 19, 203], [a + 19, 211]], '#d29e73', 2);
   }
