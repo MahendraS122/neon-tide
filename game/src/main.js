@@ -7,6 +7,7 @@ import { createWeapons, createVitals } from './combat/weapons.js';
 import { createCombatEffects } from './combat/effects.js';
 import { createCombatAudio } from './combat/audio.js';
 import { createGangs } from './entities/gangs.js';
+import { createRadio } from './systems/radio.js';
 import { createHud } from './ui/hud.js';
 import { createPlayer } from './entities/player.js';
 import { createVehicleSystem } from './entities/vehicle.js';
@@ -54,7 +55,7 @@ function crime(reason, amount) {
 const vehicles = createVehicleSystem(scene, input, city, player, (position, yaw) => {
   pedestrians.eject(position, yaw);
   crime('Grand theft', 1);
-}, createVehicleModel);
+}, createVehicleModel, reward);
 const hero = vehicles.add('sports', '#20d6bf', 104.6, 10, Math.PI);
 vehicles.add('muscle', '#d36b46', 86.9, -9, Math.PI);
 vehicles.add('suv', '#e1d1b9', 87.1, 65, 0);
@@ -118,7 +119,12 @@ const weapons = createWeapons(player, input, city, effects, audio, seededRandom(
     crime('Shots fired', 0.32);
   }
 });
-const hud = createHud(player, vehicles, city, wanted);
+const radio = createRadio();
+function responseUnits() {
+  return [...police.units, ...(roadblocks.active ? [roadblocks.unit] : []),
+    ...(helicopter.active ? [helicopter.unit] : [])];
+}
+const hud = createHud(player, vehicles, city, { wanted, vitals, weapons, gangs, radio, progress, units: responseUnits });
 const actorBatch = createActorBatch(scene);
 actorBatch.add(character.root);
 vehicles.vehicles.forEach(vehicle => actorBatch.add(vehicle.root));
@@ -138,8 +144,10 @@ function simulate(dt) {
     return;
   }
   if (input.take('KeyN')) sky.setNight(!sky.night);
+  if (input.take('KeyV')) radio.cycle();
   traffic.update(dt, time);
   vehicles.update(dt, time);
+  radio.update(dt, Boolean(player.vehicle));
   player.aiming = weapons.selected > 0 || input.down('Mouse0') || input.down('KeyX');
   player.update(dt);
   pedestrians.update(dt);
@@ -177,5 +185,5 @@ renderer.setAnimationLoop(() => {
 
 // This inspectable state also gives later story and police systems stable integration points.
 window.__game = { scene, camera, renderer, city, sky, player, vehicles, traffic, pedestrians, hero,
-  wanted, police, helicopter, roadblocks, weapons, vitals, effects, gangs, progress,
+  wanted, police, helicopter, roadblocks, weapons, vitals, effects, gangs, progress, radio,
   get time() { return time; }, get frames() { return frames; } };

@@ -11,6 +11,7 @@ export function createVehicle(scene, model, type, x, z, yaw = 0, occupied = fals
   return {
     ...model, type, position: model.root.position, yaw, speed: 0,
     velocity: new THREE.Vector3(), steering: 0, condition: 100,
+    nitro: 100, drifting: false, driftTime: 0, driftChain: 0, nearMissCooldown: 0,
     occupied, controlled: false, traffic: occupied, stolen: false,
     brake: false, distance: 0, stopTimer: 0
   };
@@ -28,7 +29,7 @@ export function animateVehicle(vehicle, dt, time) {
   });
 }
 
-export function createVehicleSystem(scene, input, city, player, onEject, buildModel) {
+export function createVehicleSystem(scene, input, city, player, onEject, buildModel, onReward = () => {}) {
   const vehicles = [];
   const skidMaterial = new THREE.MeshBasicMaterial({ color: '#182126', transparent: true, opacity: 0.44 });
   const skidGeometry = new THREE.PlaneGeometry(0.2, 1.2);
@@ -128,10 +129,13 @@ export function createVehicleSystem(scene, input, city, player, onEject, buildMo
     vehicle.steering = THREE.MathUtils.damp(vehicle.steering, turn, 8, dt);
     const spec = vehicle.spec;
     let acceleration = throttle * spec.power - reverse * (vehicle.speed > 1 ? 33 : 10);
+    const boost = throttle && vehicle.nitro > 0 && (input.down('ShiftLeft') || input.down('ShiftRight'));
+    if (boost) acceleration += 19;
+    vehicle.nitro = THREE.MathUtils.clamp(vehicle.nitro + dt * (boost ? -27 : 6), 0, 100);
     if (vehicle.speed < -1 && throttle) acceleration = 27;
     vehicle.speed += acceleration * dt;
     vehicle.speed *= Math.exp(-dt * (handbrake ? 1.05 : throttle || reverse ? 0.13 : 0.42));
-    vehicle.speed = THREE.MathUtils.clamp(vehicle.speed, -12, spec.max);
+    vehicle.speed = THREE.MathUtils.clamp(vehicle.speed, -12, spec.max + (boost ? 9 : 0));
     const turnStrength = Math.min(1, Math.abs(vehicle.speed) / 7);
     vehicle.yaw += vehicle.steering * turnStrength * Math.sign(vehicle.speed)
       * (handbrake ? 2.1 : 1.13) * dt / (1 + Math.abs(vehicle.speed) * 0.018);
@@ -146,6 +150,19 @@ export function createVehicleSystem(scene, input, city, player, onEject, buildMo
     }
     if (vehicle.condition <= 0) vehicle.speed *= Math.exp(-dt * 4);
     const slipping = handbrake || vehicle.velocity.clone().sub(desiredVelocity).length() > 6;
+    vehicle.drifting = slipping && Math.abs(vehicle.speed) > 9 && Math.abs(vehicle.steering) > 0.28;
+    if (vehicle.drifting) {
+      vehicle.driftTime += dt;
+      if (vehicle.driftTime >= 1.15) {
+        vehicle.driftTime -= 1.15;
+        vehicle.driftChain += 1;
+        onReward(`DRIFT x${vehicle.driftChain}`, 20 * vehicle.driftChain);
+      }
+    } else {
+      vehicle.driftTime = Math.max(0, vehicle.driftTime - dt * 2);
+      if (!vehicle.driftTime) vehicle.driftChain = 0;
+    }
+    vehicle.nearMissCooldown = Math.max(0, vehicle.nearMissCooldown - dt);
     skidTime += dt;
     if (slipping && Math.abs(vehicle.speed) > 7 && skidTime > 0.045) {
       skidTime = 0;
@@ -167,6 +184,11 @@ export function createVehicleSystem(scene, input, city, player, onEject, buildMo
     for (const other of vehicles) {
       if (other === controlled) continue;
       const distance = other.position.distanceTo(controlled.position);
+      if (distance > 2.4 && distance < 3.55 && controlled.speed > 16 && other.traffic
+        && !controlled.nearMissCooldown) {
+        controlled.nearMissCooldown = 2.5;
+        onReward('NEAR MISS', 50);
+      }
       if (distance > 2.1 || distance < 0.01) continue;
       const direction = controlled.position.clone().sub(other.position).normalize();
       moveWithCollisions(controlled.position, direction.x * 0.2, direction.z * 0.2, 1.1, city);

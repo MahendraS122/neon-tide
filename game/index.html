@@ -11,17 +11,29 @@
 <body>
   <canvas id="game" aria-label="Explore Port Solara on foot or by car"></canvas>
   <header id="identity"><b>NEON TIDE</b><span>PORT SOLARA / FREE ROAM</span></header>
-  <section id="mission"><small>CHAPTER 01 · HOMECOMING</small><h1>A city to call your own</h1>
-    <p id="objective">Explore Ocean Drive. Find a ride.</p><div class="stage"></div>
-    <footer>NEXT: The streets are yours</footer></section>
-  <aside id="wallet"><b>$2,450</b><span id="clock">18:42 / THU</span>
+  <section id="mission"><small id="chapter"></small><time id="timer"></time>
+    <h1 id="mission-name"></h1><p id="objective"></p><div id="stage" class="meter"></div>
+    <footer id="next"></footer></section>
+  <section id="response" hidden><small>SPD RESPONSE</small><ul id="response-list"></ul></section>
+  <aside id="wallet"><b id="cash"></b><span id="clock"></span>
     <div id="stars"></div><span id="wanted-label"></span></aside>
+  <aside id="weapons" aria-label="Weapon slots"></aside><div id="reticle" hidden></div>
   <section id="failure" hidden><strong></strong><p>Returning to Ocean Drive</p></section>
-  <section id="location"><small>WELCOME TO</small><h2 id="district">Ocean Drive</h2>
-    <div class="vitals"><i></i><i></i></div><span>DEX CALLOWAY</span></section>
-  <section id="speedometer" hidden><strong id="speed">0</strong><span>KM/H</span>
-    <h3 id="car-name">Solstice GT</h3><small id="condition">CONDITION 100%</small></section>
-  <div id="hint">CLICK TO LOOK · WASD MOVE · SHIFT SPRINT · SPACE JUMP · F ENTER CAR · N NIGHT</div>
+  <section id="location"><canvas id="minimap" width="224" height="224" aria-label="Minimap"></canvas>
+    <h2 id="district"></h2><div class="vitals">
+      <span>HP <b id="health-value"></b></span><div id="health" class="meter"></div>
+      <span>AR <b id="armour-value"></b></span><div id="armour" class="meter"></div>
+      <span>RESPECT</span><div id="respect" class="meter"></div>
+    </div></section>
+  <section id="speedometer" hidden><div class="dial"><strong id="speed"></strong>
+      <div><b id="gear"></b><span>KM/H</span></div></div>
+    <h3 id="car-name"></h3><small id="condition"></small>
+    <div class="nitro"><small>NITRO</small><div id="nitro" class="meter"></div></div>
+    <div class="radio"><div id="eq"><i></i><i></i><i></i><i></i><i></i></div>
+      <small id="station"></small><p id="song"></p></div></section>
+  <section id="dialogue" hidden><canvas id="portrait" width="56" height="56"></canvas>
+    <div><small id="speaker"></small><p id="line"></p></div></section>
+  <aside id="callout" hidden></aside><div id="hint"></div>
   <p id="status" role="status" aria-live="polite"></p>
   <script type="module" src="./src/main.js"></script>
 </body>
