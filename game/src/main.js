@@ -3,6 +3,10 @@ import { createWanted } from './systems/wanted.js';
 import { createPolice } from './entities/police.js';
 import { createHelicopter } from './entities/helicopter.js';
 import { createRoadblocks } from './world/roadblocks.js';
+import { createWeapons, createVitals } from './combat/weapons.js';
+import { createCombatEffects } from './combat/effects.js';
+import { createCombatAudio } from './combat/audio.js';
+import { createGangs } from './entities/gangs.js';
 import { createHud } from './ui/hud.js';
 import { createPlayer } from './entities/player.js';
 import { createVehicleSystem } from './entities/vehicle.js';
@@ -29,6 +33,7 @@ const city = createCity(scene, textures);
 const input = createInput(canvas);
 const character = createCharacter({ player: true, shirt: '#387e81' });
 const player = createPlayer(scene, character, input, city);
+const vitals = createVitals();
 const wanted = createWanted(() => {
   if (player.vehicle) {
     const car = player.vehicle;
@@ -39,9 +44,8 @@ const wanted = createWanted(() => {
   }
   player.position.set(109, 0.22, 15);
   player.character.root.position.copy(player.position);
-  player.health = 100;
+  vitals.reset();
 });
-player.health = 100;
 const pedestrians = createPedestrians(scene, city, seededRandom(43), createCharacter);
 function crime(reason, amount) {
   wanted.report(reason, amount);
@@ -60,8 +64,59 @@ vehicles.add('van', '#72a9b0', -47.4, 158, 0);
 const traffic = createTraffic(vehicles, city, seededRandom(980));
 const helicopter = createHelicopter(scene, city);
 const roadblocks = createRoadblocks(scene, city);
-const police = createPolice(scene, city, vehicles, player, createCharacter, (origin, target, damage) => {
-  player.health = Math.max(0, player.health - damage);
+const effects = createCombatEffects(scene, seededRandom(517));
+const audio = createCombatAudio();
+function enemyFire(origin, target, damage) {
+  effects.shot(origin, target, true);
+  audio.play(0.42, 0.09);
+  vitals.hurt(player.vehicle ? damage * 0.55 : damage);
+}
+const police = createPolice(scene, city, vehicles, player, createCharacter, enemyFire);
+const gangs = createGangs(scene, city, player, createCharacter, enemyFire, seededRandom(380));
+for (const [x, z] of [[29, -31], [18, -22], [29, -18], [21, -12], [27, -8]]) gangs.add(x, z);
+const personZones = [[1.03, 0.39], [1.67, 0.22, true]];
+const progress = { cash: 2450, respect: 12, callout: '', flash: 0 };
+function reward(label, value) {
+  progress.cash += value;
+  progress.respect = Math.min(100, progress.respect + 2);
+  progress.callout = `${label} +$${value}`;
+  progress.flash = 2.5;
+}
+function combatTargets(ranged) {
+  const targets = gangs.members.filter(member => member.health).map(member => ({
+    position: member.position, zones: personZones,
+    hit(damage, headshot) {
+      member.hit(damage);
+      if (!member.health) reward(headshot ? 'HEADSHOT' : 'LOOKOUT DOWN', headshot ? 150 : 75);
+    }
+  }));
+  for (const unit of police.units) {
+    if (!unit.onFoot) continue;
+    targets.push({ position: unit.position, zones: personZones, hit(damage) {
+      unit.integrity -= damage;
+      crime('Assault on SPD', 0.65);
+    } });
+  }
+  if (!ranged) return targets;
+  for (const car of vehicles.vehicles) {
+    if (car === player.vehicle) continue;
+    for (const offset of [-1.15, 0, 1.15]) {
+      const position = car.position.clone().add(new THREE.Vector3(
+        Math.sin(car.yaw) * offset, 0, Math.cos(car.yaw) * offset));
+      targets.push({ position, zones: [[0.57, 0.82]], hit(damage) {
+        car.condition = Math.max(0, car.condition - damage * 0.32);
+      } });
+    }
+  }
+  return targets;
+}
+const weapons = createWeapons(player, input, city, effects, audio, seededRandom(32), {
+  targets: combatTargets,
+  onShot(origin) {
+    pedestrians.onGunfire(origin);
+    gangs.alert(origin);
+    crime('Shots fired', 0.32);
+  }
 });
 const hud = createHud(player, vehicles, city, wanted);
 const actorBatch = createActorBatch(scene);
@@ -76,6 +131,8 @@ player.updateCamera(camera, 1 / 60, true);
 
 function simulate(dt) {
   time += dt;
+  effects.update(dt);
+  progress.flash = Math.max(0, progress.flash - dt);
   if (wanted.ending) {
     wanted.update(dt);
     return;
@@ -83,12 +140,15 @@ function simulate(dt) {
   if (input.take('KeyN')) sky.setNight(!sky.night);
   traffic.update(dt, time);
   vehicles.update(dt, time);
+  player.aiming = weapons.selected > 0 || input.down('Mouse0') || input.down('KeyX');
   player.update(dt);
   pedestrians.update(dt);
+  weapons.update(dt);
+  gangs.update(dt);
   const aerialSight = helicopter.update(dt, time, wanted.stars, player.position);
   roadblocks.update(wanted.stars, player, time);
   const response = police.update(dt, wanted.stars, aerialSight);
-  wanted.update(dt, { ...response, health: player.health });
+  wanted.update(dt, { ...response, health: vitals.health });
 }
 
 renderer.setAnimationLoop(() => {
@@ -117,5 +177,5 @@ renderer.setAnimationLoop(() => {
 
 // This inspectable state also gives later story and police systems stable integration points.
 window.__game = { scene, camera, renderer, city, sky, player, vehicles, traffic, pedestrians, hero,
-  wanted, police, helicopter, roadblocks,
+  wanted, police, helicopter, roadblocks, weapons, vitals, effects, gangs, progress,
   get time() { return time; }, get frames() { return frames; } };

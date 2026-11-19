@@ -16,11 +16,21 @@ export function createInput(canvas) {
     pressed.clear();
     dragging = false;
   });
+  document.addEventListener('pointerlockchange', () => {
+    if (document.pointerLockElement !== canvas) held.delete('Mouse0');
+  });
   canvas.addEventListener('click', () => {
     if (!document.pointerLockElement) canvas.requestPointerLock()?.catch(() => {});
   });
-  canvas.addEventListener('mousedown', () => { dragging = true; });
-  addEventListener('mouseup', () => { dragging = false; });
+  canvas.addEventListener('mousedown', event => {
+    dragging = true;
+    if (document.pointerLockElement === canvas) held.add(`Mouse${event.button}`);
+  });
+  canvas.addEventListener('contextmenu', event => event.preventDefault());
+  addEventListener('mouseup', event => {
+    dragging = false;
+    held.delete(`Mouse${event.button}`);
+  });
   addEventListener('mousemove', event => {
     if (document.pointerLockElement === canvas || dragging) {
       mouseX += event.movementX;

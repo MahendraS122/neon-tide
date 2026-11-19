@@ -12,6 +12,7 @@ export function createPlayer(scene, character, input, city) {
   let grounded = true;
   let vehicle = null;
   let walkingSpeed = 0;
+  let aiming = false;
   const cameraTarget = position.clone().add(new THREE.Vector3(0, 1.25, 0));
   function update(dt) {
     const mouse = input.mouse();
@@ -34,8 +35,8 @@ export function createPlayer(scene, character, input, city) {
     );
     if (movement.lengthSq() > 0) movement.normalize().multiplyScalar(speed);
     walkingSpeed = movement.length();
-    if (walkingSpeed > 0) {
-      const facing = Math.atan2(movement.x, movement.z);
+    if (walkingSpeed > 0 || aiming) {
+      const facing = aiming ? yaw + Math.PI : Math.atan2(movement.x, movement.z);
       character.root.rotation.y += shortestAngle(character.root.rotation.y, facing) * Math.min(1, dt * 14);
     }
     moveWithCollisions(position, movement.x * dt, movement.z * dt, 0.34, city, position.y);
@@ -51,7 +52,10 @@ export function createPlayer(scene, character, input, city) {
       grounded = true;
     }
     character.root.position.copy(position);
-    character.animate(dt, grounded ? walkingSpeed : 0);
+    character.animate(dt, grounded ? walkingSpeed : 0, aiming);
+  }
+  function aimDirection() {
+    return new THREE.Vector3(-Math.sin(yaw), -Math.sin(pitch - 0.15), -Math.cos(yaw)).normalize();
   }
   function updateCamera(camera, dt, snap = false) {
     const moving = vehicle && Math.abs(vehicle.speed) > 2;
@@ -69,12 +73,18 @@ export function createPlayer(scene, character, input, city) {
     camera.position.lerp(safe, blend);
     cameraTarget.lerp(target, snap ? 1 : 1 - Math.exp(-dt * 18));
     camera.lookAt(cameraTarget);
+    if (aiming && !vehicle) {
+      const aim = position.clone().add(new THREE.Vector3(0, 1.35, 0)).addScaledVector(aimDirection(), 14);
+      camera.lookAt(aim);
+    }
     const fov = vehicle ? 58 + Math.min(12, Math.abs(vehicle.speed) * 0.22) : 58;
     camera.fov += (fov - camera.fov) * blend;
     camera.updateProjectionMatrix();
   }
   return {
-    position, character, update, updateCamera,
+    position, character, update, updateCamera, aimDirection,
+    set aiming(value) { aiming = value; },
+    get heading() { return vehicle?.yaw ?? yaw + Math.PI; },
     get vehicle() { return vehicle; },
     set vehicle(value) {
       vehicle = value;
