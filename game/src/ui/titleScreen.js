@@ -54,7 +54,9 @@ export function createTitleScreen({ player, camera, hero, onNewGame, onContinue,
       '<p><kbd>F</kbd> Enter, steal or exit a vehicle</p>' +
       '<p><kbd>J</kbd> Start or retry a glowing story job</p>' +
       '<p><kbd>1–5 / LMB</kbd> Select a weapon and fire · R reload</p>' +
-      '<p><kbd>V / N</kbd> Tune the radio · toggle night</p>' +
+      '<p><kbd>Q / E</kbd> Tune the car radio</p>' +
+      '<p><kbd>M / ESC</kbd> Atlas · pause</p>' +
+      '<p><kbd>G / K / T</kbd> Workshop · save or shop · race</p>' +
       '<p><kbd>SPACE</kbd> Jump on foot · handbrake in a car</p>' +
       '<button type="button">BACK</button>';
     panel.querySelector('button').addEventListener('click', showMenu);

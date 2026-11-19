@@ -179,8 +179,18 @@ export function createMissions(game, input) {
       next: storyMissions[index + 1]?.title ?? 'Port Solara is yours' };
   }
 
-  setDestination(objectivePlans[0].position);
-  return { start, update, fail, presentation, completed, destination,
+  function restore(savedIndex) {
+    cleanTargets();
+    if (targetCar) targetCar.missionTarget = false;
+    targetCar = null;
+    active = false;
+    index = Math.max(0, Math.min(storyMissions.length, savedIndex));
+    completed.splice(0, completed.length, ...storyMissions.slice(0, index).map(mission => mission.id));
+    if (index < storyMissions.length) setDestination(objectivePlans[index].position);
+    else marker.visible = false;
+  }
+  restore(0);
+  return { start, update, fail, restore, presentation, completed, destination,
     setDialogue(handler) { dialogue = handler; },
     get active() { return active; }, get index() { return index; }, get stage() { return stage; },
     get blips() { return index < storyMissions.length ? [{ position: destination }] : []; } };

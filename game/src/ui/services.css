@@ -1,0 +1,21 @@
+/* Focused interaction panels share the garage's muted glass style. */
+.service-menu {
+  position: fixed;
+  z-index: 45;
+  inset: 50% auto auto 50%;
+  translate: -50% -50%;
+  width: min(450px, 88vw);
+  padding: 25px;
+  border: 1px solid #6caaa6;
+  box-shadow: 0 12px 90px 36px #030d18b0;
+  color: #fff1d9;
+  background: #102331;
+  font: 14px system-ui, sans-serif;
+}
+.service-menu h2 { margin: 5px 0 14px; font-size: 32px; }
+.service-menu small { color: #79f8dc; letter-spacing: .18em; }
+.service-actions, .swatches { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 0; }
+.service-menu button { color: inherit; background: #243c49; padding: 9px 12px; border: 1px solid #52757e; }
+.service-menu button:hover, .service-menu button:focus-visible { border-color: #79f8dc; }
+.swatches button { width: 33px; height: 33px; border-radius: 50%; }
+.service-menu [role="status"] { color: #ffbf87; }

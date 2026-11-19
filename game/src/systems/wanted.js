@@ -45,6 +45,11 @@ export function createWanted(onRecover = () => {}) {
 
   return {
     report, update,
+    clear() {
+      heat = unseen = arrest = 0;
+      visible = false;
+      ending = lastCrime = '';
+    },
     get stars() { return Math.ceil(heat); },
     get status() { return heat <= 0 ? 'CLEAR' : visible ? 'IN SIGHT' : 'SEARCHING'; },
     get lastCrime() { return lastCrime; },

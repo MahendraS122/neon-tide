@@ -41,6 +41,7 @@ export function createInput(canvas) {
   });
   return {
     held,
+    clearPresses() { pressed.clear(); },
     down(code) { return held.has(code); },
     take(code) {
       const value = pressed.has(code);

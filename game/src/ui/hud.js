@@ -117,7 +117,7 @@ export function createHud(player, vehicles, city, {
     }
     const minutes = (night ? 23 * 60 + 17 : 18 * 60 + 42) + Math.floor(elapsed / 4);
     const day = ['THU', 'FRI', 'SAT', 'SUN', 'MON', 'TUE', 'WED'][Math.floor(minutes / 1440) % 7];
-    text('clock', `${timePart(Math.floor(minutes / 60) % 24)}:${timePart(minutes % 60)} / ${day}`);
+    text('clock', presentation.clock ?? `${timePart(Math.floor(minutes / 60) % 24)}:${timePart(minutes % 60)} / ${day}`);
     el('dialogue').hidden = !presentation.dialogue;
     if (presentation.dialogue) {
       text('speaker', presentation.dialogue.speaker);
@@ -125,7 +125,7 @@ export function createHud(player, vehicles, city, {
     }
     el('callout').hidden = !progress.flash;
     text('callout', progress.callout);
-    text('hint', presentation.hint ?? (vehicle ? 'WASD DRIVE · SPACE DRIFT · SHIFT NITRO · V TUNE · F EXIT'
+    text('hint', presentation.hint ?? (vehicle ? 'WASD DRIVE · SPACE DRIFT · SHIFT NITRO · Q/E RADIO · M ATLAS · F EXIT'
       : vehicles.nearestHint() || 'CLICK TO LOOK · WASD MOVE · F ENTER · 1–5 WEAPONS · LMB FIRE · R RELOAD'));
   }
   return { update };

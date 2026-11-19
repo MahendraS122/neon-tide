@@ -1,10 +1,12 @@
-// Two original procedural car-radio loops and an off position.
+// Three synthesized stations and a silent position share a small WebAudio sequencer.
 const stations = [
   { station: 'SOLARA FM', song: 'Kite Arc — Tidal Static', bpm: 115,
     notes: [45, 45, 48, 43, 45, 52, 48, 43] },
   { station: 'NIGHT SIGNAL', song: 'Dusk Relay — Blue Exit', bpm: 94,
     notes: [42, 45, 49, 40, 42, 52, 49, 45] },
-  { station: 'RADIO OFF', song: 'V tune' }
+  { station: 'LOW TIDE AM', song: 'Paper Suns — Coral Steps', bpm: 132,
+    notes: [48, 55, 52, 57, 46, 53, 50, 55], voice: 'square' },
+  { station: 'RADIO OFF', song: 'Q / E tune' }
 ];
 
 export function createRadio() {
@@ -14,7 +16,7 @@ export function createRadio() {
   let step = 0;
   let driving = false;
   function unlock() {
-    if (!driving || index === 2) return;
+    if (!driving || !stations[index].bpm) return;
     context ??= new AudioContext();
     if (context.state === 'suspended') context.resume().catch(() => {});
   }
@@ -37,19 +39,22 @@ export function createRadio() {
     if (!enabled || !stations[index].bpm) return;
     tick -= dt;
     if (tick > 0) return;
-    const { bpm, notes } = stations[index];
+    const { bpm, notes, voice = 'triangle' } = stations[index];
     tick += 30 / bpm;
     const beat = step++;
     if (context?.state !== 'running') return;
     const time = context.currentTime;
     const note = notes[beat % notes.length];
-    tone(note, time, tick * 0.92, 0.045, 'triangle');
+    tone(note, time, tick * 0.92, voice === 'square' ? .023 : .045, voice);
     if (beat % 2 === 0) tone(31, time, 0.15, 0.05, 'sine');
     if (beat % 4 !== 2) tone(note + 19, time + 0.02, tick, 0.017, 'sine');
   }
   return {
     update,
-    cycle() { index = (index + 1) % stations.length; },
+    cycle(direction = 1) {
+      index = (index + direction + stations.length) % stations.length;
+      tick = step = 0;
+    },
     get current() { return stations[index]; },
     get phase() { return step; }
   };

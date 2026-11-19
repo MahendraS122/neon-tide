@@ -8,6 +8,14 @@ import { createWeapons, createVitals } from './combat/weapons.js';
 import { createDialogue } from './ui/dialogue.js';
 import { createTitleScreen } from './ui/titleScreen.js';
 import { createCityMap } from './ui/cityMap.js';
+import { createGarageMenu } from './ui/garage.js';
+import { createSave } from './systems/save.js';
+import { createRaces } from './systems/races.js';
+import { createCollectibles } from './systems/collectibles.js';
+import { createClock } from './systems/clock.js';
+import { createPauseMenu } from './ui/pauseMenu.js';
+import { createGarage } from './world/garages.js';
+import { safehouse } from './world/locations.js';
 import { createRadio } from './systems/radio.js';
 import { createHud } from './ui/hud.js';
 import { createCombatEffects } from './combat/effects.js';
@@ -82,7 +90,7 @@ const police = createPolice(scene, city, vehicles, player, createCharacter, enem
 const gangs = createGangs(scene, city, player, createCharacter, enemyFire, seededRandom(380));
 for (const [x, z] of [[29, -31], [18, -22], [29, -18], [21, -12], [27, -8]]) gangs.add(x, z);
 const personZones = [[1.03, 0.39], [1.67, 0.22, true]];
-const progress = { cash: 2450, respect: 12, stolen: 0, callout: '', flash: 0 };
+const progress = { cash: 2450, respect: 12, stolen: 0, tokens: [], races: 0, callout: '', flash: 0 };
 function reward(label, value) {
   progress.cash += value;
   progress.respect = Math.min(100, progress.respect + 2);
@@ -141,8 +149,18 @@ const shotName = new URLSearchParams(location.search).get('shot');
 const shot = setupShot(shotName, game, seededRandom(shotName === 'chase' ? 209 : 749));
 const missions = createMissions(game, input);
 game.missions = missions;
+const cityClock = createClock();
+const garage = createGarage(game);
+const garageMenu = createGarageMenu(garage, progress);
+const save = createSave({ progress, missions, cityClock, garage });
+const races = createRaces(game, reward);
+const collectibles = createCollectibles(game, reward);
 const cityMap = createCityMap(game);
 if (shotName === 'map') cityMap.open(true);
+const canSave = () => !player.vehicle && !wanted.stars && !wanted.ending
+  && Math.hypot(player.position.x - safehouse.x, player.position.z - safehouse.z) < 9;
+const pause = createPauseMenu({ canSave, save: save.write, openMap: cityMap.open });
+let nightOverride = null;
 if (shot) missions.destination.set(100, 0.2, -34);
 const dialogue = createDialogue();
 missions.setDialogue(lines => dialogue.enqueue(lines));
@@ -179,9 +197,35 @@ function simulate(dt) {
     if (input.take('Escape')) cityMap.close();
     return;
   }
+  if (input.take('Escape')) {
+    if (garageMenu.active) garageMenu.close();
+    else if (pause.active) pause.close();
+    else pause.open();
+    return;
+  }
+  if (input.take('KeyG') && player.vehicle && garage.nearby() && Math.abs(player.vehicle.speed) <= 3) {
+    if (garageMenu.active) garageMenu.close();
+    else garageMenu.open();
+    return;
+  }
+  if (pause.active || garageMenu.active) return;
+  const speaking = dialogue.active;
   dialogue.update(dt);
-  if (dialogue.active) return;
+  if (speaking) {
+    input.clearPresses();
+    return;
+  }
   time += dt;
+  cityClock.update(dt);
+  if (input.take('KeyK')) {
+    const message = canSave() ? (save.write() ? 'SAFEHOUSE · GAME SAVED' : 'SAVE UNAVAILABLE')
+      : collectibles.useService();
+    if (message) {
+      progress.callout = message;
+      progress.flash = 3;
+    }
+  }
+  if (input.take('KeyT') && !missions.active) races.start();
   effects.update(dt);
   progress.flash = Math.max(0, progress.flash - dt);
   if (wanted.ending) {
@@ -189,8 +233,11 @@ function simulate(dt) {
     wanted.update(dt);
     return;
   }
-  if (input.take('KeyN')) sky.setNight(!sky.night);
-  if (input.take('KeyV')) radio.cycle();
+  if (input.take('KeyN')) nightOverride = !sky.night;
+  const nextNight = nightOverride ?? cityClock.night;
+  if (nextNight !== sky.night) sky.setNight(nextNight);
+  if (input.take('KeyE') || input.take('KeyV')) radio.cycle();
+  if (input.take('KeyQ')) radio.cycle(-1);
   traffic.update(dt, time);
   vehicles.update(dt, time);
   radio.update(dt, Boolean(player.vehicle));
@@ -204,6 +251,8 @@ function simulate(dt) {
   const response = police.update(dt, wanted.stars, aerialSight);
   wanted.update(dt, { ...response, health: vitals.health });
   missions.update(dt);
+  races.update(dt);
+  collectibles.update(dt, time);
 }
 
 renderer.setAnimationLoop(() => {
@@ -237,7 +286,11 @@ renderer.setAnimationLoop(() => {
   city.update(dt, time, sky.night);
   sky.update(player.position);
   actorBatch.update(player.position);
-  hud.update(dt, sky.night, { mission: missions.presentation(), route: missions.blips.map(blip => blip.position) });
+  const hint = races.hint || (player.vehicle && garage.nearby() ? 'STOP · G WORKSHOP'
+    : canSave() ? 'K SAVE AT SAFEHOUSE · M ATLAS' : collectibles.hint()
+    || (races.nearby() && player.vehicle && !missions.active ? 'T ENTER GLASSWATER SPRINT' : ''));
+  hud.update(dt, sky.night, { mission: missions.presentation(), clock: cityClock.label,
+    hint: hint || undefined, route: races.active ? [races.destination] : missions.blips.map(blip => blip.position) });
   renderer.render(scene, camera);
   frames += 1;
   if (frames >= 3) window.__shotReady = true;

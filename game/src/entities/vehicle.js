@@ -128,23 +128,29 @@ export function createVehicleSystem(scene, input, city, player, onEject, buildMo
     vehicle.brake = Boolean(reverse || handbrake);
     vehicle.steering = THREE.MathUtils.damp(vehicle.steering, turn, 8, dt);
     const spec = vehicle.spec;
-    let acceleration = throttle * spec.power - reverse * (vehicle.speed > 1 ? 33 : 10);
+    const tuning = vehicle.upgrades ?? {};
+    const power = spec.power * (tuning.engine ? 1.2 : 1);
+    let acceleration = throttle * power - reverse * (vehicle.speed > 1 ? 33 : 10);
     const boost = throttle && vehicle.nitro > 0 && (input.down('ShiftLeft') || input.down('ShiftRight'));
-    if (boost) acceleration += 19;
-    vehicle.nitro = THREE.MathUtils.clamp(vehicle.nitro + dt * (boost ? -27 : 6), 0, 100);
+    if (boost) acceleration += tuning.nitro ? 25 : 19;
+    const charge = boost ? (tuning.nitro ? -18 : -27) : 6;
+    vehicle.nitro = THREE.MathUtils.clamp(vehicle.nitro + dt * charge, 0, 100);
     if (vehicle.speed < -1 && throttle) acceleration = 27;
     vehicle.speed += acceleration * dt;
     vehicle.speed *= Math.exp(-dt * (handbrake ? 1.05 : throttle || reverse ? 0.13 : 0.42));
-    vehicle.speed = THREE.MathUtils.clamp(vehicle.speed, -12, spec.max + (boost ? 9 : 0));
+    const topSpeed = spec.max * (tuning.engine ? 1.13 : 1) + (boost ? 9 : 0);
+    vehicle.speed = THREE.MathUtils.clamp(vehicle.speed, -12, topSpeed);
     const turnStrength = Math.min(1, Math.abs(vehicle.speed) / 7);
     vehicle.yaw += vehicle.steering * turnStrength * Math.sign(vehicle.speed)
       * (handbrake ? 2.1 : 1.13) * dt / (1 + Math.abs(vehicle.speed) * 0.018);
     const forward = new THREE.Vector3(Math.sin(vehicle.yaw), 0, Math.cos(vehicle.yaw));
     const desiredVelocity = forward.multiplyScalar(vehicle.speed);
-    vehicle.velocity.lerp(desiredVelocity, 1 - Math.exp(-dt * (handbrake ? 1.35 : spec.grip)));
+    const grip = spec.grip * (tuning.tyres ? 1.35 : 1);
+    vehicle.velocity.lerp(desiredVelocity, 1 - Math.exp(-dt * (handbrake ? 1.35 : grip)));
     const hit = moveVehicleWithCollisions(vehicle, vehicle.velocity.x * dt, vehicle.velocity.z * dt, city);
     if (hit) {
-      vehicle.condition = Math.max(0, vehicle.condition - Math.abs(vehicle.speed) * dt * 4);
+      const damage = Math.abs(vehicle.speed) * dt * (tuning.armour ? 2 : 4);
+      vehicle.condition = Math.max(0, vehicle.condition - damage);
       vehicle.speed *= -0.18;
       vehicle.velocity.multiplyScalar(-0.15);
     }
@@ -194,7 +200,8 @@ export function createVehicleSystem(scene, input, city, player, onEject, buildMo
       moveWithCollisions(controlled.position, direction.x * 0.2, direction.z * 0.2, 1.1, city);
       other.stopTimer = 2;
       const impact = Math.abs(controlled.speed - other.speed);
-      if (impact > 5) controlled.condition = Math.max(0, controlled.condition - impact * 0.08);
+      const damage = impact * (controlled.upgrades?.armour ? .04 : .08);
+      if (impact > 5) controlled.condition = Math.max(0, controlled.condition - damage);
       controlled.speed *= 0.55;
       controlled.velocity.multiplyScalar(0.55);
     }
