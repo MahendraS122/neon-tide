@@ -23,18 +23,18 @@ header, section, aside, #hint, #reticle { position: fixed; pointer-events: none;
   border-left: 3px solid var(--amber);
   box-shadow: 0 7px 22px #12203024;
 }
-#mission { left: 28px; top: 60px; width: 282px; }
-small, time { font-size: 9px; font-weight: 700; letter-spacing: 1.6px; color: var(--amber); }
+#mission { left: 28px; top: 60px; width: 330px; }
+small, time { font-size: 10.5px; font-weight: 800; letter-spacing: 1.6px; color: var(--amber); }
 #timer { float: right; color: var(--aqua); font-variant-numeric: tabular-nums; }
-h1 { font-size: 20px; margin: 7px 0 5px; letter-spacing: -0.3px; }
-p { margin: 0; font-size: 12px; color: #e8f1ef; line-height: 1.5; }
+h1 { font-size: 24px; font-weight: 800; margin: 7px 0 5px; letter-spacing: -0.3px; }
+p { margin: 0; font-size: 14px; font-weight: 700; color: #e8f1ef; line-height: 1.5; }
 .meter { height: 4px; background: #d5fff731; overflow: hidden; }
 .meter::before { content: ''; display: block; height: 100%; width: var(--fill, 0%); background: var(--aqua); }
 #stage { height: 3px; margin: 12px 0 8px; }
-footer { font-size: 9px; letter-spacing: 0.65px; color: #bed0d4; }
+footer { font-size: 10.5px; font-weight: 700; letter-spacing: 0.65px; color: #bed0d4; }
 
 /* Dispatch rows: unit, distance, and status. */
-#response { left: 28px; top: 191px; width: 219px; border-left-color: #79cbff; padding: 10px 12px; }
+#response { left: 28px; top: 224px; width: 219px; border-left-color: #79cbff; padding: 10px 12px; }
 #response > small { color: #b9e9ff; }
 #response-list { list-style: none; padding: 0; margin: 5px 0 0; }
 #response li { display: grid; grid-template-columns: 1fr 38px 71px; align-items: center; gap: 4px; }
@@ -47,22 +47,22 @@ footer { font-size: 9px; letter-spacing: 0.65px; color: #bed0d4; }
 #response li small[data-status='HELI'] { color: #b5ffea; background: #268a8066; }
 
 #wallet { right: 28px; top: 22px; text-align: right; text-shadow: 0 2px 8px #071322; }
-#wallet b { display: block; font-size: 30px; letter-spacing: 0.4px; }
-#wallet span { font-size: 10px; letter-spacing: 2px; font-weight: bold; }
-#stars { font-size: 23px; color: var(--amber); letter-spacing: 4px; margin: 6px -4px 3px 0; }
+#wallet b { display: block; font-size: 36px; font-weight: 800; letter-spacing: 0.4px; }
+#wallet span { font-size: 12px; letter-spacing: 2px; font-weight: 800; }
+#stars { font-size: 28px; font-weight: 800; color: var(--amber); letter-spacing: 4px; margin: 6px -4px 3px 0; }
 #stars.searching { animation: search-pulse 0.85s alternate infinite; }
 @keyframes search-pulse { to { opacity: 0.45; } }
-#weapons { right: 28px; top: 155px; width: 164px; display: grid; gap: 3px; }
+#weapons { right: 28px; top: 170px; width: 208px; display: grid; gap: 3px; }
 #weapons > div {
   display: grid; grid-template-columns: 16px 30px 1fr auto; gap: 5px; align-items: center;
-  padding: 5px 6px; background: #0e1c2cc9; border-right: 2px solid #a2ece360;
-  font-size: 10px; color: #e0e8e7;
+  padding: 5px 6px; background: #0e1c2ce8; border-right: 2px solid #a2ece360;
+  font-size: 12px; font-weight: 800; color: #e0e8e7;
 }
 #weapons > div.active { background: #173846f5; border-color: var(--aqua); color: #fff; }
 #weapons kbd { color: var(--aqua); }
 #weapons svg { width: 27px; height: 22px; fill: currentColor; }
-#weapons span { font-variant-numeric: tabular-nums; color: #d2efe7; }
-#weapons.stowed { opacity: 0.76; }
+#weapons span { font-variant-numeric: tabular-nums; color: #d2efe7; white-space: nowrap; }
+#weapons.stowed { opacity: 0.94; }
 #reticle { top: 50%; left: 50%; width: 10px; height: 10px; transform: translate(-50%, -50%); }
 #reticle { border: 1px solid #f5ffed; border-radius: 50%; box-shadow: 0 0 4px #071322; }
 #failure { inset: 0; display: grid; align-content: center; text-align: center;
@@ -70,27 +70,28 @@ footer { font-size: 9px; letter-spacing: 0.65px; color: #bed0d4; }
 #failure strong { color: #ff8194; font-size: clamp(3rem, 12vw, 8rem);
   font-style: italic; letter-spacing: 0.08em; }
 
-#location { left: 28px; bottom: 26px; width: 175px;
+#location { left: 28px; bottom: 26px; width: 248px;
   text-shadow: 0 2px 5px #071322; }
 #minimap { display: block; width: 147px; height: 147px; border-radius: 50%; background: #132538; }
 #minimap { border: 1px solid #c0eee38c; outline: 3px solid #0d1d2c80; box-shadow: 0 6px 16px #08162575; }
-h2 { margin: 10px 0 6px; font-size: 17px; font-style: italic; }
+h2 { margin: 10px 0 6px; font-size: 20px; font-weight: 800; font-style: italic; }
 .vitals { display: grid; grid-template-columns: 49px 1fr; gap: 5px 7px; align-items: center; }
-.vitals span { font-size: 8px; font-weight: bold; letter-spacing: 0.7px; }
+.vitals span { font-size: 9.5px; font-weight: 800; letter-spacing: 0.7px; }
 #health::before { background: #8bebaa; }
 #armour::before { background: #74cfff; }
 #respect::before { background: #ffc581; }
+#rank { grid-column: 1 / -1; font-size: 11px; font-weight: 800; letter-spacing: 0.3px; color: var(--amber); white-space: nowrap; }
 
-#speedometer { right: 28px; bottom: 26px; width: 168px; text-align: right; text-shadow: 0 3px 9px #081724; }
+#speedometer { right: 28px; bottom: 26px; width: 190px; text-align: right; text-shadow: 0 3px 9px #081724; }
 .dial { display: flex; justify-content: flex-end; align-items: end; gap: 8px; margin-bottom: 4px; }
-.dial strong { font-size: 69px; font-weight: 700; font-style: italic;
+.dial strong { font-size: 81px; font-weight: 800; font-style: italic;
   line-height: 0.86; letter-spacing: -5px; }
-.dial b, .dial span { display: block; font-size: 9px; color: var(--aqua); }
-.dial b { font-size: 15px; border: 1px solid #a2ece380; text-align: center; margin-bottom: 4px; }
-h3 { font-size: 13px; margin: 9px 0 3px; letter-spacing: 1.6px; }
+.dial b, .dial span { display: block; font-size: 11px; font-weight: 800; color: var(--aqua); }
+.dial b { font-size: 18px; border: 1px solid #a2ece380; text-align: center; margin-bottom: 4px; }
+h3 { font-size: 15.5px; font-weight: 800; margin: 9px 0 3px; letter-spacing: 1.6px; }
 .nitro { display: grid; grid-template-columns: 45px 1fr; gap: 8px; align-items: center; margin: 7px 0 9px; }
 .radio { background: #101d2bd9; border-right: 2px solid var(--aqua); padding: 6px 8px; text-align: left; }
-.radio p { font-size: 10px; }
+.radio p { font-size: 12px; }
 #eq { float: right; display: flex; gap: 2px; height: 16px; align-items: end; }
 #eq i { width: 2px; height: 9px; background: var(--aqua); transform-origin: bottom; }
 #eq i:nth-child(even) { height: 14px; }
@@ -99,13 +100,13 @@ h3 { font-size: 13px; margin: 9px 0 3px; letter-spacing: 1.6px; }
 #eq.on i:nth-child(3n) { animation-delay: -0.15s; }
 @keyframes beat { to { transform: scaleY(0.24); } }
 
-#dialogue { left: 50%; bottom: 57px; transform: translateX(-50%); width: min(440px, 59vw); }
+#dialogue { left: 50%; bottom: 57px; transform: translateX(-50%); width: min(496px, 59vw); }
 #dialogue { display: flex; gap: 12px; align-items: center;
   border-left-color: var(--aqua); padding: 8px 12px; }
-#portrait { width: 42px; height: 42px; border: 1px solid var(--edge); }
+#portrait { width: 42px; height: 42px; flex-shrink: 0; border: 1px solid var(--edge); }
 #speaker { color: var(--aqua); }
-#callout { bottom: 137px; left: 50%; transform: translateX(-50%); color: var(--amber); }
-#callout { font-size: 14px; font-weight: 800; letter-spacing: 2px; text-shadow: 0 2px 6px #13172a; }
+#callout { bottom: 145px; left: 50%; transform: translateX(-50%); color: var(--amber); }
+#callout { font-size: 17px; font-weight: 800; letter-spacing: 2px; text-shadow: 0 2px 6px #13172a; }
 #hint {
   bottom: 16px; left: 50%; transform: translateX(-50%); white-space: nowrap;
   font-size: 9px; letter-spacing: 1px; background: #10232cc7; padding: 8px 12px;
@@ -116,11 +117,11 @@ h3 { font-size: 13px; margin: 9px 0 3px; letter-spacing: 1.6px; }
 @media (max-width: 850px), (max-height: 620px) {
   #identity span { display: none; }
   #mission { width: 238px; }
-  #response { width: 187px; top: 210px; }
-  #weapons { width: 135px; }
+  #response { width: 187px; top: 250px; }
+  #weapons { width: 176px; }
   #weapons > div { grid-template-columns: 13px 23px 1fr auto; gap: 3px; }
   #weapons svg { width: 21px; }
-  #location { width: 128px; }
+  #location { width: 248px; }
   #minimap { width: 112px; height: 112px; }
   #hint { font-size: 7px; letter-spacing: 0; }
 }

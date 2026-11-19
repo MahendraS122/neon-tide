@@ -68,6 +68,9 @@ export function setupShot(name, game, random) {
     hero.speed = 41.9;
     hero.driverHead.visible = true;
     player.vehicle = hero;
+    weapons.select(2);
+    weapons.slots[2].ammo = 30;
+    weapons.slots[2].reserve = 120;
     vitals.health = 91;
     vitals.armour = 58;
     const cruisers = [[100.4, 7.1, 2.94], [107.5, 7.3, 3.34], [96, 0.5, 3.08]];
@@ -86,6 +89,17 @@ export function setupShot(name, game, random) {
     taxi.driverHead.visible = true;
     vehicles.add('suv', '#d6ddd6', 94, -46, 0);
     vehicles.add('muscle', '#e29473', 104, -58, Math.PI);
+    const walkers = [[110, 6], [112.5, 2], [110.5, -4], [113, -10],
+      [90.5, 1], [90, -6], [90.5, -13], [90, -19]];
+    walkers.forEach(([x, z], index) => {
+      // The system keeps add private; reveal and pose its existing sidewalk actors.
+      const person = pedestrians.people[index];
+      person.position.set(x, 0.22, z);
+      person.yaw = index % 2 ? 0.3 : 2.8;
+      person.character.root.rotation.y = person.yaw;
+      person.character.root.visible = true;
+      person.character.animate(0.12 + index * 0.09, 1.2);
+    });
     camera.fov = 48;
     camera.position.set(103.4, 5.3, 22.4);
     camera.lookAt(103.7, 3.55, 8.7);
@@ -96,14 +110,13 @@ export function setupShot(name, game, random) {
     progress.flash = 3;
     Object.assign(hud, {
       district: 'Ocean Drive',
-      compactWeapons: true,
       mission: { chapter: 'CHAPTER 03 · HOT WIRE', name: 'Long Way Home', timer: '01:24', stage: 62,
         objective: 'Lose the SPD tail on Ocean Drive', next: 'Meet Mara at the south marina' },
       dialogue: { speaker: 'MARA REYES · COMMS', line: 'Three cruisers? Keep moving. I’m at the south marina.' },
       hint: 'WASD DRIVE   /   SPACE HANDBRAKE   /   SHIFT NITRO   /   Q / E RADIO'
     });
   } else {
-    sky.setNight(true);
+    sky.setNight(false);
     createNeonRow(scene, textures, random);
     player.position.set(23.35, 0.22, 14.6);
     player.character.root.position.copy(player.position);
@@ -132,6 +145,22 @@ export function setupShot(name, game, random) {
     shotFX.wreck(wreck.position);
     vehicles.add('suv', '#6f859b', 29.65, 7.25, 3.35);
     vehicles.add('van', '#966585', 19.0, -27, 0);
+    [[27.3, -18, Math.PI], [20.7, -34, 0]].forEach(([x, z, yaw], index) => {
+      const car = vehicles.add(index ? 'taxi' : 'muscle', index ? '#eebb47' : '#e2d9bf', x, z, yaw, true);
+      car.driverHead.visible = true;
+      car.speed = 7;
+      traffic.fleet.push(car);
+    });
+    const bystanders = [[15, -9], [15.4, -16], [33, -11], [32.7, -18], [33.2, -27]];
+    bystanders.forEach(([x, z], index) => {
+      const person = pedestrians.people[index];
+      person.position.set(x, 0.22, z);
+      person.yaw = Math.PI + (index % 2 ? 0.2 : -0.2);
+      person.flee = 8;
+      person.character.root.rotation.y = person.yaw;
+      person.character.root.visible = true;
+      person.character.animate(0.1 + index * 0.07, 4.7);
+    });
     const hit = new THREE.Vector3(28.75, 1.15, 8.85);
     effects.impact(hit, 21);
     effects.shot(new THREE.Vector3(23.44, 1.58, 13.75), hit, false, 2);

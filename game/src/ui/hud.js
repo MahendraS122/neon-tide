@@ -10,6 +10,7 @@ const icons = [
 ];
 const cashFormat = new Intl.NumberFormat('en-US');
 const timePart = value => String(value).padStart(2, '0');
+const rankTitles = ['STREET RAT', 'HUSTLER', 'SHOT CALLER', 'KINGPIN'];
 
 function portrait(canvas) {
   const ctx = canvas.getContext('2d');
@@ -38,6 +39,9 @@ export function createHud(player, vehicles, city, {
 }) {
   const el = id => document.getElementById(id);
   const map = createMinimap(el('minimap'), city, player);
+  const rankLine = document.createElement('span');
+  rankLine.id = 'rank';
+  el('respect').after(rankLine);
   const weaponRows = weapons.slots.map((slot, index) => {
     const row = document.createElement('div');
     row.innerHTML = `<kbd>${index + 1}</kbd><svg viewBox="0 0 32 22" aria-hidden="true">
@@ -92,6 +96,9 @@ export function createHud(player, vehicles, city, {
     meter('health', vitals.health);
     meter('armour', vitals.armour);
     meter('respect', progress.respect);
+    const respect = Math.max(0, Math.floor(progress.respect));
+    const rank = Math.min(3, Math.floor(respect / 25));
+    rankLine.textContent = `RANK ${rank + 1} · ${rankTitles[rank]} ${respect}/${(rank + 1) * 25}`;
     text('health-value', Math.ceil(vitals.health));
     text('armour-value', Math.ceil(vitals.armour));
     map.draw(entries, gangs.members, vehicles.vehicles, presentation.route ?? []);
