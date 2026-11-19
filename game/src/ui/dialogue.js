@@ -20,7 +20,7 @@ export function createDialogue() {
   let active = false;
   let advance = false;
   const onKeydown = event => {
-    if (event.code === 'Enter' || event.code === 'Space' || event.code === 'KeyF') advance = true;
+    if (active && !event.repeat && ['Enter', 'Space', 'KeyF'].includes(event.code)) advance = true;
   };
   addEventListener('keydown', onKeydown);
 

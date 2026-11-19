@@ -1,6 +1,6 @@
 // Objective locations and pressure limits keep every Solara contract readable and replayable.
 export const objectivePlans = [
-  { position: [94, -12], kind: 'vehicle', target: 'Solstice GT' },
+  { position: [103.4, -12], kind: 'vehicle', target: 'Solstice GT' },
   { position: [50, 47], kind: 'drops', timer: 150, drops: [[50, 47], [100, 112], [-52, 116]] },
   { position: [-100, 207], kind: 'shootout', timer: 180 },
   { position: [100, 75], kind: 'heist', timer: 120 },

@@ -1,7 +1,7 @@
 // Neon Tide's canvas title art overlays a slowly drifting view of the live Solara streets.
 import { drawPortrait, portraitNames } from './portraits.js';
 
-export function createTitleScreen({ player, camera, hero, onNewGame, onContinue, shot = false }) {
+export function createTitleScreen({ player, camera, hero, onNewGame, onContinue, saveDetail, shot = false }) {
   const root = document.createElement('main');
   root.id = 'title-screen';
   root.innerHTML = '<canvas id="title-art"></canvas><nav id="title-menu" aria-label="Main menu"></nav>' +
@@ -16,9 +16,10 @@ export function createTitleScreen({ player, camera, hero, onNewGame, onContinue,
   let mode = 'menu';
   const settings = { glow: true };
 
-  function button(label, detail, action) {
+  function button(label, detail, action, disabled = false) {
     const element = document.createElement('button');
     element.type = 'button';
+    element.disabled = disabled;
     element.innerHTML = `${label}<small>${detail}</small>`;
     element.addEventListener('click', action);
     menu.append(element);
@@ -28,11 +29,12 @@ export function createTitleScreen({ player, camera, hero, onNewGame, onContinue,
     mode = 'menu';
     panel.hidden = true;
     menu.replaceChildren();
-    button('CONTINUE', 'Ch.3 Hot Wire · $12,480 · Day 3 18:42', () => {
+    const detail = shot ? 'Ch.3 Hot Wire · $12,480 · Day 3 18:42' : saveDetail;
+    button('CONTINUE', detail || 'No safehouse save yet', () => {
       active = false;
       root.hidden = true;
       onContinue();
-    });
+    }, !detail);
     button('NEW GAME', 'Begin Dex Navarro’s return to Solara', () => {
       active = false;
       root.hidden = true;

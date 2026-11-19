@@ -165,16 +165,20 @@ if (shot) missions.destination.set(100, 0.2, -34);
 const dialogue = createDialogue();
 missions.setDialogue(lines => dialogue.enqueue(lines));
 game.dialogue = dialogue;
-function beginStory() {
+function beginStory(continuing = false) {
   document.body.classList.remove('title-active');
   input.held.clear();
-  player.position.set(109, 0.22, 15);
+  input.clearPresses();
+  player.position.set(safehouse.x, 0.22, safehouse.z);
   player.character.root.position.copy(player.position);
   player.updateCamera(camera, 1 / 60, true);
-  missions.start();
+  const restored = continuing && save.load();
+  sky.setNight(cityClock.night);
+  if (!restored || missions.index === 0) missions.start();
 }
 const title = !shotName || shotName === 'title' ? createTitleScreen({
-  player, camera, hero, shot: shotName === 'title', onNewGame: beginStory, onContinue: beginStory
+  player, camera, hero, shot: shotName === 'title', saveDetail: save.detail(),
+  onNewGame: () => beginStory(), onContinue: () => beginStory(true)
 }) : null;
 game.title = title;
 document.body.classList.toggle('title-active', Boolean(title));
@@ -189,12 +193,13 @@ if (!shot) player.updateCamera(camera, 1 / 60, true);
 
 function simulate(dt) {
   if (title?.active) return;
-  if (input.take('KeyM')) {
+  if (input.take('KeyM') && !pause.active && !garageMenu.active) {
     if (cityMap.active) cityMap.close();
     else cityMap.open();
   }
   if (cityMap.active) {
     if (input.take('Escape')) cityMap.close();
+    input.clearPresses();
     return;
   }
   if (input.take('Escape')) {
@@ -203,12 +208,15 @@ function simulate(dt) {
     else pause.open();
     return;
   }
-  if (input.take('KeyG') && player.vehicle && garage.nearby() && Math.abs(player.vehicle.speed) <= 3) {
+  if (!pause.active && input.take('KeyG') && player.vehicle && garage.nearby() && Math.abs(player.vehicle.speed) <= 3) {
     if (garageMenu.active) garageMenu.close();
     else garageMenu.open();
     return;
   }
-  if (pause.active || garageMenu.active) return;
+  if (pause.active || garageMenu.active) {
+    input.clearPresses();
+    return;
+  }
   const speaking = dialogue.active;
   dialogue.update(dt);
   if (speaking) {
@@ -282,7 +290,7 @@ renderer.setAnimationLoop(() => {
     registeredPeople.add(person);
   }
   if (title?.active) title.update(dt);
-  else player.updateCamera(camera, dt);
+  else if (!pause.active && !garageMenu.active && !cityMap.active) player.updateCamera(camera, dt);
   city.update(dt, time, sky.night);
   sky.update(player.position);
   actorBatch.update(player.position);

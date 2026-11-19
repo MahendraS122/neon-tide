@@ -1,6 +1,7 @@
 /* Focused interaction panels share the garage's muted glass style. */
 .service-menu {
   position: fixed;
+  pointer-events: auto;
   z-index: 45;
   inset: 50% auto auto 50%;
   translate: -50% -50%;
