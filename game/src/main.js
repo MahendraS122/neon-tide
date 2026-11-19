@@ -1,4 +1,4 @@
-// Bootstrap Port Solara with gameplay first, a fixed simulation step and procedural art last.
+// Bootstrap Port Solara: initialize gameplay, keep a fixed simulation step, then render procedural art.
 import { createWanted } from './systems/wanted.js';
 import { createPolice } from './entities/police.js';
 import { createHelicopter } from './entities/helicopter.js';
@@ -315,5 +315,5 @@ renderer.setAnimationLoop(() => {
   if (frames >= 3) window.__shotReady = true;
 });
 
-// This inspectable state also gives later story and police systems stable integration points.
+// Expose stable integration points for story and police systems, plus development inspection.
 window.__game = game;

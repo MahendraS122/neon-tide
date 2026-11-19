@@ -1,6 +1,7 @@
 // Letterboxed dialogue queues original cast performances and reveals each line at speaking pace.
 import { drawPortrait } from './portraits.js';
 
+/** Create the dialogue canvas and return its queue/update interface. */
 export function createDialogue() {
   const canvas = document.createElement('canvas');
   canvas.id = 'story-dialogue';

@@ -1,4 +1,4 @@
-/* Mission banners and the story menu sit above the live procedural city. */
+/* Mission banners and the story menu layer over the live procedural city. */
 #mission-result {
   position: fixed;
   z-index: 8;
