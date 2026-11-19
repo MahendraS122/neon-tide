@@ -40,11 +40,11 @@ export function createMinimap(canvas, city, player) {
       ctx.fillRect(block.minX, block.minZ, block.maxX - block.minX, block.maxZ - block.minZ);
     }
     for (const car of cars) {
-      if (car !== player.vehicle && !car.service) blip(car.position, '#cce2dc', 2.35);
+      if (car.root.visible && car !== player.vehicle && !car.service) blip(car.position, '#cce2dc', 2.35);
     }
     for (const unit of units) blip(unit.position, unit.status === 'ROADBLOCK' ? '#ffbd66' : '#79d6ff', 4);
     for (const member of members) {
-      if (member.health) blip(member.position, '#ff6279', 3.9);
+      if (member.health && member.character.root.visible) blip(member.position, '#ff6279', 3.9);
     }
     const angle = player.heading;
     const northX = -Math.sin(angle) * 87;

@@ -17,6 +17,7 @@ import { createInput } from './entities/input.js';
 import { createCharacter } from './entities/character.js';
 import { createVehicleModel } from './entities/vehicleModel.js';
 import { createCity } from './world/cityGen.js';
+import { setupShot } from './shots.js';
 import { createRenderer } from './render/renderer.js';
 import { createSky } from './render/sky.js';
 import { createTextures, seededRandom } from './render/textures.js';
@@ -126,6 +127,11 @@ function responseUnits() {
 }
 const hud = createHud(player, vehicles, city, { wanted, vitals, weapons, gangs, radio, progress, units: responseUnits });
 const actorBatch = createActorBatch(scene);
+const game = { scene, camera, renderer, city, sky, player, vehicles, traffic, pedestrians, hero,
+  wanted, police, helicopter, roadblocks, weapons, vitals, effects, gangs, progress, radio, textures,
+  get time() { return time; }, get frames() { return frames; } };
+const shotName = new URLSearchParams(location.search).get('shot');
+const shot = setupShot(shotName, game, seededRandom(shotName === 'chase' ? 209 : 749));
 actorBatch.add(character.root);
 vehicles.vehicles.forEach(vehicle => actorBatch.add(vehicle.root));
 const registeredPeople = new Set();
@@ -133,7 +139,7 @@ const clock = new THREE.Clock();
 let time = 0;
 let accumulator = 0;
 let frames = 0;
-player.updateCamera(camera, 1 / 60, true);
+if (!shot) player.updateCamera(camera, 1 / 60, true);
 
 function simulate(dt) {
   time += dt;
@@ -160,6 +166,17 @@ function simulate(dt) {
 }
 
 renderer.setAnimationLoop(() => {
+  if (shot) {
+    city.update(0, 5.4, sky.night);
+    sky.update(player.position);
+    actorBatch.update(player.position);
+    hud.update(0, sky.night, shot);
+    renderer.render(scene, camera);
+    frames += 1;
+    window.__shotReady = true;
+    renderer.setAnimationLoop(null);
+    return;
+  }
   const elapsed = clock.getDelta();
   adaptResolution(elapsed);
   const dt = Math.min(elapsed, 0.1);
@@ -184,6 +201,4 @@ renderer.setAnimationLoop(() => {
 });
 
 // This inspectable state also gives later story and police systems stable integration points.
-window.__game = { scene, camera, renderer, city, sky, player, vehicles, traffic, pedestrians, hero,
-  wanted, police, helicopter, roadblocks, weapons, vitals, effects, gangs, progress, radio,
-  get time() { return time; }, get frames() { return frames; } };
+window.__game = game;

@@ -5,7 +5,7 @@ export function createSky(scene) {
   const uniforms = {
     topColor: { value: new THREE.Color('#548cb1') },
     horizonColor: { value: new THREE.Color('#ffcba0') },
-    sunDirection: { value: new THREE.Vector3(-0.7, 0.18, -0.5).normalize() },
+    sunDirection: { value: new THREE.Vector3(-0.91, 0.18, -0.26).normalize() },
     night: { value: 0 }
   };
   const material = new THREE.ShaderMaterial({
@@ -59,7 +59,7 @@ export function createSky(scene) {
     uniforms.horizonColor.value.set(value ? '#242449' : '#ffcba0');
     ambient.intensity = value ? 0.55 : 2.1;
     sun.intensity = value ? 0.6 : 3.5;
-    sun.color.set(value ? '#829acb' : '#ffd4a0');
+    sun.color.set(value ? '#829acb' : '#ffc08c');
     scene.fog = new THREE.FogExp2(value ? '#172039' : '#e6bca0', value ? 0.0037 : 0.0022);
   }
   function update(position) {
