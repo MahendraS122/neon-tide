@@ -68,7 +68,7 @@ export function setupShot(name, game, random) {
     player.vehicle = hero;
     vitals.health = 91;
     vitals.armour = 58;
-    const cruisers = [[99.8, 11.9, 2.94], [108.1, 11.7, 3.34], [95, 7.8, 3.08]];
+    const cruisers = [[100.4, 7.1, 2.94], [107.5, 7.3, 3.34], [96, 0.5, 3.08]];
     cruisers.forEach(([x, z, yaw], index) => {
       const unit = police.spawn(x, z, yaw);
       unit.status = index === 0 ? 'RAMMING' : 'PURSUIT';

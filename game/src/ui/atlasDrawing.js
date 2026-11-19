@@ -55,7 +55,7 @@ export function drawAtlas(canvas, city, player, sites, route) {
   context.clip();
   for (const [a, b, c, d, tint] of districts) {
     context.fillStyle = tint;
-    context.fillRect(x(a), y(b), (c - a) * scale, (d - b) * scale);
+    context.fillRect(x(a), y(b), (c - a) * wide, (d - b) * scale);
   }
   for (const a of city.roadX) {
     line([[a, -196], [a, 200]], '#71818b', 12 * scale);
@@ -68,7 +68,7 @@ export function drawAtlas(canvas, city, player, sites, route) {
   for (const box of city.colliders) {
     if (!Number.isFinite(box.minX) || box.maxX > bounds.maxX) continue;
     context.fillStyle = '#aebac826';
-    context.fillRect(x(box.minX), y(box.minZ), (box.maxX - box.minX) * scale, (box.maxZ - box.minZ) * scale);
+    context.fillRect(x(box.minX), y(box.minZ), (box.maxX - box.minX) * wide, (box.maxZ - box.minZ) * scale);
   }
   context.restore();
   line([[115, -115], [224, -108]], '#ccb792', 8 * scale);
