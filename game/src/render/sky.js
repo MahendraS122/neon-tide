@@ -31,7 +31,7 @@ export function createSky(scene) {
         vec3 color = mix(horizonColor, topColor, altitude);
         float facing = dot(ray, sunDirection);
         color += vec3(1.0, 0.48, 0.16) * pow(max(facing, 0.0), 20.0) * (1.0 - night);
-        color += vec3(3.0, 2.0, 0.9) * smoothstep(0.9992, 0.9996, facing) * (1.0 - night);
+        color += vec3(3.0, 2.0, 0.9) * smoothstep(0.9982, 0.9985, facing) * (1.0 - night);
         float stars = step(0.998, fract(sin(dot(floor(ray * 700.0), vec3(13.1, 71.7, 32.2)))
           * 43758.5)) * night * smoothstep(0.0, 0.4, ray.y);
         gl_FragColor = vec4(color + stars * 0.55, 1.0);
@@ -69,14 +69,18 @@ export function createSky(scene) {
     sun.color.set(value ? '#829acb' : '#ffbc8d');
     scene.fog = new THREE.FogExp2(value ? '#172039' : '#e6bca0', value ? 0.0037 : 0.0022);
   }
-  function update(position) {
+  function update(position, coastal = false) {
+    const direction = uniforms.sunDirection.value;
+    if (coastal) direction.set(0.56, 0.035, -0.83).normalize();
+    else direction.set(-0.22, 0.055, -0.974).normalize();
     dome.position.copy(position);
-    const discPosition = position.clone().addScaledVector(uniforms.sunDirection.value, 560);
+    const discPosition = position.clone().addScaledVector(direction, 560);
     sunDisc.position.copy(discPosition);
     sunGlow.position.copy(discPosition);
-    sunDisc.visible = sunGlow.visible = !isNight;
+    sunDisc.visible = sunGlow.visible = !isNight && !coastal;
     sun.target.position.copy(position);
-    sun.position.copy(position).addScaledVector(uniforms.sunDirection.value, 180);
+    if (coastal) sun.position.set(position.x - 95, position.y + 115, position.z + 85);
+    else sun.position.copy(position).addScaledVector(direction, 180);
   }
   setNight(false);
   return { update, setNight, get night() { return isNight; } };

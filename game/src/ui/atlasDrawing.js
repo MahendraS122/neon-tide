@@ -14,9 +14,10 @@ export function drawAtlas(canvas, city, player, sites, route) {
   context.fillStyle = sea;
   context.fillRect(0, 0, width, height);
   const bounds = city.bounds;
-  const scale = Math.min((width - 28) / 500, (height - 28) / 515);
-  const x = value => width / 2 + (value + 10) * scale;
-  const y = value => height / 2 + (value - 23) * scale;
+  const scale = (height - 24) / 515;
+  const wide = (width - 24) / 520;
+  const x = value => width / 2 + (value + 13) * wide;
+  const y = value => height / 2 + (value - 13) * scale;
 
   function line(points, color, size = 1, fill = false) {
     context.beginPath();
@@ -33,22 +34,25 @@ export function drawAtlas(canvas, city, player, sites, route) {
     }
   }
 
-  const shore = [[135, -231], [142, -171], [133, -115], [147, -64], [145, -8],
-    [141, 43], [150, 98], [138, 157], [129, 194], [76, 218], [39, 263]];
-  const west = [[-248, 260], [-248, -231]];
+  const shore = [[104, -228], [151, -197], [162, -166], [139, -123], [153, -82], [168, -53],
+    [151, -14], [143, 43], [168, 84], [171, 125], [150, 154], [145, 197], [86, 217], [39, 263]];
+  const west = [[-229, 258], [-250, 207], [-242, 146], [-252, 84], [-228, 41],
+    [-246, -25], [-254, -102], [-234, -156], [-239, -204], [-208, -241], [-46, -230]];
   for (const offset of [27, 48, 78, 112]) {
     line(shore.map(([a, b]) => [a + offset, b + offset * .16]), '#89c6d32a');
   }
   line([...west, ...shore], '#c9ad79', 0, true);
-  line([...west, ...shore.map(([a, b], i) => [a - (i < 8 ? 21 : 6), b])], '#293e49', 0, true);
+  line([...west, ...shore.map(([a, b], i) => [a - (i < 11 ? 17 : 6), b])], '#314759', 0, true);
   const districts = [
-    [-245, -221, -155, 193, '#295451', 'LAS PALMAS', -193, -63],
-    [-155, -221, 82, 39, '#42465d', 'GLASSWATER', -55, -175],
-    [-155, 40, 82, 116, '#355547', 'REYES PARK', -49, 68],
-    [-155, 117, 82, 192, '#525044', 'LITTLE SOL', -45, 161],
-    [82, -220, 115, 191, '#574755', 'OCEAN DRIVE', 99, -84],
-    [-234, 194, 38, 251, '#3f5055', 'CONTAINER PORT', -125, 229]
+    [-257, -247, -158, 193, '#29695e', 'LAS PALMAS', -200, -66],
+    [-158, -247, 77, 40, '#484b78', 'GLASSWATER', -54, -163],
+    [-158, 40, 77, 116, '#39684b', 'REYES PARK', -68, 61],
+    [-158, 116, 77, 194, '#6e5946', 'LITTLE SOL', -42, 156],
+    [77, -247, 170, 203, '#934e71', 'OCEAN DRIVE', 113, -68],
+    [-254, 194, 112, 263, '#4e616a', 'CONTAINER PORT', -127, 230]
   ];
+  context.save();
+  context.clip();
   for (const [a, b, c, d, tint] of districts) {
     context.fillStyle = tint;
     context.fillRect(x(a), y(b), (c - a) * scale, (d - b) * scale);
@@ -66,6 +70,7 @@ export function drawAtlas(canvas, city, player, sites, route) {
     context.fillStyle = '#aebac826';
     context.fillRect(x(box.minX), y(box.minZ), (box.maxX - box.minX) * scale, (box.maxZ - box.minZ) * scale);
   }
+  context.restore();
   line([[115, -115], [224, -108]], '#ccb792', 8 * scale);
   context.textAlign = 'center';
   context.textBaseline = 'middle';
@@ -75,20 +80,23 @@ export function drawAtlas(canvas, city, player, sites, route) {
   for (const a of [-176, -91, -19]) {
     line([[a, 217], [a, 203], [a + 19, 203], [a + 19, 211]], '#d29e73', 2);
   }
-  context.font = `800 ${Math.max(9, scale * 13)}px system-ui`;
+  context.font = `900 ${Math.max(11, Math.min(wide * 13.5, 20))}px system-ui`;
   for (const [, , , , , label, a, b] of districts) {
-    context.fillStyle = '#e7e6d5b8';
+    context.strokeStyle = '#122334b0';
+    context.lineWidth = 3;
+    context.strokeText(label, x(a), y(b));
+    context.fillStyle = '#fff4df';
     context.fillText(label, x(a), y(b));
   }
   context.fillStyle = '#a6d7de99';
-  context.fillText('SOLARA BAY', x(155), y(104));
+  context.fillText('SOLARA BAY', x(196), y(64));
   context.fillText('N ↑', width - 27, 25);
   if (route.length > 1) {
-    line(route, '#081d29', 10);
-    line(route, '#60ffda', 5);
+    line(route, '#081d29', 11);
+    line(route, '#98ff63', 6);
   }
   for (const site of sites) {
-    const radius = site.icon === '◆' ? 4 : 9;
+    const radius = site.icon === '◆' ? 4 : 11;
     context.fillStyle = '#142a39';
     context.strokeStyle = site.color;
     context.lineWidth = 1.4;
@@ -98,7 +106,7 @@ export function drawAtlas(canvas, city, player, sites, route) {
     context.stroke();
     if (radius < 5) continue;
     context.fillStyle = site.color;
-    context.font = 'bold 11px system-ui';
+    context.font = '900 14px system-ui';
     context.fillText(site.icon, x(site.x), y(site.z));
   }
   const actor = player.vehicle ?? player;

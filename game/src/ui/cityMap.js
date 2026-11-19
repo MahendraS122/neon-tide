@@ -22,8 +22,10 @@ export function createCityMap({ city, player, progress, missions }) {
   const count = root.querySelector('h2 span');
   const contacts = storyMissions.map((mission, index) => ({ name: mission.contact,
     icon: '!', color: '#c5a6ff', x: objectivePlans[index].position[0], z: objectivePlans[index].position[1] }));
-  const legend = [...atlasSites, { name: 'Story contact', icon: '!', color: '#c5a6ff' },
-    { name: 'Tide token', icon: '◆', color: '#6edfe6' }, { name: 'GPS route', icon: '━', color: '#60ffda' }];
+  const categories = ['Property / Save', 'Garage / Respray', 'Street Race', 'Hospital', 'Weapons Shop'];
+  const legend = [...atlasSites.map((site, i) => ({ ...site, name: categories[i] ?? site.name })),
+    { name: 'Story contact', icon: '!', color: '#c5a6ff' }, { name: 'Tide token', icon: '◆', color: '#6edfe6' },
+    { name: 'GPS route', icon: '━', color: '#98ff63' }];
   root.querySelector('ul').innerHTML = legend.map(site =>
     `<li><b style="color:${site.color}">${site.icon}</b>${site.name}</li>`).join('');
   let preview = false;
@@ -34,7 +36,7 @@ export function createCityMap({ city, player, progress, missions }) {
       [{ x, z, color: '#6edfe6', icon: '◆' }]);
     const target = preview ? { x: 100, z: -112 } : missions.blips[0]?.position;
     const from = (player.vehicle ?? player).position;
-    const sites = [...tokens, ...atlasSites, ...contacts];
+    const sites = [...tokens, ...contacts.filter((_, i) => ![3, 4, 6].includes(i)), ...atlasSites];
     drawAtlas(canvas, city, player, sites, target ? roadRoute(city, from, target) : []);
   }
 

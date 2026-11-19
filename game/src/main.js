@@ -179,7 +179,7 @@ function beginStory(continuing = false) {
 }
 const title = !shotName || shotName === 'title' ? createTitleScreen({
   player, camera, hero, shot: shotName === 'title', saveDetail: save.detail(),
-  onNewGame: () => beginStory(), onContinue: () => beginStory(true)
+  onStart: beginStory
 }) : null;
 game.title = title;
 document.body.classList.toggle('title-active', Boolean(title));
@@ -268,7 +268,7 @@ renderer.setAnimationLoop(() => {
   if (shot) {
     title?.update(0);
     city.update(0, 5.4, sky.night);
-    sky.update(player.position);
+    sky.update(player.position, title?.active);
     actorBatch.update(player.position);
     hud.update(0, sky.night, shot);
     renderer.render(scene, camera);
@@ -293,7 +293,7 @@ renderer.setAnimationLoop(() => {
   if (title?.active) title.update(dt);
   else if (!pause.active && !garageMenu.active && !cityMap.active) player.updateCamera(camera, dt);
   city.update(dt, time, sky.night);
-  sky.update(player.position);
+  sky.update(player.position, title?.active);
   actorBatch.update(player.position);
   const hint = races.hint || (player.vehicle && garage.nearby() ? 'STOP · G WORKSHOP'
     : canSave() ? 'K SAVE AT SAFEHOUSE · M ATLAS' : collectibles.hint()

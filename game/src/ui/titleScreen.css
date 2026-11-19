@@ -39,7 +39,7 @@
 #title-menu {
   position: absolute;
   left: 48px;
-  top: 47%;
+  top: 42%;
   display: grid;
   width: 255px;
   gap: 8px;
@@ -71,7 +71,7 @@
 #title-controls {
   position: absolute;
   left: 48px;
-  top: 40%;
+  bottom: 58px;
   width: min(430px, calc(100vw - 96px));
   padding: 22px 24px;
   border: 1px solid #80e8d288;
@@ -96,7 +96,19 @@
   font: 700 11px Arial;
 }
 #title-controls button { margin-top: 12px; }
-#title-screen[hidden] { display: none; }
+#title-screen[hidden], #title-menu[hidden] { display: none; }
+#title-quick {
+  position: absolute;
+  inset: 28px 34px auto auto;
+  min-width: 180px;
+  padding: 13px 17px;
+  background: #131a2bdc;
+  border: 1px solid #96dacd88;
+  border-top: 3px solid #7df3db;
+}
+#title-quick h2 { margin: 0 0 7px; color: #91ffdf; font-size: 14px; letter-spacing: .15em; }
+#title-quick p { margin: 5px 0; font-size: 12px; }
+#title-quick kbd { display: inline-block; min-width: 60px; color: #ffdb9b; }
 body.title-active > header, body.title-active > section, body.title-active > aside,
 body.title-active > #hint, body.title-active > #reticle { visibility: hidden; }
 #title-controls { pointer-events: auto; }
