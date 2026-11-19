@@ -64,8 +64,8 @@ export function createSky(scene) {
     uniforms.night.value = value ? 1 : 0;
     uniforms.topColor.value.set(value ? '#070d27' : '#655774');
     uniforms.horizonColor.value.set(value ? '#242449' : '#f39a7f');
-    ambient.intensity = value ? 0.8 : 1.35;
-    sun.intensity = value ? 0.65 : 2.7;
+    ambient.intensity = value ? 1.03 : 1.35;
+    sun.intensity = value ? 0.77 : 2.7;
     sun.color.set(value ? '#829acb' : '#ffbc8d');
     scene.fog = new THREE.FogExp2(value ? '#172039' : '#e6bca0', value ? 0.0037 : 0.0022);
   }

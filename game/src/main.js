@@ -181,7 +181,6 @@ const title = !shotName || shotName === 'title' ? createTitleScreen({
   player, camera, hero, shot: shotName === 'title', saveDetail: save.detail(),
   onStart: beginStory
 }) : null;
-game.title = title;
 document.body.classList.toggle('title-active', Boolean(title));
 actorBatch.add(character.root);
 vehicles.vehicles.forEach(vehicle => actorBatch.add(vehicle.root));
@@ -195,6 +194,7 @@ if (!shot) player.updateCamera(camera, 1 / 60, true);
 function simulate(dt) {
   if (title?.active) return;
   if (input.take('KeyM') && !pause.active && !garageMenu.active) {
+    audio.click();
     if (cityMap.active) cityMap.close();
     else cityMap.open();
   }
@@ -204,12 +204,14 @@ function simulate(dt) {
     return;
   }
   if (input.take('Escape')) {
+    audio.click();
     if (garageMenu.active) garageMenu.close();
     else if (pause.active) pause.close();
     else pause.open();
     return;
   }
   if (!pause.active && input.take('KeyG') && player.vehicle && garage.nearby() && Math.abs(player.vehicle.speed) <= 3) {
+    audio.click();
     if (garageMenu.active) garageMenu.close();
     else garageMenu.open();
     return;
@@ -294,6 +296,14 @@ renderer.setAnimationLoop(() => {
   else if (!pause.active && !garageMenu.active && !cityMap.active) player.updateCamera(camera, dt);
   city.update(dt, time, sky.night);
   sky.update(player.position, title?.active);
+  const audible = !title?.active && !pause.active && !cityMap.active && !garageMenu.active && !wanted.ending;
+  let pursuitDistance = Infinity;
+  if (audible && wanted.stars) {
+    for (const unit of police.units) {
+      pursuitDistance = Math.min(pursuitDistance, unit.position.distanceTo(player.position));
+    }
+  }
+  audio.update(dt, audible ? player.vehicle : null, Number(audible && input.down('KeyW')), pursuitDistance);
   actorBatch.update(player.position);
   const hint = races.hint || (player.vehicle && garage.nearby() ? 'STOP · G WORKSHOP'
     : canSave() ? 'K SAVE AT SAFEHOUSE · M ATLAS' : collectibles.hint()

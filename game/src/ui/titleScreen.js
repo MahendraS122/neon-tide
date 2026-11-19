@@ -138,13 +138,13 @@ export function createTitleScreen({ player, camera, hero, onStart, saveDetail, s
   }
 
   hero.root.visible = true;
-  hero.position.set(142.9, 0.04, 46.3);
+  hero.position.set(142.9, 0.12, 46.3);
   hero.yaw = -0.77;
   hero.root.rotation.y = hero.yaw;
   player.position.set(139.9, 0.02, 48.1);
   player.character.root.position.copy(player.position);
   player.character.root.visible = true;
-  player.character.root.rotation.y = -0.43;
+  player.character.root.rotation.y = -0.55;
   resize();
   addEventListener('resize', resize);
   showMenu();

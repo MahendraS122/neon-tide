@@ -55,7 +55,6 @@ export function createRadio() {
       index = (index + direction + stations.length) % stations.length;
       tick = step = 0;
     },
-    get current() { return stations[index]; },
-    get phase() { return step; }
+    get current() { return stations[index]; }
   };
 }

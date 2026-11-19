@@ -126,7 +126,7 @@ export function createVehicleSystem(scene, input, city, player, onEject, buildMo
       - Number(input.down('KeyD') || input.down('ArrowRight'));
     const handbrake = input.down('Space');
     vehicle.brake = Boolean(reverse || handbrake);
-    vehicle.steering = THREE.MathUtils.damp(vehicle.steering, turn, 8, dt);
+    vehicle.steering = THREE.MathUtils.damp(vehicle.steering, turn, turn ? 9 : 13, dt);
     const spec = vehicle.spec;
     const tuning = vehicle.upgrades ?? {};
     const power = spec.power * (tuning.engine ? 1.2 : 1);
@@ -137,10 +137,11 @@ export function createVehicleSystem(scene, input, city, player, onEject, buildMo
     vehicle.nitro = THREE.MathUtils.clamp(vehicle.nitro + dt * charge, 0, 100);
     if (vehicle.speed < -1 && throttle) acceleration = 27;
     vehicle.speed += acceleration * dt;
-    vehicle.speed *= Math.exp(-dt * (handbrake ? 1.05 : throttle || reverse ? 0.13 : 0.42));
+    vehicle.speed *= Math.exp(-dt * (handbrake ? 1.05 : throttle || reverse ? 0.13 : 0.62));
+    if (!throttle && !reverse && Math.abs(vehicle.speed) < 0.35) vehicle.speed = 0;
     const topSpeed = spec.max * (tuning.engine ? 1.13 : 1) + (boost ? 9 : 0);
     vehicle.speed = THREE.MathUtils.clamp(vehicle.speed, -12, topSpeed);
-    const turnStrength = Math.min(1, Math.abs(vehicle.speed) / 7);
+    const turnStrength = Math.min(1, Math.abs(vehicle.speed) / 5.5);
     vehicle.yaw += vehicle.steering * turnStrength * Math.sign(vehicle.speed)
       * (handbrake ? 2.1 : 1.13) * dt / (1 + Math.abs(vehicle.speed) * 0.018);
     const forward = new THREE.Vector3(Math.sin(vehicle.yaw), 0, Math.cos(vehicle.yaw));

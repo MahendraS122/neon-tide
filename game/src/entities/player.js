@@ -58,26 +58,32 @@ export function createPlayer(scene, character, input, city) {
     return new THREE.Vector3(-Math.sin(yaw), -Math.sin(pitch - 0.15), -Math.cos(yaw)).normalize();
   }
   function updateCamera(camera, dt, snap = false) {
-    const moving = vehicle && Math.abs(vehicle.speed) > 2;
-    if (moving) yaw += shortestAngle(yaw, vehicle.yaw + Math.PI) * (1 - Math.exp(-dt * 2.1));
+    const speed = Math.abs(vehicle?.speed ?? 0);
+    if (speed > 2) yaw += shortestAngle(yaw, vehicle.yaw + Math.PI) * (1 - Math.exp(-dt * 3));
     const target = position.clone().add(new THREE.Vector3(0, vehicle ? 1.1 : 1.3, 0));
-    const distance = vehicle ? 7.8 + Math.min(3, Math.abs(vehicle.speed) * 0.055) : 4.7;
-    const height = vehicle ? 2.65 : 1.25;
+    const distance = vehicle ? 6.8 + Math.min(2.5, speed * 0.05) : 4.7;
+    const height = vehicle ? 2.35 : 1.25;
     const desired = target.clone().add(new THREE.Vector3(
       Math.sin(yaw) * distance, height + Math.sin(pitch) * distance,
       Math.cos(yaw) * distance
     ));
     if (!vehicle) desired.add(new THREE.Vector3(Math.cos(yaw) * 0.6, 0, -Math.sin(yaw) * 0.6));
     const safe = cameraObstruction(target, desired, city.colliders);
-    const blend = snap ? 1 : 1 - Math.exp(-dt * (vehicle ? 6 : 14));
+    const blocked = safe.distanceToSquared(desired) > 0.01;
+    const blend = snap ? 1 : 1 - Math.exp(-dt * (blocked ? 24 : vehicle ? 9 : 14));
     camera.position.lerp(safe, blend);
-    cameraTarget.lerp(target, snap ? 1 : 1 - Math.exp(-dt * 18));
+    if (vehicle) {
+      const lead = THREE.MathUtils.clamp(vehicle.speed * 0.057, -1, 2.8);
+      target.x += Math.sin(vehicle.yaw) * lead;
+      target.z += Math.cos(vehicle.yaw) * lead;
+    }
+    cameraTarget.lerp(target, snap ? 1 : 1 - Math.exp(-dt * 14));
     camera.lookAt(cameraTarget);
     if (aiming && !vehicle) {
       const aim = position.clone().add(new THREE.Vector3(0, 1.35, 0)).addScaledVector(aimDirection(), 14);
       camera.lookAt(aim);
     }
-    const fov = vehicle ? 58 + Math.min(12, Math.abs(vehicle.speed) * 0.22) : 58;
+    const fov = vehicle ? 55 + Math.min(10, speed * 0.18) : 58;
     camera.fov += (fov - camera.fov) * blend;
     camera.updateProjectionMatrix();
   }
