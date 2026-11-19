@@ -68,7 +68,7 @@ export function setupShot(name, game, random) {
     player.vehicle = hero;
     vitals.health = 91;
     vitals.armour = 58;
-    const cruisers = [[99.5, 18.2, 2.94], [108.5, 18.2, 3.34], [95.2, 15.8, 3.08]];
+    const cruisers = [[101, 9.4, 2.94], [107, 9.4, 3.34], [95, 12, 3.08]];
     cruisers.forEach(([x, z, yaw], index) => {
       const unit = police.spawn(x, z, yaw);
       unit.status = index === 0 ? 'RAMMING' : 'PURSUIT';
@@ -77,15 +77,16 @@ export function setupShot(name, game, random) {
     wanted.report('Grand theft', 4);
     wanted.update(0, { seen: true });
     helicopter.setActive(true);
-    helicopter.pose(new THREE.Vector3(101.5, 16.2, -9), new THREE.Vector3(104, 0, 9.5), 0.85, 4.2);
+    helicopter.root.scale.setScalar(1.45);
+    helicopter.pose(new THREE.Vector3(104, 12.2, 4), new THREE.Vector3(104, 0, 9.5), 0.85, 4.2);
     roadblocks.deploy(100, -34, false);
     const taxi = vehicles.add('taxi', '#eebb47', 95.0, -16, 0);
     taxi.driverHead.visible = true;
     vehicles.add('suv', '#d6ddd6', 94, -46, 0);
     vehicles.add('muscle', '#e29473', 104, -58, Math.PI);
     camera.fov = 48;
-    camera.position.set(103.8, 4.45, 21.1);
-    camera.lookAt(103, 3.2, 9.2);
+    camera.position.set(104, 5.1, 22);
+    camera.lookAt(104, 3.25, 8.2);
     camera.updateProjectionMatrix();
     shotFX.drift(hero);
     shotFX.speedLines(camera);
@@ -93,11 +94,9 @@ export function setupShot(name, game, random) {
     progress.flash = 3;
     Object.assign(hud, {
       district: 'Ocean Drive',
-      chaseFrame: true,
       compactWeapons: true,
       mission: { chapter: 'CHAPTER 03 · HOT WIRE', name: 'Long Way Home', timer: '01:24', stage: 62,
         objective: 'Lose the SPD tail on Ocean Drive', next: 'Meet Mara at the south marina' },
-      dialogue: { speaker: 'MARA REYES · COMMS', line: 'Lose the lights first, Dex. Then bring me the car.' },
       hint: 'WASD DRIVE   /   SPACE HANDBRAKE   /   SHIFT NITRO   /   Q / E RADIO'
     });
   } else {
