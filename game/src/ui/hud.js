@@ -42,6 +42,9 @@ export function createHud(player, vehicles, city, {
   const rankLine = document.createElement('span');
   rankLine.id = 'rank';
   el('respect').after(rankLine);
+  const rankBadge = document.createElement('strong');
+  rankBadge.id = 'rank-badge';
+  el('stars').after(rankBadge);
   const weaponRows = weapons.slots.map((slot, index) => {
     const row = document.createElement('div');
     row.innerHTML = `<kbd>${index + 1}</kbd><svg viewBox="0 0 32 22" aria-hidden="true">
@@ -99,6 +102,7 @@ export function createHud(player, vehicles, city, {
     const respect = Math.max(0, Math.floor(progress.respect));
     const rank = Math.min(3, Math.floor(respect / 25));
     rankLine.textContent = `RANK ${rank + 1} · ${rankTitles[rank]} ${respect}/${(rank + 1) * 25}`;
+    rankBadge.textContent = `RESPECT LV ${rank + 1} · ${rankTitles[rank]}`;
     text('health-value', Math.ceil(vitals.health));
     text('armour-value', Math.ceil(vitals.armour));
     map.draw(entries, gangs.members, vehicles.vehicles, presentation.route ?? []);

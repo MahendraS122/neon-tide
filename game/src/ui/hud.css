@@ -6,122 +6,87 @@
   background: #10232c;
   --aqua: #83f9df;
   --amber: #ffd182;
-  --edge: #a2ece339;
-  --panel: #101d2be8;
+  --edge: #a2ece366;
+  --panel: #081620f5;
 }
 * { box-sizing: border-box; }
 body { margin: 0; overflow: hidden; }
 #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
 header, section, aside, #hint, #reticle { position: fixed; pointer-events: none; }
-#identity { left: 28px; top: 20px; display: flex; align-items: baseline; gap: 13px; }
-#identity b { font-size: 23px; font-style: italic; letter-spacing: -1px; text-shadow: 0 2px 12px #071622; }
-#identity span { font-size: 8px; letter-spacing: 2.4px; color: #defdf3; text-shadow: 0 2px 4px #10202c; }
-#mission, #response, #dialogue {
-  padding: 13px 16px;
-  background: linear-gradient(105deg, var(--panel), #101d2bba);
-  border: 1px solid var(--edge);
-  border-left: 3px solid var(--amber);
-  box-shadow: 0 7px 22px #12203024;
-}
-#mission { left: 28px; top: 60px; width: 330px; }
-small, time { font-size: 10.5px; font-weight: 800; letter-spacing: 1.6px; color: var(--amber); }
+#identity { left: 22px; top: 16px; display: flex; align-items: baseline; gap: 12px; }
+#identity b { font-size: 29px; font-weight: 900; font-style: italic; text-shadow: 0 2px 12px #071622; }
+#identity span { font-size: 12px; font-weight: 800; color: #defdf3; text-shadow: 0 2px 4px #10202c; }
+#mission, #response, #dialogue { padding: 10px 13px; background: #081620f5; border: 1px solid var(--edge); border-left: 4px solid var(--amber); box-shadow: 0 7px 22px #12203055; }
+#mission { left: 22px; top: 57px; width: 350px; }
+small, time { font-size: 13px; font-weight: 900; color: var(--amber); }
 #timer { float: right; color: var(--aqua); font-variant-numeric: tabular-nums; }
-h1 { font-size: 24px; font-weight: 800; margin: 7px 0 5px; letter-spacing: -0.3px; }
-p { margin: 0; font-size: 14px; font-weight: 700; color: #e8f1ef; line-height: 1.5; }
-.meter { height: 4px; background: #d5fff731; overflow: hidden; }
+h1 { font-size: 30px; font-weight: 900; margin: 5px 0 3px; }
+p { margin: 0; font-size: 18px; font-weight: 800; color: #f3f7f5; line-height: 1.25; }
+.meter { height: 5px; background: #d5fff744; overflow: hidden; }
 .meter::before { content: ''; display: block; height: 100%; width: var(--fill, 0%); background: var(--aqua); }
-#stage { height: 3px; margin: 12px 0 8px; }
-footer { font-size: 10.5px; font-weight: 700; letter-spacing: 0.65px; color: #bed0d4; }
-
-/* Dispatch rows: unit, distance, and status. */
-#response { left: 28px; top: 224px; width: 219px; border-left-color: #79cbff; padding: 10px 12px; }
+#stage { height: 4px; margin: 8px 0 6px; }
+footer { font-size: 13px; font-weight: 800; color: #d8e5e8; }
+#response { left: 22px; top: 221px; width: 280px; border-left-color: #79cbff; padding: 8px 11px; }
 #response > small { color: #b9e9ff; }
-#response-list { list-style: none; padding: 0; margin: 5px 0 0; }
-#response li { display: grid; grid-template-columns: 1fr 38px 71px; align-items: center; gap: 4px; }
-#response li { font-size: 10px; padding: 4px 0; border-top: 1px solid #daf9ff21; }
-#response li span { color: #dce9ee; text-align: right; font-variant-numeric: tabular-nums; }
-#response li small { text-align: center; font-size: 8px; letter-spacing: 0.6px; padding: 3px 2px; }
-#response li small { color: #aadfff; background: #367fa442; }
-#response li small[data-status='RAMMING'] { color: #ffd7cb; background: #e2644c55; }
-#response li small[data-status='ROADBLOCK'] { color: #ffe0a1; background: #b984314f; }
-#response li small[data-status='HELI'] { color: #b5ffea; background: #268a8066; }
-
-#wallet { right: 28px; top: 22px; text-align: right; text-shadow: 0 2px 8px #071322; }
-#wallet b { display: block; font-size: 36px; font-weight: 800; letter-spacing: 0.4px; }
-#wallet span { font-size: 12px; letter-spacing: 2px; font-weight: 800; }
-#stars { font-size: 28px; font-weight: 800; color: var(--amber); letter-spacing: 4px; margin: 6px -4px 3px 0; }
-#stars.searching { animation: search-pulse 0.85s alternate infinite; }
-@keyframes search-pulse { to { opacity: 0.45; } }
-#weapons { right: 28px; top: 170px; width: 208px; display: grid; gap: 3px; }
-#weapons > div {
-  display: grid; grid-template-columns: 16px 30px 1fr auto; gap: 5px; align-items: center;
-  padding: 5px 6px; background: #0e1c2ce8; border-right: 2px solid #a2ece360;
-  font-size: 12px; font-weight: 800; color: #e0e8e7;
-}
-#weapons > div.active { background: #173846f5; border-color: var(--aqua); color: #fff; }
-#weapons kbd { color: var(--aqua); }
+#response-list { list-style: none; padding: 0; margin: 4px 0 0; }
+#response li { display: grid; grid-template-columns: 1fr 42px 82px; align-items: center; gap: 5px; font-size: 14px; font-weight: 900; padding: 3px 0; border-top: 1px solid #daf9ff36; }
+#response li span { color: #f0f7fa; text-align: right; font-variant-numeric: tabular-nums; }
+#response li small { text-align: center; font-size: 12px; padding: 3px 2px; color: #aadfff; background: #285776; }
+#response li small[data-status='RAMMING'] { color: #fff0e9; background: #873c32; }
+#response li small[data-status='ROADBLOCK'] { color: #fff0cc; background: #79581e; }
+#response li small[data-status='HELI'] { color: #d5fff2; background: #17675e; }
+#wallet { right: 22px; top: 15px; text-align: right; text-shadow: 0 2px 8px #071322; }
+#wallet b { display: block; font-size: 42px; font-weight: 900; }
+#wallet span { font-size: 15px; font-weight: 900; }
+#stars { font-size: 30px; font-weight: 900; color: var(--amber); margin: 2px 0; }
+#rank-badge { display: block; margin-top: 5px; padding: 5px 8px; color: #fff; background: #111d28; border: 1px solid #ffd182; font-size: 14px; font-weight: 900; }
+#weapons { right: 22px; top: 205px; width: 232px; display: grid; gap: 3px; }
+#weapons > div { display: grid; grid-template-columns: 20px 29px 1fr auto; gap: 4px; align-items: center; padding: 5px 6px; background: #081620f5; border-right: 3px solid #a2ece388; font-size: 15px; font-weight: 900; color: #fff; }
+#weapons > div.active { background: #12323d; border-color: var(--aqua); }
+#weapons kbd { color: var(--aqua); font: inherit; }
 #weapons svg { width: 27px; height: 22px; fill: currentColor; }
-#weapons span { font-variant-numeric: tabular-nums; color: #d2efe7; white-space: nowrap; }
-#weapons.stowed { opacity: 0.94; }
-#reticle { top: 50%; left: 50%; width: 10px; height: 10px; transform: translate(-50%, -50%); }
-#reticle { border: 1px solid #f5ffed; border-radius: 50%; box-shadow: 0 0 4px #071322; }
-#failure { inset: 0; display: grid; align-content: center; text-align: center;
-  background: #160e21ce; z-index: 4; }
-#failure strong { color: #ff8194; font-size: clamp(3rem, 12vw, 8rem);
-  font-style: italic; letter-spacing: 0.08em; }
-
-#location { left: 28px; bottom: 26px; width: 248px;
-  text-shadow: 0 2px 5px #071322; }
-#minimap { display: block; width: 147px; height: 147px; border-radius: 50%; background: #132538; }
-#minimap { border: 1px solid #c0eee38c; outline: 3px solid #0d1d2c80; box-shadow: 0 6px 16px #08162575; }
-h2 { margin: 10px 0 6px; font-size: 20px; font-weight: 800; font-style: italic; }
-.vitals { display: grid; grid-template-columns: 49px 1fr; gap: 5px 7px; align-items: center; }
-.vitals span { font-size: 9.5px; font-weight: 800; letter-spacing: 0.7px; }
-#health::before { background: #8bebaa; }
-#armour::before { background: #74cfff; }
-#respect::before { background: #ffc581; }
-#rank { grid-column: 1 / -1; font-size: 11px; font-weight: 800; letter-spacing: 0.3px; color: var(--amber); white-space: nowrap; }
-
-#speedometer { right: 28px; bottom: 26px; width: 190px; text-align: right; text-shadow: 0 3px 9px #081724; }
-.dial { display: flex; justify-content: flex-end; align-items: end; gap: 8px; margin-bottom: 4px; }
-.dial strong { font-size: 81px; font-weight: 800; font-style: italic;
-  line-height: 0.86; letter-spacing: -5px; }
-.dial b, .dial span { display: block; font-size: 11px; font-weight: 800; color: var(--aqua); }
-.dial b { font-size: 18px; border: 1px solid #a2ece380; text-align: center; margin-bottom: 4px; }
-h3 { font-size: 15.5px; font-weight: 800; margin: 9px 0 3px; letter-spacing: 1.6px; }
-.nitro { display: grid; grid-template-columns: 45px 1fr; gap: 8px; align-items: center; margin: 7px 0 9px; }
-.radio { background: #101d2bd9; border-right: 2px solid var(--aqua); padding: 6px 8px; text-align: left; }
-.radio p { font-size: 12px; }
+#weapons span { font-variant-numeric: tabular-nums; color: #e6fff5; white-space: nowrap; }
+#weapons.stowed { opacity: 0.98; }
+#reticle { top: 50%; left: 50%; width: 10px; height: 10px; transform: translate(-50%, -50%); border: 1px solid #f5ffed; border-radius: 50%; box-shadow: 0 0 4px #071322; }
+#failure { inset: 0; display: grid; align-content: center; text-align: center; background: #160e21ce; z-index: 4; }
+#failure strong { color: #ff8194; font-size: clamp(3rem, 12vw, 8rem); font-style: italic; }
+#location { left: 22px; bottom: 20px; width: 270px; text-shadow: 0 2px 5px #071322; }
+#minimap { display: block; width: 142px; height: 142px; border-radius: 50%; background: #132538; border: 2px solid #c0eee3; outline: 2px solid #0d1d2c; box-shadow: 0 6px 16px #08162575; }
+h2 { margin: 6px 0 4px; font-size: 25px; font-weight: 900; font-style: italic; }
+.vitals { display: grid; grid-template-columns: 59px 1fr; gap: 4px 7px; align-items: center; }
+.vitals span { font-size: 13px; font-weight: 900; }
+#health::before { background: #8bebaa; } #armour::before { background: #74cfff; } #respect::before { background: #ffc581; }
+#rank { grid-column: 1 / -1; font-size: 14px; font-weight: 900; color: var(--amber); white-space: nowrap; }
+#speedometer { right: 22px; bottom: 20px; width: 225px; text-align: right; text-shadow: 0 3px 9px #081724; }
+.dial { display: flex; justify-content: flex-end; align-items: end; gap: 8px; margin-bottom: 2px; }
+.dial strong { font-size: 86px; font-weight: 900; font-style: italic; line-height: .86; }
+.dial b, .dial span { display: block; font-size: 15px; font-weight: 900; color: var(--aqua); }
+.dial b { font-size: 21px; border: 1px solid #a2ece3; text-align: center; margin-bottom: 4px; }
+h3 { font-size: 19px; font-weight: 900; margin: 5px 0 2px; }
+.nitro { display: grid; grid-template-columns: 56px 1fr; gap: 8px; align-items: center; margin: 5px 0 7px; }
+.radio { background: #081620f5; border-right: 3px solid var(--aqua); padding: 5px 7px; text-align: left; }
+.radio p { font-size: 15px; }
 #eq { float: right; display: flex; gap: 2px; height: 16px; align-items: end; }
-#eq i { width: 2px; height: 9px; background: var(--aqua); transform-origin: bottom; }
+#eq i { width: 3px; height: 9px; background: var(--aqua); }
 #eq i:nth-child(even) { height: 14px; }
-#eq.on i { animation: beat 0.55s alternate infinite; }
-#eq.on i:nth-child(2n) { animation-delay: -0.3s; }
-#eq.on i:nth-child(3n) { animation-delay: -0.15s; }
-@keyframes beat { to { transform: scaleY(0.24); } }
-
-#dialogue { left: 50%; bottom: 57px; transform: translateX(-50%); width: min(496px, 59vw); }
-#dialogue { display: flex; gap: 12px; align-items: center;
-  border-left-color: var(--aqua); padding: 8px 12px; }
+#eq.on i { animation: beat .55s alternate infinite; }
+#eq.on i:nth-child(2n) { animation-delay: -.3s; }
+#eq.on i:nth-child(3n) { animation-delay: -.15s; }
+@keyframes beat { to { transform: scaleY(.24); } }
+#dialogue { left: 50%; bottom: 56px; transform: translateX(-50%); width: min(540px, 55vw); display: flex; gap: 10px; align-items: center; border-left-color: var(--aqua); padding: 7px 10px; }
 #portrait { width: 42px; height: 42px; flex-shrink: 0; border: 1px solid var(--edge); }
 #speaker { color: var(--aqua); }
-#callout { bottom: 145px; left: 50%; transform: translateX(-50%); color: var(--amber); }
-#callout { font-size: 17px; font-weight: 800; letter-spacing: 2px; text-shadow: 0 2px 6px #13172a; }
-#hint {
-  bottom: 16px; left: 50%; transform: translateX(-50%); white-space: nowrap;
-  font-size: 9px; letter-spacing: 1px; background: #10232cc7; padding: 8px 12px;
-  border-radius: 3px; color: #f5efdf;
-}
+#callout { bottom: 145px; left: 50%; transform: translateX(-50%); color: var(--amber); font-size: 19px; font-weight: 900; text-shadow: 0 2px 6px #13172a; }
+#hint { bottom: 12px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 900; background: #081620f5; padding: 7px 10px; color: #fff; }
 #status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 [hidden] { display: none !important; }
 @media (max-width: 850px), (max-height: 620px) {
   #identity span { display: none; }
-  #mission { width: 238px; }
-  #response { width: 187px; top: 250px; }
-  #weapons { width: 176px; }
-  #weapons > div { grid-template-columns: 13px 23px 1fr auto; gap: 3px; }
-  #weapons svg { width: 21px; }
-  #location { width: 248px; }
+  #mission { width: 300px; }
+  #response { width: 240px; top: 245px; }
+  #weapons { width: 205px; }
+  #location { width: 240px; }
   #minimap { width: 112px; height: 112px; }
-  #hint { font-size: 7px; letter-spacing: 0; }
+  #dialogue { width: min(500px, 62vw); }
+  #hint { font-size: 10px; white-space: normal; text-align: center; }
 }

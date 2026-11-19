@@ -1,9 +1,11 @@
 // Deterministic browser tableaux use actual game actors, cameras, props and gameplay HUD.
 import * as THREE from '../vendor/three.module.min.js';
 import { createNeonRow } from './world/neonRow.js';
+import { createGarage } from './world/garages.js';
 import { createShotEffects } from './render/shotEffects.js';
+import { createGarageMenu } from './ui/garage.js';
 
-const SHOT_NAMES = ['chase', 'onfoot', 'start', 'title', 'map'];
+const SHOT_NAMES = ['chase', 'onfoot', 'start', 'title', 'map', 'garage'];
 
 export function setupShot(name, game, random) {
   if (!SHOT_NAMES.includes(name)) return null;
@@ -20,12 +22,34 @@ export function setupShot(name, game, random) {
   for (const member of gangs.members) member.character.root.visible = false;
   camera.fov = name === 'chase' ? 60 : name === 'onfoot' ? 64 : 55;
   camera.updateProjectionMatrix();
-  progress.cash = name === 'chase' ? 8450 : 5825;
-  progress.respect = name === 'chase' ? 58 : 34;
+  progress.cash = name === 'chase' ? 8450 : name === 'garage' ? 12650 : 5825;
+  progress.respect = name === 'chase' ? 58 : name === 'garage' ? 58 : 34;
   const hud = { static: true, hideReticle: true };
 
   if (name === 'title') {
     sky.setNight(false);
+    return hud;
+  }
+
+  if (name === 'garage') {
+    sky.setNight(false);
+    hero.root.visible = true;
+    hero.position.set(104, 0.12, 12);
+    hero.yaw = 0;
+    hero.root.rotation.set(0, 0, 0);
+    hero.speed = 0;
+    hero.nitro = 100;
+    hero.condition = 100;
+    hero.driverHead.visible = true;
+    hero.upgrades = { engine: true, nitro: true };
+    player.vehicle = hero;
+    player.position.copy(hero.position);
+    const garage = createGarage(game);
+    createGarageMenu(garage, progress, game).open();
+    camera.fov = 52;
+    camera.position.set(99.4, 3.35, 26.5);
+    camera.lookAt(104, 1.1, 11.8);
+    camera.updateProjectionMatrix();
     return hud;
   }
 
@@ -74,10 +98,11 @@ export function setupShot(name, game, random) {
     vitals.health = 91;
     vitals.armour = 58;
     const cruisers = [[100.4, 7.1, 2.94], [107.5, 7.3, 3.34], [96, 0.5, 3.08]];
-    cruisers.forEach(([x, z, yaw], index) => {
+    const units = cruisers.map(([x, z, yaw], index) => {
       const unit = police.spawn(x, z, yaw);
       unit.status = index === 0 ? 'RAMMING' : 'PURSUIT';
       shotFX.flash(unit.car, index);
+      return unit;
     });
     wanted.report('Grand theft', 4);
     wanted.update(0, { seen: true });
@@ -90,16 +115,29 @@ export function setupShot(name, game, random) {
     vehicles.add('suv', '#d6ddd6', 94, -46, 0);
     vehicles.add('muscle', '#e29473', 104, -58, Math.PI);
     const walkers = [[110, 6], [112.5, 2], [110.5, -4], [113, -10],
-      [90.5, 1], [90, -6], [90.5, -13], [90, -19]];
+      [90.5, 1], [90, -6], [90.5, -13], [90, -19],
+      [111, -18], [115, -25], [89, -27], [92, -32],
+      [110, -35], [113, -42], [88, -42], [91, -48],
+      [110, -52], [114, -59], [89, -57], [92, -64],
+      [110, -68], [115, -74], [88, -72], [91, -79]];
     walkers.forEach(([x, z], index) => {
-      // The system keeps add private; reveal and pose its existing sidewalk actors.
       const person = pedestrians.people[index];
       person.position.set(x, 0.22, z);
       person.yaw = index % 2 ? 0.3 : 2.8;
+      if (index < 8) person.flee = 4.5 + (index % 3) * 0.45;
       person.character.root.rotation.y = person.yaw;
       person.character.root.visible = true;
-      person.character.animate(0.12 + index * 0.09, 1.2);
+      person.character.animate(0.12 + index * 0.04, index < 8 ? 4.7 : 1.2);
     });
+    units.slice(0, 2).forEach((unit, index) => {
+      const muzzle = unit.position.clone().add(new THREE.Vector3(
+        Math.sin(unit.car.yaw) * 2.35, 1.2, Math.cos(unit.car.yaw) * 2.35));
+      const target = hero.position.clone().add(new THREE.Vector3(index ? 0.4 : -0.4, 0.85, 0));
+      effects.shot(muzzle, target, true, 2);
+    });
+    const burningWreck = vehicles.add('muscle', '#33252d', 100, -91, Math.PI);
+    burningWreck.condition = 0;
+    shotFX.wreck(burningWreck.position);
     camera.fov = 48;
     camera.position.set(103.4, 5.3, 22.4);
     camera.lookAt(103.7, 3.55, 8.7);
