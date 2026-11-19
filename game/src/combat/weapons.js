@@ -14,6 +14,7 @@ export const LOADOUT = [
     cadence: 0.14, spread: 0.014, reload: 1.45 }
 ];
 
+/** Create the player's weapon slots and combat update loop. */
 export function createWeapons(player, input, city, effects, audio, random, callbacks) {
   const slots = LOADOUT.map(spec => ({ ...spec, ammo: spec.magazine }));
   const spread = new THREE.Vector3();
@@ -121,6 +122,7 @@ export function createWeapons(player, input, city, effects, audio, random, callb
   };
 }
 
+/** Create health and armour state with its damage and reset helpers. */
 export function createVitals() {
   const vitals = { health: 100, armour: 40 };
   vitals.hurt = damage => {

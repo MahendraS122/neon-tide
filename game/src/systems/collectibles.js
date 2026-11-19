@@ -2,6 +2,7 @@
 import * as THREE from '../../vendor/three.module.min.js';
 import { armoury, hospital, tideTokens } from '../world/locations.js';
 
+/** Create token pickups and the nearby clinic and armoury services. */
 export function createCollectibles({ scene, player, progress, vitals, weapons }, reward) {
   const geometry = new THREE.OctahedronGeometry(.42);
   const material = new THREE.MeshStandardMaterial({ color: '#61ffdc', emissive: '#39cde3', emissiveIntensity: 2 });

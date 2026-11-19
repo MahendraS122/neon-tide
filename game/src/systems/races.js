@@ -4,6 +4,7 @@ import { raceSite } from '../world/locations.js';
 
 const route = [[24, -112], [24, -36], [100, -36], [100, 40], [24, 40]];
 
+/** Create and manage the optional Glasswater sprint race. */
 export function createRaces({ scene, player, vehicles, progress }, reward) {
   let stage = 0;
   let time = 0;

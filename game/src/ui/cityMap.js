@@ -5,6 +5,7 @@ import { atlasSites, tideTokens } from '../world/locations.js';
 import { drawPortrait } from './portraits.js';
 import { drawAtlas, roadRoute } from './atlasDrawing.js';
 
+/** Create the atlas overlay, its story dossier, and live route redraw logic. */
 export function createCityMap({ city, player, progress, missions }) {
   const root = document.createElement('section');
   root.id = 'city-map';

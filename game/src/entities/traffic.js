@@ -2,6 +2,7 @@
 import * as THREE from '../../vendor/three.module.min.js';
 import { shortestAngle } from './collision.js';
 
+/** Create ambient vehicles and advance their lane-following routes. */
 export function createTraffic(vehicleSystem, city, random) {
   const fleet = [];
   const colors = ['#b94f4a', '#ded8c4', '#44718c', '#d4ad58', '#375557', '#9a91a2'];

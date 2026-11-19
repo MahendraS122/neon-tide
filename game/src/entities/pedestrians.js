@@ -3,6 +3,7 @@ import * as THREE from '../../vendor/three.module.min.js';
 
 import { moveWithCollisions, shortestAngle } from './collision.js';
 
+/** Build sidewalk pedestrians, including their shared alert and ejection behavior. */
 export function createPedestrians(scene, city, random, buildCharacter) {
   const people = [];
   const shirts = ['#c78f72', '#e7d9ad', '#65a9a6', '#d49da8', '#748bba', '#bac2a0'];

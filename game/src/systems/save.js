@@ -4,6 +4,7 @@ import { clockLabel } from './clock.js';
 
 const key = 'neon-tide.slot.v1';
 
+/** Provide validated read, write, restore and title-detail operations for the save slot. */
 export function createSave({ progress, missions, cityClock, garage }) {
   function read() {
     try {

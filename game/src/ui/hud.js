@@ -32,6 +32,7 @@ function portrait(canvas) {
   ellipse(42, 35, 2, 3, '#ffe2a0');
 }
 
+/** Connect game state to DOM HUD elements and throttle visual refreshes. */
 export function createHud(player, vehicles, city, {
   wanted, vitals, weapons, gangs, radio, progress, units
 }) {
